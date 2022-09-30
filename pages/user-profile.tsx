@@ -28,7 +28,7 @@ const UserProfile: NextPage = () => {
         cache: new InMemoryCache(),
     })
     useEffect(() => {
-        if (router.query) {
+        if (router.query.address) {
             initialize().then()
         }
     }, [router.query])

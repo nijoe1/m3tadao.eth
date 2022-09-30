@@ -1,28 +1,27 @@
-import { AppProps } from "next/app"
-import { ColorScheme, ColorSchemeProvider, MantineProvider } from "@mantine/core"
-import { NotificationsProvider } from "@mantine/notifications"
+import {AppProps} from "next/app"
+import {ColorScheme, ColorSchemeProvider, MantineProvider} from "@mantine/core"
+import {NotificationsProvider} from "@mantine/notifications"
 import "@rainbow-me/rainbowkit/styles.css"
-import { RainbowKitSiweNextAuthProvider } from "@rainbow-me/rainbowkit-siwe-next-auth"
+import {RainbowKitSiweNextAuthProvider} from "@rainbow-me/rainbowkit-siwe-next-auth"
 import {
     RainbowKitProvider,
     getDefaultWallets,
     connectorsForWallets,
     darkTheme,
 } from "@rainbow-me/rainbowkit"
-import { SessionProvider } from "next-auth/react"
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi"
-import { alchemyProvider } from "wagmi/providers/alchemy"
-import { publicProvider } from "wagmi/providers/public"
-import { useHotkeys, useLocalStorage } from "@mantine/hooks"
+import {SessionProvider} from "next-auth/react"
+import {chain, configureChains, createClient, WagmiConfig} from "wagmi"
+import {alchemyProvider} from "wagmi/providers/alchemy"
+import {publicProvider} from "wagmi/providers/public"
+import {useHotkeys, useLocalStorage} from "@mantine/hooks"
 import AuthWrapper from "../components/AuthenticationWrapper/AuthWrapper"
-import { XMTPContextProvider } from "../context/XMTPProvider"
 
-const { chains, provider, webSocketProvider } = configureChains(
+const {chains, provider, webSocketProvider} = configureChains(
     [chain.polygonMumbai],
-    [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY }), publicProvider()]
+    [alchemyProvider({apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}), publicProvider()]
 )
 
-const { wallets } = getDefaultWallets({
+const {wallets} = getDefaultWallets({
     appName: "M3tadao",
     chains,
 })
@@ -45,7 +44,7 @@ const getSiweMessageOptions = () => ({
 })
 
 export default function App(props: AppProps) {
-    const { Component, pageProps } = props
+    const {Component, pageProps} = props
     //
     // const {isDisconnected, status} = useAccount()
     //
@@ -86,13 +85,11 @@ export default function App(props: AppProps) {
                             <MantineProvider
                                 withGlobalStyles
                                 withNormalizeCSS
-                                theme={{ colorScheme }}
+                                theme={{colorScheme}}
                             >
                                 <NotificationsProvider position="top-right" zIndex={2077}>
                                     <AuthWrapper>
-                                        <XMTPContextProvider>
-                                            <Component {...pageProps} />
-                                        </XMTPContextProvider>
+                                        <Component {...pageProps} />
                                     </AuthWrapper>
                                 </NotificationsProvider>
                             </MantineProvider>

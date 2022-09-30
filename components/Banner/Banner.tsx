@@ -9,7 +9,7 @@ import {
     Center,
     Stack,
     Badge,
-    Title,
+    Title, Container,
 } from "@mantine/core"
 import Link from "next/link"
 import {
@@ -19,10 +19,10 @@ import {
     IconCheck,
     IconAlertCircle,
 } from "@tabler/icons"
-import { showNotification, updateNotification } from "@mantine/notifications"
-import { Worldcoin } from "../Worldcoin"
+import {showNotification, updateNotification} from "@mantine/notifications"
+import {Worldcoin} from "../Worldcoin"
 import useContract from "../../hooks/useContract"
-import { useRouter } from "next/router"
+import {useRouter} from "next/router"
 import useTableland from "../../hooks/useTableland"
 import useEPNS from "../../hooks/useEPNS"
 
@@ -52,20 +52,20 @@ interface UserCardImageProps {
 }
 
 export function Banner({
-    image,
-    avatar,
-    name,
-    designation,
-    stats,
-    website,
-    interests,
-    skills,
-    github,
-    twitter,
-    isOwner,
-    profId,
-}: UserCardImageProps) {
-    const { classes, theme } = useStyles()
+                           image,
+                           avatar,
+                           name,
+                           designation,
+                           stats,
+                           website,
+                           interests,
+                           skills,
+                           github,
+                           twitter,
+                           isOwner,
+                           profId,
+                       }: UserCardImageProps) {
+    const {classes, theme} = useStyles()
     console.log("stats", stats)
 
     const items = stats.map((stat) => (
@@ -91,10 +91,10 @@ export function Banner({
     ))
 
     const router = useRouter()
-    const { optIn } = useEPNS()
+    const {optIn} = useEPNS()
 
-    const { createFollow } = useContract()
-    const { getUserData } = useTableland()
+    const {createFollow} = useContract()
+    const {getUserData} = useTableland()
 
     const handleFollow = async () => {
         showNotification({
@@ -116,7 +116,7 @@ export function Banner({
                 color: "teal",
                 title: "Success",
                 message: "Followed successfully",
-                icon: <IconCheck size={16} />,
+                icon: <IconCheck size={16}/>,
                 autoClose: 2000,
             })
 
@@ -129,7 +129,7 @@ export function Banner({
                 color: "red",
                 title: "Error",
                 message: "Failed to follow",
-                icon: <IconAlertCircle size={16} />,
+                icon: <IconAlertCircle size={16}/>,
                 autoClose: 2000,
             })
         }
@@ -164,21 +164,21 @@ export function Banner({
                 {twitter && (
                     <Link href={twitter ? twitter : "https://twitter.com"} passHref>
                         <ActionIcon component={"a"} target={"_blank"}>
-                            <IconBrandTwitter size={32} />
+                            <IconBrandTwitter size={32}/>
                         </ActionIcon>
                     </Link>
                 )}
                 {github && (
                     <Link href={github ? github : "https://github.com"} passHref>
                         <ActionIcon component={"a"} target={"_blank"}>
-                            <IconBrandGithub size={32} />
+                            <IconBrandGithub size={32}/>
                         </ActionIcon>
                     </Link>
                 )}
                 {website && (
                     <Link href={website ? website : "#"} passHref>
                         <ActionIcon component={"a"} target={"_blank"}>
-                            <IconWorldWww size={32} />
+                            <IconWorldWww size={32}/>
                         </ActionIcon>
                     </Link>
                 )}
@@ -241,7 +241,7 @@ export function Banner({
                             size="md"
                             fullWidth={false}
                             variant="gradient"
-                            gradient={{ from: "indigo", to: "cyan" }}
+                            gradient={{from: "indigo", to: "cyan"}}
                             color={theme.colorScheme === "dark" ? undefined : "dark"}
                             onClick={() => {
                                 handleFollow()
@@ -254,10 +254,12 @@ export function Banner({
             )}
             {isOwner && (
                 <Stack m={"md"}>
-                    <Center mb={0}>
-                        <Button.Group>
-                            <Worldcoin profId={profId} />
-                            {/* <Button
+                    {/*<Center mb={0}>*/}
+                    {/*<Container >*/}
+                    <Center my={0}>
+                        <Worldcoin profId={profId}/>
+                    </Center>
+                    {/* <Button
                                 radius="md"
                                 mt="xl"
                                 size="md"
@@ -269,20 +271,21 @@ export function Banner({
                             >
                                 Verify Profile on Worldcoin
                             </Button> */}
-                            <Button
-                                radius="md"
-                                mt="xl"
-                                size="md"
-                                fullWidth={false}
-                                color={theme.colorScheme === "dark" ? undefined : "dark"}
-                                onClick={() => {
-                                    optIn()
-                                }}
-                            >
-                                Opt In To EPNS Notification Channel
-                            </Button>
-                        </Button.Group>
+                    <Center my={0}>
+                        <Button
+                            radius="md"
+                            size="md"
+                            fullWidth={false}
+                            color={theme.colorScheme === "dark" ? undefined : "dark"}
+                            onClick={() => {
+                                optIn()
+                            }}
+                        >
+                            Opt In To EPNS Notification Channel
+                        </Button>
                     </Center>
+                    {/*    </Container>*/}
+                    {/*</Center>*/}
                 </Stack>
             )}
         </Card>
