@@ -25,7 +25,7 @@ const useTableland = () => {
         const { columns, rows } = await tableland.read(
             `SELECT * FROM ${
                 tableNames["m3taUser"]
-            } WHERE ownerAddress='${addr.toLowerCase()}';`
+            } WHERE profileAddress='${addr.toLowerCase()}';`
         )
 
         // const { columns, rows } = await tableland.read(`SELECT * FROM ${tableNames["m3taUser"]};`)
@@ -45,7 +45,7 @@ const useTableland = () => {
         const { columns, rows } = await tableland.read(
             `SELECT * FROM ${
                 tableNames["m3taUser"]
-            } WHERE ownerAddress='${userAddress.toLowerCase()}';`
+            } WHERE profileAddress='${userAddress.toLowerCase()}';`
         )
         return rows[0]
     }

@@ -36,39 +36,38 @@ const UserProfile: NextPage = () => {
     const initialize = async () => {
         const user = await getUserData(router.query.address)
         console.log(user)
-        setProfId(user[1])
+        setProfId(user[2])
         // const response = await fetch("https://" + user[7] + ".ipfs.w3s.link/json")
         // const externalProfileData: any = response.json()
-        const profileHex = user[2]
+        // const profileHex = user[2]
         const userStats = {
-            image: "https://" + user[5] + ".ipfs.w3s.link/image",
-            avatar: "https://" + user[4] + ".ipfs.w3s.link/image",
-            name: user[3],
+            image: "https://" + user[7] + ".ipfs.w3s.link/image",
+            avatar: "https://" + user[6] + ".ipfs.w3s.link/image",
+            name: user[5],
         }
         setStats((oldStats) => ({ ...oldStats, ...userStats }))
-        fetchPostsCount(user[1])
-        fetchExternalURIs(user[7])
+        // fetchPostsCount(user[1])
+        fetchExternalURIs(user[4])
 
-        const query = {
-            query: gql(fetchUserProfile),
-            variables: {
-                profHex: profileHex,
-            },
-        }
+        // const query = {
+        //     query: gql(fetchUserProfile),
+        //     variables: {
+        //         profHex: profileHex,
+        //     },
+        // }
 
-        const graphRes = (await client.query(query)).data
-            .profiles.items[0].stats
+        // const graphRes = (await client.query(query)).data.profiles.items[0].stats
         const lensStats = [
             {
-                value: graphRes.totalFollowers,
+                value: "2",
                 label: "Followers",
             },
             {
-                value: graphRes.totalFollowing,
+                value: "1",
                 label: "Follows",
             },
             {
-                value: graphRes.totalPosts,
+                value: "1",
                 label: "Posts",
             },
         ]
@@ -107,14 +106,6 @@ const UserProfile: NextPage = () => {
                         content="minimum-scale=1, initial-scale=1, width=device-width"
                     />
                 </Head>
-                {/*<button onClick={() => {*/}
-                {/*    console.log(isLoading)*/}
-                {/*    if (!isLoading){*/}
-                {/*        Main(provider, signer)*/}
-                {/*    }*/}
-                {/*}}>*/}
-                {/*    superfluid*/}
-                {/*</button>*/}
                 <Stack m={"sm"} sx={{ height: "100%" }}>
                     <Banner isOwner={isOwner} {...stats} profId={profId} />
                     <NavTabs

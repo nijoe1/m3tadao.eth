@@ -13,6 +13,7 @@ import { fetchOrganisationDetails } from "../constants/graphql/queries"
 import {ApolloClient, InMemoryCache, ApolloProvider, gql} from '@apollo/client'
 import { HiringRequestTable } from "../components/HiringRequestTable"
 import { RequirementsCard } from "../components/RequirementsCard"
+import useOrbis from "../hooks/useOrbis";
 
 const Organisation = () => {
     const [activeTab, setActiveTab] = useState("first")
@@ -21,8 +22,10 @@ const Organisation = () => {
     const [members, setMembers] = useState([])
     const [name, setName] = useState("")
     const [accId, setAccId] = useState("")
+    const [groupId, setGroupId] = useState("")
 
     const router = useRouter()
+    const {createOrbisChannel, connectOrbis} = useOrbis()
     const client = new ApolloClient({
         uri: 'https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai',
         cache: new InMemoryCache(),
@@ -31,6 +34,7 @@ const Organisation = () => {
     useEffect(() => {
         initialize().then()
         setAccId(router.query.accId)
+        setGroupId(router.query.groupId)
     }, [router.query])
 
     const initialize = async () => {
@@ -106,6 +110,23 @@ const Organisation = () => {
                         onClick={() => setIsModalOpen(true)}
                     >
                         New Post
+                    </Button>
+                    <Button
+                        radius="md"
+                        mt="xl"
+                        size="md"
+                        variant={"light"}
+                        onClick={async () => {
+                            await connectOrbis()
+                            const createChannelRes = await createOrbisChannel(groupId, {
+                                name: "General",
+                                description: "General discussion",
+                                type: "chat"
+                            })
+                            console.log(createChannelRes)
+                        }}
+                    >
+                        Create Channel
                     </Button>
                 </Button.Group>
             </Group>

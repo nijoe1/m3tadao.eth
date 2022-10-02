@@ -24,18 +24,18 @@ export function DisplayGrid({onLoad, data, isOrganisations}) {
     const cards = data && data.map((article) => (
         <Skeleton key={article[1]} visible={onLoad}>
             <Link
-                href={isOrganisations ? `/organisation?accHex=${article[3]}&accId=${article[2]}` : `/project?accHex=${article[3]}`}
+                href={isOrganisations ? `/organisation?accHex=${article[4]}&accId=${article[2]}&groupId=${article[3]}` : `/project?accHex=${article[3]}`}
                 passHref>
                 <Card p="md" radius="md" component="a"
                       className={classes.card}>
                     <AspectRatio mb={"xs"} ratio={1920 / 1080}>
-                        <Image src={"https://" + article[6] + ".ipfs.w3s.link/image"}/>
+                        <Image src={"https://" + article[7] + ".ipfs.w3s.link/image"}/>
                     </AspectRatio>
                     <Text className={classes.title} mt={5}>
-                        {article[4]}
+                        {article[5]}
                     </Text>
                     <Text color="dimmed" size="sm" mt="md">
-                        {article[9] || article[7]}
+                        {article[10]}
                     </Text>
                 </Card>
             </Link>

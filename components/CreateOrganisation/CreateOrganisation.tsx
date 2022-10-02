@@ -12,6 +12,7 @@ import {showNotification, updateNotification} from "@mantine/notifications";
 import useContract from "../../hooks/useContract";
 import {useRouter} from "next/router";
 import {useAccount} from "wagmi";
+import useOrbis from "../../hooks/useOrbis";
 
 export function CreateOrganisation() {
     const [active, setActive] = useState(0)
@@ -19,6 +20,7 @@ export function CreateOrganisation() {
     const [members, membersHandlers] = useListState<string>([]);
     const {createProjectAccount} = useContract()
     const router = useRouter()
+    const {createOrbisGroup, connectOrbis} = useOrbis()
 
     const removeMember = (member: string) => {
         membersHandlers.filter(
@@ -67,10 +69,8 @@ export function CreateOrganisation() {
             await createProjectAccount(
                 form.values.accountName,
                 form.values.website,
-                "organisation",
-                "",
+                "default requirements",
                 image,
-                "",
                 form.values.description,
                 members
             )

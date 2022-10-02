@@ -1,9 +1,10 @@
-import { ethers } from "ethers"
-import { contractAddresses, m3taDaoAbi, lensAbi, valistAbi } from "../constants/"
-import { useAccount, useSigner } from "wagmi"
-import { uploadFileToIpfs, uploadJsonToIpfs } from "../utils/uploadToIpfs"
-import { v4 as uuidv4 } from "uuid"
-import { defaultAbiCoder } from "ethers/lib/utils"
+import {ethers} from "ethers"
+import {contractAddresses, lensAbi, m3taDaoAbi, valistAbi} from "../constants/"
+import {useAccount, useSigner} from "wagmi"
+import {uploadFileToIpfs, uploadJsonToIpfs} from "../utils/uploadToIpfs"
+import {v4 as uuidv4} from "uuid"
+import {defaultAbiCoder} from "ethers/lib/utils"
+import useOrbis from "./useOrbis";
 
 const isJsonEmpty = (jsonObj) => {
     return (
@@ -16,13 +17,15 @@ const isJsonEmpty = (jsonObj) => {
 const useContract = () => {
     const { data: signer, isError, isLoading } = useSigner()
     const { address } = useAccount()
+    const {createOrbisGroup, connectOrbis} = useOrbis()
 
-    const createLensProfile = async (
+    const createUserProfile = async(
+        orbisDid,
+        orbisGroupId,
         userAddress,
-        handle,
+        handle, // name
         image,
         banner,
-        // followNFTURI,
         description,
         designation,
         github,
@@ -30,24 +33,21 @@ const useContract = () => {
         website,
         interests,
         skills
-        // profileURI
     ) => {
-        const externalJson = { website, twitter, github, interests, skills, designation }
+        const externalJson = { website, twitter, github, interests, skills, designation, description }
         let externalURIs
         if (isJsonEmpty(externalJson)) {
             externalURIs = ""
         } else {
             externalURIs = await uploadJsonToIpfs(externalJson, "json")
         }
-        console.log("externalURIs", externalURIs)
 
-        let profileURI
+        let bannerUri
         if (banner) {
-            profileURI = await uploadFileToIpfs(banner, "image")
+            bannerUri = await uploadFileToIpfs(banner, "image")
         } else {
-            profileURI = ""
+            bannerUri = ""
         }
-        console.log("profileURI", profileURI)
 
         let imageURI
         if (image) {
@@ -56,26 +56,23 @@ const useContract = () => {
             imageURI = ""
         }
 
-        console.log("imageURI", imageURI)
-        const followNFTURI = ""
-        console.log(signer)
         const m3taDaoContractInstance = new ethers.Contract(
             contractAddresses.m3taDao,
             m3taDaoAbi,
             signer
         )
 
-        var tx = await m3taDaoContractInstance.createLensProfile(
+        const tx = await m3taDaoContractInstance.createProfile(
             [
-                [
-                    userAddress,
-                    handle,
-                    imageURI,
-                    "0x0000000000000000000000000000000000000000",
-                    "0x",
-                    followNFTURI,
-                ],
-                ["", 0, "", description, externalURIs, profileURI],
+                userAddress,
+                0,
+                orbisDid,
+                orbisGroupId,
+                "M3taUser",
+                externalURIs,
+                handle,
+                imageURI,
+                bannerUri
             ],
             { gasLimit: 5000000 }
         )
@@ -85,10 +82,8 @@ const useContract = () => {
     const createProjectAccount = async (
         accountName,
         website, // website url
-        AccountType,
         requirements, // for now empty string
-        image,
-        bannerURI, // for now empty string
+        image, // for now empty string
         description,
         // we should add into the members the contract address of metadao to be able to make updates
         members
@@ -102,47 +97,32 @@ const useContract = () => {
         const externalJson = { website, description, accountName, imageURI }
         const metaURI = await uploadJsonToIpfs(externalJson, "json")
 
+        await connectOrbis()
+        const groupCreateRes = await createOrbisGroup(imageURI, accountName, description)
+
         const m3taDaoContractInstance = new ethers.Contract(
             contractAddresses.m3taDao,
             m3taDaoAbi,
             signer
         )
 
-        // const accountStruct = [
-        //     (founderAddress = "0x0000000000000000000000000000000000000000"),
-        //     (id = "0"),
-        //     (accountID = "0"),
-        //     (accountHex = "a"),
-        //     accountName,
-        //     metaURI,
-        //     AccountType,
-        //     requirements,
-        //     imageURI,
-        //     bannerURI,
-        //     (metadataTable = "a"),
-        //     description,
-        //     // we should add into the members the contract address of metadao to be able to make updates
-        //     members,
-        // ]
-
-        const accountStruct = [
+        let accountStruct = [
             address,
             "0",
             "0",
-            "a",
+            groupCreateRes.doc,
+            "0x0",
             accountName,
             metaURI,
-            AccountType,
             requirements,
             imageURI,
-            "",
-            "a",
+            "default",
+            "default",
             description,
-            // we should add into the members the contract address of metadao to be able to make updates
             [...members, contractAddresses.m3taDao],
         ]
         console.log("accountStruct", accountStruct)
-        var tx = await m3taDaoContractInstance.createProjectAccount(accountStruct, {
+        const tx = await m3taDaoContractInstance.createProjectAccount(accountStruct, {
             gasLimit: 5000000,
         })
 
@@ -167,17 +147,6 @@ const useContract = () => {
         }
         const requirementsURI = await uploadJsonToIpfs(inputStruct, "json")
 
-        //     struct HireReqStruct
-        // {
-        //     address profAddress="dontcare";
-        //     uint256 hireID="dontcare";
-        //     uint256 accountID;
-        //     string  profHex;
-        //     string  metadataTable="dontcare";
-        //     string  hireTitle;
-        //     string  hireDescription;
-
-        // }
 
         const m3taDaoContractInstance = new ethers.Contract(
             contractAddresses.m3taDao,
@@ -436,7 +405,7 @@ const useContract = () => {
     }
 
     return {
-        createLensProfile,
+        createUserProfile,
         createProjectAccount,
         updateProjectAccountRequirements,
         createSubProject,
@@ -449,7 +418,6 @@ const useContract = () => {
         createFollow,
         addValistMember,
         deleteValistMember,
-        // updateProjectAccount,
     }
 }
 

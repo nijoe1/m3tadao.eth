@@ -3,10 +3,10 @@ import { useProvider } from "wagmi"
 
 const useOrbis = () => {
     const orbis = new Orbis()
-    const provider = useProvider()
+    // const provider = useProvider()
 
     const connectOrbis = async () => {
-        return await orbis.connect(provider)
+        return await orbis.connect(window.ethereum)
     }
 
     const createOrbisGroup = async (pfp, name, description) => {
@@ -143,3 +143,5 @@ const useOrbis = () => {
         getOrbisMessages,
     }
 }
+
+export default useOrbis

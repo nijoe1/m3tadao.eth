@@ -1,31 +1,14 @@
 import {useEffect, useState} from "react"
-import {
-    Stepper,
-    Button,
-    Group,
-    TextInput,
-    Code,
-    Title,
-    Checkbox,
-    Container,
-    Tooltip,
-    Input,
-    Textarea,
-} from "@mantine/core"
+import {Stepper, Button, Group, TextInput, Code, Title, Checkbox, Container, Tooltip, Input, Textarea,} from "@mantine/core"
 import {useForm} from "@mantine/form"
 import {ImageInput} from "../ImageInput"
-import {
-    IconAlertCircle,
-    IconBrandTwitter,
-    IconBrandGithub,
-    IconWorldWww,
-    IconCheck,
-} from "@tabler/icons"
+import {IconAlertCircle, IconBrandTwitter, IconBrandGithub, IconWorldWww, IconCheck,} from "@tabler/icons"
 import useContract from "../../hooks/useContract"
 import {useAccount} from "wagmi"
 import {showNotification, updateNotification} from "@mantine/notifications"
 import {useRouter} from "next/router"
 import useTableland from "../../hooks/useTableland"
+import useOrbis from "../../hooks/useOrbis"
 
 export function Registration() {
     const [active, setActive] = useState(0)
@@ -34,10 +17,9 @@ export function Registration() {
     const [skills, setSkills] = useState<string[]>([])
     const [interests, setInterests] = useState<string[]>([])
     const {address} = useAccount()
-    const {createLensProfile} = useContract()
+    const {createUserProfile} = useContract()
     const router = useRouter()
-
-    const {isConnected, isDisconnected, status} = useAccount()
+    const {connectOrbis} = useOrbis()
 
     const {getUserExists} = useTableland()
 
@@ -63,6 +45,8 @@ export function Registration() {
 
     const form = useForm({
         initialValues: {
+            orbisDid: "",
+            orbisGroupId: "",
             name: "",
             description: "",
             designation: "",
@@ -75,8 +59,8 @@ export function Registration() {
             if (active === 0) {
                 return {
                     name:
-                        values.name.trim().length < 6
-                            ? "Name must include at least 6 characters"
+                        values.name.trim().length < 4
+                            ? "Name must include at least 4 characters"
                             : null,
                 }
             }
@@ -105,7 +89,12 @@ export function Registration() {
             disallowClose: true,
         })
         try {
-            await createLensProfile(
+            const res = await connectOrbis()
+            console.log(res)
+            form.setFieldValue("orbisDid", res.did)
+            await createUserProfile(
+                form.values.orbisDid,
+                form.values.orbisGroupId,
                 address,
                 form.values.name,
                 image,
