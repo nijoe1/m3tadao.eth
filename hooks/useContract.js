@@ -1,10 +1,10 @@
-import {ethers} from "ethers"
-import {contractAddresses, lensAbi, m3taDaoAbi, valistAbi} from "../constants/"
-import {useAccount, useSigner} from "wagmi"
-import {uploadFileToIpfs, uploadJsonToIpfs} from "../utils/uploadToIpfs"
-import {v4 as uuidv4} from "uuid"
-import {defaultAbiCoder} from "ethers/lib/utils"
-import useOrbis from "./useOrbis";
+import { ethers } from "ethers"
+import { contractAddresses, lensAbi, m3taDaoAbi, valistAbi } from "../constants/"
+import { useAccount, useSigner } from "wagmi"
+import { uploadFileToIpfs, uploadJsonToIpfs } from "../utils/uploadToIpfs"
+import { v4 as uuidv4 } from "uuid"
+import { defaultAbiCoder } from "ethers/lib/utils"
+import useOrbis from "./useOrbis"
 
 const isJsonEmpty = (jsonObj) => {
     return (
@@ -17,9 +17,9 @@ const isJsonEmpty = (jsonObj) => {
 const useContract = () => {
     const { data: signer, isError, isLoading } = useSigner()
     const { address } = useAccount()
-    const {createOrbisGroup, connectOrbis} = useOrbis()
+    const { updateProfile, createOrbisGroup, connectOrbis } = useOrbis()
 
-    const createUserProfile = async(
+    const createUserProfile = async (
         orbisDid,
         orbisGroupId,
         userAddress,
@@ -34,7 +34,14 @@ const useContract = () => {
         interests,
         skills
     ) => {
-        const externalJson = { website, twitter, github, interests, skills, designation, description }
+        const externalJson = {
+            website,
+            twitter,
+            github,
+            interests,
+            skills,
+            designation,
+        }
         let externalURIs
         if (isJsonEmpty(externalJson)) {
             externalURIs = ""
@@ -42,11 +49,11 @@ const useContract = () => {
             externalURIs = await uploadJsonToIpfs(externalJson, "json")
         }
 
-        let bannerUri
+        let bannerURI
         if (banner) {
-            bannerUri = await uploadFileToIpfs(banner, "image")
+            bannerURI = await uploadFileToIpfs(banner, "image")
         } else {
-            bannerUri = ""
+            bannerURI = ""
         }
 
         let imageURI
@@ -62,6 +69,10 @@ const useContract = () => {
             signer
         )
 
+        console.log("UPDATE PROFILE")
+        const res = await updateProfile(imageURI, bannerURI, handle, description, externalJson)
+        console.log("res UpdateProfile", res)
+
         const tx = await m3taDaoContractInstance.createProfile(
             [
                 userAddress,
@@ -72,7 +83,7 @@ const useContract = () => {
                 externalURIs,
                 handle,
                 imageURI,
-                bannerUri
+                bannerURI,
             ],
             { gasLimit: 5000000 }
         )
@@ -97,7 +108,7 @@ const useContract = () => {
         const externalJson = { website, description, accountName, imageURI }
         const metaURI = await uploadJsonToIpfs(externalJson, "json")
 
-        await connectOrbis()
+        // await connectOrbis()
         const groupCreateRes = await createOrbisGroup(imageURI, accountName, description)
 
         const m3taDaoContractInstance = new ethers.Contract(
@@ -146,7 +157,6 @@ const useContract = () => {
             reqDeadline,
         }
         const requirementsURI = await uploadJsonToIpfs(inputStruct, "json")
-
 
         const m3taDaoContractInstance = new ethers.Contract(
             contractAddresses.m3taDao,

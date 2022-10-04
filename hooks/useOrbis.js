@@ -9,6 +9,15 @@ const useOrbis = () => {
         return await orbis.connect(window.ethereum)
     }
 
+    const updateProfile = async (pfpURI, coverURI, username, description, data) => {
+        const isConnected = await orbis.isConnected()
+        console.log("connected", isConnected)
+        const pfp = `https://${pfpURI}.ipfs.w3s.link/image`
+        const cover = `https://${coverURI}.ipfs.w3s.link/image`
+        // const res = await connectOrbis()
+        return await orbis.updateProfile({ pfp, cover, username, description, data })
+    }
+
     const createOrbisGroup = async (pfp, name, description) => {
         return await orbis.createGroup({ pfp, name, description })
     }
@@ -55,6 +64,10 @@ const useOrbis = () => {
 
     const sendConvoMessage = async (conversationId, content) => {
         return await orbis.sendMessage({ conversation_id: conversationId, body: content })
+    }
+
+    const setFollow = async (did, active) => {
+        return await orbis.setFollow(did, active)
     }
 
     const getOrbisPosts = async (context, did, page = 0) => {
@@ -118,6 +131,7 @@ const useOrbis = () => {
     }
 
     return {
+        updateProfile,
         connectOrbis,
         createOrbisGroup,
         updateOrbisGroup,
@@ -126,6 +140,7 @@ const useOrbis = () => {
         updateOrbisChannel,
         createOrbisConversation,
         sendConvoMessage,
+        setFollow,
         getOrbisPosts,
         getOrbisPost,
         getOrbisGroup,

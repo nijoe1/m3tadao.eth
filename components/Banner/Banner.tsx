@@ -9,7 +9,8 @@ import {
     Center,
     Stack,
     Badge,
-    Title, Container,
+    Title,
+    Container,
 } from "@mantine/core"
 import Link from "next/link"
 import {
@@ -19,12 +20,13 @@ import {
     IconCheck,
     IconAlertCircle,
 } from "@tabler/icons"
-import {showNotification, updateNotification} from "@mantine/notifications"
-import {Worldcoin} from "../Worldcoin"
+import { showNotification, updateNotification } from "@mantine/notifications"
+import { Worldcoin } from "../Worldcoin"
 import useContract from "../../hooks/useContract"
-import {useRouter} from "next/router"
+import { useRouter } from "next/router"
 import useTableland from "../../hooks/useTableland"
 import useEPNS from "../../hooks/useEPNS"
+import useOrbis from "../../hooks/useOrbis"
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -49,24 +51,29 @@ interface UserCardImageProps {
     designation: string
     isOwner: boolean
     profId: string
+    userExists: boolean
+    userDid: String
 }
 
 export function Banner({
-                           image,
-                           avatar,
-                           name,
-                           designation,
-                           stats,
-                           website,
-                           interests,
-                           skills,
-                           github,
-                           twitter,
-                           isOwner,
-                           profId,
-                       }: UserCardImageProps) {
-    const {classes, theme} = useStyles()
+    image,
+    avatar,
+    name,
+    designation,
+    stats,
+    website,
+    interests,
+    skills,
+    github,
+    twitter,
+    isOwner,
+    profId,
+    userExists,
+    userDid,
+}: UserCardImageProps) {
+    const { classes, theme } = useStyles()
     console.log("stats", stats)
+    console.log("userExists", userExists)
 
     const items = stats.map((stat) => (
         <div key={stat.label}>
@@ -91,10 +98,11 @@ export function Banner({
     ))
 
     const router = useRouter()
-    const {optIn} = useEPNS()
+    const { optIn } = useEPNS()
 
-    const {createFollow} = useContract()
-    const {getUserData} = useTableland()
+    const { createFollow } = useContract()
+    const { getUserData } = useTableland()
+    const { setFollow } = useOrbis()
 
     const handleFollow = async () => {
         showNotification({
@@ -108,19 +116,30 @@ export function Banner({
         try {
             console.log("router query address", router.query.address)
             const userData = await getUserData(router.query.address)
-            const res = await createFollow([userData[1]])
-            console.log("res", res)
+            console.log(userData)
+            // const res = await createFollow([userData[1]])
+            // console.log("res", res)
+            const didOfUserToFollow = userData[3]
+            if (didOfUserToFollow && didOfUserToFollow !== "") {
+                const res = await setFollow(userData[3], true)
+                console.log(res)
+                if (res.status !== 200) {
+                    throw "unable to follow"
+                }
+            } else {
+                throw "invalid did"
+            }
 
             updateNotification({
                 id: "load-data",
                 color: "teal",
                 title: "Success",
                 message: "Followed successfully",
-                icon: <IconCheck size={16}/>,
+                icon: <IconCheck size={16} />,
                 autoClose: 2000,
             })
 
-            router.reload()
+            // router.reload()
             // router.push("/home")
         } catch (e) {
             console.log(e)
@@ -129,7 +148,7 @@ export function Banner({
                 color: "red",
                 title: "Error",
                 message: "Failed to follow",
-                icon: <IconAlertCircle size={16}/>,
+                icon: <IconAlertCircle size={16} />,
                 autoClose: 2000,
             })
         }
@@ -164,21 +183,21 @@ export function Banner({
                 {twitter && (
                     <Link href={twitter ? twitter : "https://twitter.com"} passHref>
                         <ActionIcon component={"a"} target={"_blank"}>
-                            <IconBrandTwitter size={32}/>
+                            <IconBrandTwitter size={32} />
                         </ActionIcon>
                     </Link>
                 )}
                 {github && (
                     <Link href={github ? github : "https://github.com"} passHref>
                         <ActionIcon component={"a"} target={"_blank"}>
-                            <IconBrandGithub size={32}/>
+                            <IconBrandGithub size={32} />
                         </ActionIcon>
                     </Link>
                 )}
                 {website && (
                     <Link href={website ? website : "#"} passHref>
                         <ActionIcon component={"a"} target={"_blank"}>
-                            <IconWorldWww size={32}/>
+                            <IconWorldWww size={32} />
                         </ActionIcon>
                     </Link>
                 )}
@@ -232,7 +251,7 @@ export function Banner({
                     </>
                 )}
             </Stack>
-            {!isOwner && (
+            {!isOwner && userExists && (
                 <Stack m={"md"}>
                     <Center mb={0}>
                         <Button
@@ -241,7 +260,7 @@ export function Banner({
                             size="md"
                             fullWidth={false}
                             variant="gradient"
-                            gradient={{from: "indigo", to: "cyan"}}
+                            gradient={{ from: "indigo", to: "cyan" }}
                             color={theme.colorScheme === "dark" ? undefined : "dark"}
                             onClick={() => {
                                 handleFollow()
@@ -257,7 +276,7 @@ export function Banner({
                     {/*<Center mb={0}>*/}
                     {/*<Container >*/}
                     <Center my={0}>
-                        <Worldcoin profId={profId}/>
+                        <Worldcoin profId={profId} />
                     </Center>
                     {/* <Button
                                 radius="md"
