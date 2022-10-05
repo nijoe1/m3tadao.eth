@@ -42,7 +42,7 @@ export function Registration() {
     const { getUserExists } = useTableland()
 
     useEffect(() => {
-        checkStatus()
+        // checkStatus() // TODO: Removed here, but should be added back in
     }, [])
 
     const checkStatus = async () => {
@@ -64,7 +64,6 @@ export function Registration() {
     const form = useForm({
         initialValues: {
             orbisDid: "",
-            orbisGroupId: "",
             name: "",
             description: "",
             designation: "",
@@ -112,8 +111,7 @@ export function Registration() {
             form.setFieldValue("orbisDid", res.did)
             // form.setFieldValue("orbisDid", "IamAHMED")
             await createUserProfile(
-                form.values.orbisDid,
-                form.values.orbisGroupId,
+                res.did,
                 address,
                 form.values.name,
                 image,

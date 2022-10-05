@@ -27,6 +27,7 @@ import { useRouter } from "next/router"
 import useTableland from "../../hooks/useTableland"
 import useEPNS from "../../hooks/useEPNS"
 import useOrbis from "../../hooks/useOrbis"
+import {useState} from "react";
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -53,6 +54,7 @@ interface UserCardImageProps {
     profId: string
     userExists: boolean
     userDid: String
+    isFollowing: boolean
 }
 
 export function Banner({
@@ -67,11 +69,14 @@ export function Banner({
     github,
     twitter,
     isOwner,
-    profId,
     userExists,
     userDid,
+    isFollowing,
 }: UserCardImageProps) {
     const { classes, theme } = useStyles()
+    const { optIn } = useEPNS()
+    const { setFollow, connectOrbis } = useOrbis() // TODO: fix this
+
     console.log("stats", stats)
     console.log("userExists", userExists)
 
@@ -97,31 +102,25 @@ export function Banner({
         </Badge>
     ))
 
-    const router = useRouter()
-    const { optIn } = useEPNS()
-
-    const { createFollow } = useContract()
-    const { getUserData } = useTableland()
-    const { setFollow } = useOrbis()
-
-    const handleFollow = async () => {
+    const handleFollow = async (follow: boolean) => {
         showNotification({
             id: "load-data",
             loading: true,
-            title: "Following user",
+            title: follow ? "Following user" : "Unfollowing user",
             message: "Please wait!",
             autoClose: false,
             disallowClose: true,
         })
         try {
-            console.log("router query address", router.query.address)
-            const userData = await getUserData(router.query.address)
-            console.log(userData)
+            // console.log("router query address", router.query.address)
+            // const userData = await getUserData(router.query.address)
+            // console.log(userData)
             // const res = await createFollow([userData[1]])
             // console.log("res", res)
-            const didOfUserToFollow = userData[3]
+            await connectOrbis()
+            const didOfUserToFollow = userDid
             if (didOfUserToFollow && didOfUserToFollow !== "") {
-                const res = await setFollow(userData[3], true)
+                const res = await setFollow(userDid, follow)
                 console.log(res)
                 if (res.status !== 200) {
                     throw "unable to follow"
@@ -134,7 +133,7 @@ export function Banner({
                 id: "load-data",
                 color: "teal",
                 title: "Success",
-                message: "Followed successfully",
+                message: follow ? "Followed successfully" : "Unfollowed successfully",
                 icon: <IconCheck size={16} />,
                 autoClose: 2000,
             })
@@ -147,12 +146,13 @@ export function Banner({
                 id: "load-data",
                 color: "red",
                 title: "Error",
-                message: "Failed to follow",
+                message: follow ?  "Failed to follow" : "Failed to unfollow",
                 icon: <IconAlertCircle size={16} />,
                 autoClose: 2000,
             })
         }
     }
+
 
     return (
         <Card p="xl" className={classes.card}>
@@ -263,33 +263,19 @@ export function Banner({
                             gradient={{ from: "indigo", to: "cyan" }}
                             color={theme.colorScheme === "dark" ? undefined : "dark"}
                             onClick={() => {
-                                handleFollow()
+                                handleFollow(!isFollowing)
                             }}
                         >
-                            Follow
+                            {isFollowing ? "Unfollow" : "Follow"}
                         </Button>
                     </Center>
                 </Stack>
             )}
             {isOwner && (
                 <Stack m={"md"}>
-                    {/*<Center mb={0}>*/}
-                    {/*<Container >*/}
-                    <Center my={0}>
-                        <Worldcoin profId={profId} />
-                    </Center>
-                    {/* <Button
-                                radius="md"
-                                mt="xl"
-                                size="md"
-                                fullWidth={false}
-                                color={theme.colorScheme === "dark" ? undefined : "dark"}
-                                onClick={() => {
-                                    console.log("hehe")
-                                }}
-                            >
-                                Verify Profile on Worldcoin
-                            </Button> */}
+                    {/*<Center my={0}>*/}
+                    {/*    <Worldcoin profId={profId} />*/}
+                    {/*</Center>*/}
                     <Center my={0}>
                         <Button
                             radius="md"

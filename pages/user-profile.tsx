@@ -24,9 +24,10 @@ const UserProfile: NextPage = () => {
     const [isPostCountFetched, setIsPostCountFetched] = useState(false)
     const { getUserData } = useTableland()
     const { getLensPostCount } = useContract()
-    const { getOrbisProfileFollowing, getOrbisProfileFollowers } = useOrbis()
+    const { getOrbisProfileFollowing, getOrbisProfileFollowers, getOrbisProfile, getOrbisIsFollowing } = useOrbis()
     const [userExists, setIsUserExists] = useState(0) // 0 : checking, 1 : exists, 2 : not exists
     const [userDid, setUserDid] = useState("") // did of user of current profile page and not the user using the website
+    const [isFollowing, setIsFollowing] = useState(false)
     const client = new ApolloClient({
         uri: "https://api-mumbai.lens.dev/",
         cache: new InMemoryCache(),
@@ -45,53 +46,31 @@ const UserProfile: NextPage = () => {
             return
         }
         setIsUserExists(1)
-        const did = user[3]
-        setUserDid("did:pkh:eip155:80001:0x0de82dcc40b8468639251b089f8b4a4400022e04")
+        const did = user[2].toLowerCase()
+        setUserDid(did)
         console.log("user", user)
-        setProfId(user[2])
-        // const response = await fetch("https://" + user[7] + ".ipfs.w3s.link/json")
-        // const externalProfileData: any = response.json()
-        // const profileHex = user[2]
+        const temp = await getOrbisProfile(did)
+        console.log("temp", temp)
+        const profileDetails = (await getOrbisProfile(did)).data.details.profile
+        console.log("profileDetails", profileDetails)
         const userStats = {
-            image: "https://" + user[7] + ".ipfs.w3s.link/image",
-            avatar: "https://" + user[6] + ".ipfs.w3s.link/image",
-            name: user[5],
+            image: profileDetails.cover,
+            avatar: "https://ipfs.io/ipfs/" + user[5] + "/image",
+            name: user[4],
         }
-        setStats((oldStats) => ({ ...oldStats, ...userStats }))
+        setStats((oldStats) => ({ ...oldStats, ...userStats, ...profileDetails.data }))
         // fetchPostsCount(user[1])
-        fetchExternalURIs(user[4])
-        fetchFollowStats("did:pkh:eip155:80001:0x0de82dcc40b8468639251b089f8b4a4400022e04")
-
-        // const query = {
-        //     query: gql(fetchUserProfile),
-        //     variables: {
-        //         profHex: profileHex,
-        //     },
-        // }
-
-        // const graphRes = (await client.query(query)).data.profiles.items[0].stats
-        const lensStats = [
-            {
-                value: "2",
-                label: "Followers",
-            },
-            {
-                value: "1",
-                label: "Follows",
-            },
-            {
-                value: "1",
-                label: "Posts",
-            },
-        ]
-        setStats((oldStats) => ({ ...oldStats, stats: lensStats }))
+        // fetchExternalURIs(user[4])
+        fetchFollowStats(did)
+        const follows = await getOrbisIsFollowing(`did:pkh:eip155:80001:${address?.toLowerCase()}`,did)
+        setIsFollowing(follows.data)
     }
 
     const fetchFollowStats = async (did: String) => {
         const following = await getOrbisProfileFollowing(did)
         const followers = await getOrbisProfileFollowers(did)
-        console.log("following", following)
-        console.log("followers", followers)
+        // console.log("following", following)
+        // console.log("followers", followers)
         setStats((oldStats) => ({
             ...oldStats,
             stats: [
@@ -114,7 +93,7 @@ const UserProfile: NextPage = () => {
         }))
     }
 
-    const fetchPostsCount = async (profileId) => {
+    const fetchPostsCount = async (profileId: String) => {
         console.log("fetchTotalPosts")
         const totalPosts = await getLensPostCount(profileId)
         console.log("total post", totalPosts)
@@ -127,13 +106,6 @@ const UserProfile: NextPage = () => {
             return { ...oldStats, stats }
         })
         setIsPostCountFetched(true)
-    }
-
-    const fetchExternalURIs = async (cid: string) => {
-        const response = await fetch("https://" + cid + ".ipfs.w3s.link/json")
-        const externalProfileData = await response.json()
-        console.log("ex", externalProfileData)
-        setStats((oldStats) => ({ ...oldStats, ...externalProfileData }))
     }
 
     return (
@@ -153,6 +125,7 @@ const UserProfile: NextPage = () => {
                         profId={profId}
                         userExists={userExists === 1}
                         userDid={userDid}
+                        isFollowing={isFollowing}
                     />
                     <NavTabs
                         isOwner={isOwner}

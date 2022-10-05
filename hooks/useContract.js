@@ -21,7 +21,6 @@ const useContract = () => {
 
     const createUserProfile = async (
         orbisDid,
-        orbisGroupId,
         userAddress,
         handle, // name
         image,
@@ -69,22 +68,17 @@ const useContract = () => {
             signer
         )
 
-        console.log("UPDATE PROFILE")
         const res = await updateProfile(imageURI, bannerURI, handle, description, externalJson)
-        console.log("res UpdateProfile", res)
+        console.log("res", res)
 
-        const tx = await m3taDaoContractInstance.createProfile(
-            [
-                userAddress,
-                0,
-                orbisDid,
-                orbisGroupId,
-                "M3taUser",
-                externalURIs,
-                handle,
-                imageURI,
-                bannerURI,
-            ],
+        const groupId = await createOrbisGroup(imageURI, handle, description)
+        console.log("groupId", groupId)
+        const tx = await m3taDaoContractInstance.indexProfile(
+            orbisDid,
+            groupId.doc,
+            handle,
+            imageURI,
+            description,
             { gasLimit: 5000000 }
         )
         return await tx.wait()
