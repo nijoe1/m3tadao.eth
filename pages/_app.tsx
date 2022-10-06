@@ -1,4 +1,7 @@
 import {AppProps} from "next/app"
+import '../styles/globals.css'
+import '../styles/utilities.css'
+import '../styles/responsive.css'
 import {ColorScheme, ColorSchemeProvider, MantineProvider} from "@mantine/core"
 import {NotificationsProvider} from "@mantine/notifications"
 import "@rainbow-me/rainbowkit/styles.css"
