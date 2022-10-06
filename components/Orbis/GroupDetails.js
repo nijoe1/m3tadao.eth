@@ -160,7 +160,7 @@ function LoopChannels({channels}) {
           title={channel.content.name}
           image={getChannelIcon(channel, false)}
           imageActive={getChannelIcon(channel, true)}
-          route={"/" + channel.stream_id}
+          route={"/orbis/" + channel.stream_id}
           active={channel_id == channel.stream_id ? true : false} />
       )
     } else {

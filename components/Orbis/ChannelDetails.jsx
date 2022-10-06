@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import Head from 'next/head'
 import Image from 'next/image'
-import styles from '../styles/Home.module.css'
-import { getChannelIcon } from "../utils";
-import useIsGroupAdmin from "../hooks/useIsGroupAdmin";
-import { Feed } from "../components/Orbis/Feed";
-import { RightSide } from "../components/Orbis/RightSide";
+import styles from '../../styles/Home.module.css'
+import { getChannelIcon } from "../../utils";
+import useIsGroupAdmin from "../../hooks/useIsGroupAdmin";
+import { Feed } from "./Feed";
+import { RightSide } from "./RightSide";
 
 /** Import Context */
-import { GlobalContext, ModalsContext } from "../contexts/GlobalContext";
+import { GlobalContext, ModalsContext } from "../../contexts/GlobalContext";
 
 import { useRouter } from 'next/router'
 
@@ -21,6 +21,7 @@ export default function ChannelDetails() {
     /** Use Next router to get group_id */
     const router = useRouter();
     const { channel_id } = router.query;
+    console.log("channel_id", channel_id);
 
     useEffect(() => {
         if(channel_id) {

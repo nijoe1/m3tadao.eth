@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import styles from '../styles/orbis.home.module.css'
+import styles from '../../styles/orbis.home.module.css'
 import Head from 'next/head'
-import GroupHome from "../components/Orbis/GroupHome";
-import { useRouter } from 'next/router'
+import GroupHome from "../../components/Orbis/GroupHome";
+import {Layout} from "../../components/Layout";
 
 /** Import some Orbis modules */
-import { Navigation } from "../components/Orbis/Navigation";
-import { CreateChannelModal } from "../components/Orbis/modals/CreateChannel"
-import { UpdateChannelModal } from "../components/Orbis/modals/UpdateChannel"
-import { UpdateGroupModal } from "../components/Orbis/modals/UpdateGroup"
+import { Navigation } from "../../components/Orbis/Navigation";
+import { CreateChannelModal } from "../../components/Orbis/modals/CreateChannel"
+import { UpdateChannelModal } from "../../components/Orbis/modals/UpdateChannel"
+import { UpdateGroupModal } from "../../components/Orbis/modals/UpdateGroup"
 
 /** Import Context */
-import { GlobalContext, ModalsContext } from "../contexts/GlobalContext";
+import { GlobalContext, ModalsContext } from "../../contexts/GlobalContext";
 
 /** Import Orbis SDK */
 import { Orbis } from "@orbisclub/orbis-sdk";
@@ -19,6 +19,7 @@ import { Orbis } from "@orbisclub/orbis-sdk";
 /** Import TimeAgo globally */
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en.json'
+import {useRouter} from "next/router";
 en.long.minute = {
   current: "this minute",
   future: {one: '{0} min.', other: '{0} min.'},
@@ -45,6 +46,9 @@ function App({ Component, pageProps }) {
   const [updateProfileModalVis, setUpdateProfileModalVis] = useState(false);
   const [createChannelModalVisible, setCreateChannelModalVisible] = useState(false);
   const [updateChannelModalVisible, setUpdateChannelModalVisible] = useState(false);
+  
+  const router = useRouter()
+  router.pathname
 
   /** Once user is connected we load the user groups */
   useEffect(() => {
@@ -98,7 +102,7 @@ function App({ Component, pageProps }) {
   }
 
   return(
-    <>
+    <Layout>
       <Head>
           <title key="title">Orbis Group</title>
           <meta name="description" content="Orbis is a fully decentralized social layer for the internet that any developers can use to build their own social apps or features." key="description"></meta>
@@ -112,7 +116,7 @@ function App({ Component, pageProps }) {
       </Head>
       <GlobalContext.Provider value={{ user, setUser, group_id, orbis }}>
         <ModalsContext.Provider value={{ setModalVis, navigationVis }}>
-          <div className={styles.container}>
+          <div className={styles.container} style={{marginTop: "-76px"}}>
             {/** Show navigation on every pages */}
             <Navigation />
 
@@ -141,7 +145,7 @@ function App({ Component, pageProps }) {
 
         </ModalsContext.Provider>
       </GlobalContext.Provider>
-    </>
+    </Layout>
   );
 }
 
