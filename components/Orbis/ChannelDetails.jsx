@@ -20,7 +20,7 @@ export default function ChannelDetails() {
 
     /** Use Next router to get group_id */
     const router = useRouter();
-    const { channel_id } = router.query;
+    const { channelId: channel_id } = router.query;
     console.log("channel_id", channel_id);
 
     useEffect(() => {

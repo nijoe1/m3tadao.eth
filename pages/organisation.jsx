@@ -94,7 +94,7 @@ const Organisation = () => {
             <Head>
                 <title>Organisation - m3tadao</title>
             </Head>
-            <Group position={"apart"} p={"xl"} mx={"xl"} my={"sm"}>
+            <Group position={"apart"} p={"xl"} mx={"xl"} my={"sm"} style={{marginTop: "-76px"}}>
                 <Group>
                     <Title>Welcome to {name} 👋</Title>
                     <Text color={"dimmed"} size={"sm"}>

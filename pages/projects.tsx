@@ -29,9 +29,11 @@ export default function Projects() {
                 <meta name="description" content="Organisations"/>
             </Head>
             <Container>
-                <Skeleton visible={onLoad} animate={true}>
-                    <DisplayGrid isOrganisations={false} data={projectsData} onLoad={onLoad}/>
-                </Skeleton>
+                {onLoad && <Skeleton visible={onLoad} animate={true} height={"60vh"}/>}
+                {projectsData.length === 0 && <Center>
+                    <h1>No projects found</h1>
+                </Center>}
+                <DisplayGrid isOrganisations={false} data={projectsData} onLoad={onLoad}/>
             </Container>
         </Layout>
     )

@@ -30,15 +30,11 @@ TimeAgo.addDefaultLocale(en);
 /** Initiate the Orbis class object */
 let orbis = new Orbis();
 
-/** Update this group id to display a new group */
-const GROUP_ID = "kjzl6cwe1jw146iqu2myib8omsiaawfvng2o2eak27qylaa7xpcv5pod7x2nm2g";
-
 let tempCallback;
 
 /** Global App component */
 function App({ Component, pageProps }) {
   const [user, setUser] = useState(null);
-  const group_id = GROUP_ID;
   const [tempModalData, setTempModalData] = useState();
   const [navigationVis, setNavigationVis] = useState(false);
   const [createGroupModalVis, setCreateGroupModalVis] = useState(false);
@@ -48,7 +44,7 @@ function App({ Component, pageProps }) {
   const [updateChannelModalVisible, setUpdateChannelModalVisible] = useState(false);
   
   const router = useRouter()
-  router.pathname
+  const {groupId: group_id} = router.query
 
   /** Once user is connected we load the user groups */
   useEffect(() => {

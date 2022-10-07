@@ -21,7 +21,7 @@ export function GroupDetails() {
 
   /** Use Next router to get group_id */
   const router = useRouter();
-  const { channel_id } = router.query;
+  const { channelId: channel_id } = router.query;
 
   /** Load group details */
   useEffect(() => {
@@ -127,7 +127,7 @@ export function GroupDetails() {
                 title="home"
                 image="/img/icons/group-home-grey.png"
                 imageActive="/img/icons/group-home-white.png"
-                route={"/"}
+                route={`/orbis?groupId=${group_id}`}
                 active={!channel_id ? true : false} />
 
               {/** Loop through all channels */}
@@ -151,7 +151,7 @@ export function GroupDetails() {
 function LoopChannels({channels}) {
   const { group_id } = useContext(GlobalContext);
   const router = useRouter();
-  const { channel_id } = router.query;
+  const { channelId: channel_id } = router.query;
 
   return channels.map((channel, key) => {
     if(channel.content) {
@@ -160,7 +160,7 @@ function LoopChannels({channels}) {
           title={channel.content.name}
           image={getChannelIcon(channel, false)}
           imageActive={getChannelIcon(channel, true)}
-          route={"/orbis/" + channel.stream_id}
+          route={`/orbis/channel?groupId=${group_id}&channelId=${channel.stream_id}`}
           active={channel_id == channel.stream_id ? true : false} />
       )
     } else {

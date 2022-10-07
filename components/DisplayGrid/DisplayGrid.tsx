@@ -29,13 +29,13 @@ export function DisplayGrid({onLoad, data, isOrganisations}) {
                 <Card p="md" radius="md" component="a"
                       className={classes.card}>
                     <AspectRatio mb={"xs"} ratio={1920 / 1080}>
-                        <Image src={"https://" + article[7] + ".ipfs.w3s.link/image"}/>
+                        <Image src={"https://" + article[6] + ".ipfs.w3s.link/image"}/>
                     </AspectRatio>
                     <Text className={classes.title} mt={5}>
                         {article[5]}
                     </Text>
                     <Text color="dimmed" size="sm" mt="md">
-                        {article[10]}
+                        {article[7]}
                     </Text>
                 </Card>
             </Link>

@@ -44,9 +44,8 @@ export default function Organisations() {
                         </Link>
                     </Button.Group>
                 </Center>
-                <Skeleton visible={onLoad} animate={true}>
-                    <DisplayGrid onLoad={onLoad} data={organisationsData} isOrganisations={true}/>
-                </Skeleton>
+                {onLoad && <Skeleton visible={onLoad} animate={true} height={"60vh"}/>}
+                <DisplayGrid onLoad={onLoad} data={organisationsData} isOrganisations={true}/>
             </Container>
         </Layout>
     )
