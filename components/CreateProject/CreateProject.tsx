@@ -34,7 +34,6 @@ export function CreateProject() {
     ];
     const {address} = useAccount()
     const handleSubmit = async () => {
-        addMember(address)
         console.log(form.values)
         showNotification({
             id: 'load-data',
@@ -52,7 +51,7 @@ export function CreateProject() {
                 form.values.type,
                 image,
                 form.values.description,
-                members,
+                members.includes(address!) ? members : [address, ...members],
                 form.values.displayName,
                 form.values.website,
                 form.values.shortDescription,

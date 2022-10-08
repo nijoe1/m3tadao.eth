@@ -65,7 +65,6 @@ export function CreateOrganisation() {
     const { address } = useAccount()
 
     const handleSubmit = async () => {
-        addMember(address!)
         showNotification({
             id: "load-data",
             loading: true,
@@ -80,7 +79,7 @@ export function CreateOrganisation() {
                 form.values.website,
                 image,
                 form.values.description,
-                members
+                members.includes(address!) ? members : [address!, ...members],
             )
             updateNotification({
                 id: "load-data",
@@ -186,7 +185,7 @@ export function CreateOrganisation() {
                     </Button>
                 )}
                 {active !== 2 && <Button onClick={nextStep}>Next step</Button>}
-                {active === 2 && <Button onClick={() => handleSubmit()}>Confirm</Button>}
+                {active === 2 && <Button onClick={() => address && handleSubmit()}>Confirm</Button>}
             </Group>
         </>
     )

@@ -18,22 +18,19 @@ export default function Project() {
     const [data, setData] = useState(null)
     const [name, setName] = useState("project")
     useEffect(() => {
-        const projectId = router.query.accHex
-        client.query({
-            query: gql(fetchProjectDetails),
-            variables: {
-                projId: projectId
-            }
-        }).then(res => {
-            console.log("res", res)
-            setName(res.data.project.name)
-            setData(res.data.project)
-        })
-        // graphql.fetchGraphQL("https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai", query).then(res => {
-        //     console.log("res", res)
-        //     setName(res.data.project.name)
-        //     setData(res.data.project)
-        // })
+        const projectId = router.query.projId
+        if (projectId) {
+            client.query({
+                query: gql(fetchProjectDetails),
+                variables: {
+                    projId: projectId
+                }
+            }).then(res => {
+                console.log("res", res)
+                setName(res.data.project.name)
+                setData(res.data.project)
+            })
+        }
     }, [router.query])
 
     return (

@@ -1,11 +1,11 @@
-import { ethers } from "ethers"
-import { contractAddresses, lensAbi, m3taDaoAbi, valistAbi } from "../constants/"
-import { useAccount, useSigner } from "wagmi"
-import { uploadFileToIpfs, uploadJsonToIpfs } from "../utils/uploadToIpfs"
-import { v4 as uuidv4 } from "uuid"
-import { defaultAbiCoder } from "ethers/lib/utils"
+import {ethers} from "ethers"
+import {contractAddresses, lensAbi, m3taDaoAbi, valistAbi} from "../constants/"
+import {useAccount, useSigner} from "wagmi"
+import {uploadFileToIpfs, uploadJsonToIpfs} from "../utils/uploadToIpfs"
+import {v4 as uuidv4} from "uuid"
+import {defaultAbiCoder} from "ethers/lib/utils"
 import useOrbis from "./useOrbis"
-import { AccountMeta, create } from "@valist/sdk"
+import {AccountMeta, create, ProjectMeta} from "@valist/sdk"
 
 const isJsonEmpty = (jsonObj) => {
     return (
@@ -16,9 +16,9 @@ const isJsonEmpty = (jsonObj) => {
 }
 
 const useContract = () => {
-    const { data: signer, isError, isLoading } = useSigner()
-    const { address } = useAccount()
-    const { updateProfile, createOrbisGroup, connectOrbis } = useOrbis()
+    const {data: signer, isError, isLoading} = useSigner()
+    const {address} = useAccount()
+    const {updateProfile, createOrbisGroup, connectOrbis} = useOrbis()
 
     const createUserProfile = async (
         orbisDid,
@@ -73,7 +73,7 @@ const useContract = () => {
             handle,
             imageURI,
             description,
-            { gasLimit: 500000 }
+            {gasLimit: 500000}
         )
         return await tx.wait()
     }
@@ -85,17 +85,18 @@ const useContract = () => {
         description,
         members
     ) => {
+        console.log("members", members)
         let imageURI
         if (image) {
             imageURI = await uploadFileToIpfs(image, "image")
         } else {
             imageURI = ""
         }
-        const externalJson = { website, description, accountName, imageURI }
+        const externalJson = {website, description, accountName, imageURI}
         const externalURI = await uploadJsonToIpfs(externalJson, "json")
 
         // valist
-        const valist = await create(signer.provider, { signer, metaTx: true })
+        const valist = await create(signer.provider, {signer, metaTx: true})
         const valistAccountTx = await valist.createAccount(
             accountName,
             new AccountMeta(accountName, description, externalURI, imageURI),
@@ -152,6 +153,9 @@ const useContract = () => {
         }
         const requirementsURI = await uploadJsonToIpfs(inputStruct, "json")
 
+        // console.log("valistAccountTx", valistAccountTx)
+        const valistAccountTxRes = await valistAccountTx.wait()
+
         const m3taDaoContractInstance = new ethers.Contract(
             contractAddresses.m3taDao,
             m3taDaoAbi,
@@ -186,48 +190,38 @@ const useContract = () => {
             imageURI = ""
         }
 
-        const metaURIObject = { displayName, description, website, youTubeLink, tags }
-        const metaURI = await uploadJsonToIpfs(metaURIObject, "json")
-        const m3taDaoContractInstance = new ethers.Contract(
-            contractAddresses.m3taDao,
-            m3taDaoAbi,
-            signer
-        )
-
-        // const ProjectStruct = [
-        //     (sender = "0x0000000000000000000000000000000000000000"),
-        //     (id = 0),
-        //     accountID,
-        //     (projectID = "1"),
-        //     (metadataTable = "a"),
-        //     (projectHex = "e"),
-        //     projectName,
-        //     metaURI,
-        //     projectType,
-        //     imageURI,
-        //     description,
-        //     members,
-        // ]
-
-        const ProjectStruct = [
-            address,
-            "0",
-            accountID,
-            "1",
-            "a",
-            "e",
+        // valist
+        const valist = await create(signer.provider, {signer, metaTx: true})
+        console.log("valist", valist)
+        const meta = new ProjectMeta()
+        meta.name = displayName
+        meta.description = description
+        meta.image = `https://ipfs.io/ipfs/${imageURI}/image`
+        meta.external_url = website
+        meta.launch_external = website
+        meta.short_description = shortDescription
+        if (youTubeLink) meta.gallery = [{name: '', type: 'youtube', src: youTubeLink}]
+        meta.tags = tags
+        // const meta = {
+        //     name : displayName,
+        //     description : description,
+        //     image : `https://ipfs.io/ipfs/${imageURI}/image`,
+        //     external_url : website,
+        //     launch_external : website,
+        //     short_description : shortDescription,
+        //     gallery : [{ name: '', type: 'youtube', src: youTubeLink }],
+        //     tags : tags
+        // };
+        console.log("meta", meta)
+        const valistProjectTx = await valist.createProject(
+            ethers.BigNumber.from(accountID),
             projectName,
-            metaURI,
-            projectType,
-            imageURI,
-            shortDescription,
-            [...members, contractAddresses.m3taDao],
-        ]
-
-        var tx = await m3taDaoContractInstance.createSubProject(ProjectStruct, {
-            gasLimit: 5000000,
-        })
-        return await tx.wait()
+            meta,
+            members
+        )
+        const temp = await valistProjectTx.wait()
+        console.log("temp", temp)
+        return temp
     }
 
     const createRelease = async (
@@ -260,7 +254,7 @@ const useContract = () => {
             releaseURI,
         ]
 
-        var tx = await m3taDaoContractInstance.createRelease(ReleaseStruct, { gasLimit: 5000000 })
+        var tx = await m3taDaoContractInstance.createRelease(ReleaseStruct, {gasLimit: 5000000})
         return await tx
     }
 
@@ -280,7 +274,7 @@ const useContract = () => {
 
         const PostStruct = [address, "0", accountID, "a", postDescription, postTitle, postGalery]
 
-        var tx = await m3taDaoContractInstance.createPost(PostStruct, { gasLimit: 5000000 })
+        var tx = await m3taDaoContractInstance.createPost(PostStruct, {gasLimit: 5000000})
         return await tx.wait()
     }
 
@@ -291,7 +285,7 @@ const useContract = () => {
             signer
         )
 
-        var tx = await m3taDaoContractInstance.createPost(accountID, postID, { gasLimit: 5000000 })
+        var tx = await m3taDaoContractInstance.createPost(accountID, postID, {gasLimit: 5000000})
         return await tx.wait()
     }
 
@@ -354,14 +348,14 @@ const useContract = () => {
             referenceModuleInitData: [],
         }
 
-        var tx = await lensContractInstance.post(inputStruct, { gasLimit: 5000000 })
+        var tx = await lensContractInstance.post(inputStruct, {gasLimit: 5000000})
         return await tx.wait()
     }
 
     const getLensPostCount = async (profId) => {
         const lensContractInstance = new ethers.Contract(contractAddresses.lens, lensAbi, signer)
         console.log("profID", profId)
-        var tx = await lensContractInstance.getPubCount(profId, { gasLimit: 5000000 })
+        var tx = await lensContractInstance.getPubCount(profId, {gasLimit: 5000000})
         return tx.toString()
     }
 
@@ -369,14 +363,14 @@ const useContract = () => {
     const getLensPost = async (profId, pubId) => {
         const lensContractInstance = new ethers.Contract(contractAddresses.lens, lensAbi, signer)
         console.log("profID", profId)
-        var tx = await lensContractInstance.getPub(profId, pubId, { gasLimit: 5000000 })
+        var tx = await lensContractInstance.getPub(profId, pubId, {gasLimit: 5000000})
         return tx.toString()
     }
 
     const createFollow = async (profileIDs) => {
         const lensContractInstance = new ethers.Contract(contractAddresses.lens, lensAbi, signer)
 
-        var tx = await lensContractInstance.follow(profileIDs, [[]], { gasLimit: 5000000 })
+        var tx = await lensContractInstance.follow(profileIDs, [[]], {gasLimit: 5000000})
         return await tx.wait()
     }
 
@@ -403,7 +397,7 @@ const useContract = () => {
         var tx = await valistContractInstance.removeAccountMember(
             accountID,
             newUserWalletAddress,
-            { gasLimit: 5000000 }
+            {gasLimit: 5000000}
         )
         return await tx.wait()
     }

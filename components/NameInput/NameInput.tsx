@@ -21,7 +21,7 @@ export function NameInput(props: NameInputProps) {
     const [loading, setLoading] = useState(false)
     const [exists, setExists] = useState(false)
     const [error, setError] = useState<string>()
-    const [query, setQuery] = useState()
+    const [query, setQuery] = useState<string>()
     const router = useRouter()
     const client = new ApolloClient({
         uri: 'https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai',
@@ -40,7 +40,7 @@ export function NameInput(props: NameInputProps) {
         }
         if(router.pathname === "/create-project"){
             setQuery({
-                query: gql`\n query UniqueProject($project: String, $accountName: String){ accounts(where:{name: $accountName}){ projects(where: {name_contains: $project}){ id, name } }}\n`,
+                query: gql`\n query UniqueProject($project: String, $accountName: String){ accounts(where:{name: $accountName}){ projects(where: {name: $project}){ id, name } }}\n`,
                 variables: {
                     project: name,
                     accountName: props.parentId

@@ -28,7 +28,7 @@ export function ProjectData(props: any) {
             setMemberData(temp)
             setReleaseData(propsData.releases)
             const response = fetch(
-                `https://${propsData.metaURI}.ipfs.gateway.valist.io/json`
+                propsData.metaURI
             ).then((res) => res.json().then((data) => setMeta(data)))
             setLoading(false)
         }
