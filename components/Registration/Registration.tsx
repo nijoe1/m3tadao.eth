@@ -42,7 +42,7 @@ export function Registration() {
     const { getUserExists } = useTableland()
 
     useEffect(() => {
-        // checkStatus() // TODO: Removed here, but should be added back in
+        checkStatus() // TODO: Removed here, but should be added back in
     }, [])
 
     const checkStatus = async () => {
@@ -101,7 +101,7 @@ export function Registration() {
             loading: true,
             title: "Registering you on m3tadao",
             message:
-                "Please wait while we upload your images to web3.storage and create your lens profile",
+                "Please wait while we upload your images to web3.storage and create your profile",
             autoClose: false,
             disallowClose: true,
         })

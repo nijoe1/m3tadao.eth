@@ -5,6 +5,7 @@ import { uploadFileToIpfs, uploadJsonToIpfs } from "../utils/uploadToIpfs"
 import { v4 as uuidv4 } from "uuid"
 import { defaultAbiCoder } from "ethers/lib/utils"
 import useOrbis from "./useOrbis"
+import { AccountMeta, create } from "@valist/sdk"
 
 const isJsonEmpty = (jsonObj) => {
     return (
@@ -68,6 +69,7 @@ const useContract = () => {
         // const groupId = await createOrbisGroup(imageURI, handle, description)
         const tx = await m3taDaoContractInstance.indexProfile(
             orbisDid,
+            groupId.doc,
             handle,
             imageURI,
             description,
@@ -79,9 +81,10 @@ const useContract = () => {
     const createProjectAccount = async (
         accountName,
         website, // website url
-        requirements, // for now empty string
+        // requirements, // for now empty string
         image, // for now empty string
         description,
+        // we should add into the members the contract address of metadao to be able to make updates
         members
     ) => {
         let imageURI
@@ -91,10 +94,27 @@ const useContract = () => {
             imageURI = ""
         }
         const externalJson = { website, description, accountName, imageURI }
-        const metaURI = await uploadJsonToIpfs(externalJson, "json")
+        const externalURI = await uploadJsonToIpfs(externalJson, "json")
 
-        // await connectOrbis()
-        const groupCreateRes = await createOrbisGroup(imageURI, accountName, description)
+        // valist
+        const valist = await create(signer.provider, { signer, metaTx: true })
+        const valistAccountTx = await valist.createAccount(
+            accountName,
+            new AccountMeta(accountName, description, externalURI, imageURI),
+            members
+        )
+        console.log("valistAccountTx", valistAccountTx)
+        const valistAccountTxRes = await valistAccountTx.wait()
+        console.log("valistAccountTxRes", valistAccountTxRes)
+
+        await connectOrbis()
+        const orbisGroup = await createOrbisGroup(imageURI, accountName, description)
+        console.log("orbisGroup", orbisGroup)
+        const groupID = orbisGroup.doc
+
+        console.log("valistAccountTx", valistAccountTx)
+        const accountID = await valist.generateID(ethers.BigNumber.from("80001"), accountName)
+        console.log("accountID", accountID)
 
         const m3taDaoContractInstance = new ethers.Contract(
             contractAddresses.m3taDao,
@@ -102,23 +122,16 @@ const useContract = () => {
             signer
         )
 
-        let accountStruct = [
-            address,
-            groupCreateRes.doc,
-            "0x0",
+        const tx = await m3taDaoContractInstance.indexProjectAccount(
+            accountID,
+            groupID,
             accountName,
-            metaURI,
-            requirements,
             imageURI,
-            "default",
-            "default",
             description,
-            [...members, contractAddresses.m3taDao],
-        ]
-        console.log("accountStruct", accountStruct)
-        const tx = await m3taDaoContractInstance.indexProjectOrganization(accountStruct, {
-            gasLimit: 500000,
-        })
+            {
+                gasLimit: 5000000,
+            }
+        )
 
         return await tx.wait()
     }
