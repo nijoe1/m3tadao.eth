@@ -1,277 +1,378 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.12;
-
-// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
+// SPDX-License-Identifier: Unlicense
+pragma solidity >=0.8.11 <0.9.0;
 import "@tableland/evm/contracts/ITablelandTables.sol";
 import "@tableland/evm/contracts/utils/TablelandDeployments.sol";
-import "./Im3taQuery.sol";
+import "@tableland/evm/contracts/ITablelandController.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "./utils/SQLHelpers.sol";
+import "./Ownable.sol";
 import "./IValist.sol";
-import "./Im3taUser.sol";
 
-contract m3taDao 
-
+contract m3taDao is
+    Ownable
 {
 
-    // / @@@  @@@   @@@@@@   @@@       @@@   @@@@@@   @@@@@@@
-    // / @@@  @@@  @@@@@@@@  @@@       @@@  @@@@@@@   @@@@@@@
-    // / @@!  @@@  @@!  @@@  @@!       @@!  !@@         @@!
-    // / !@!  @!@  !@!  @!@  !@!       !@!  !@!         !@!
-    // / @!@  !@!  @!@!@!@!  @!!       !!@  !!@@!!      @!!
-    // / !@!  !!!  !!!@!!!!  !!!       !!!   !!@!!!     !!!
-    // / :!:  !!:  !!:  !!!  !!:       !!:       !:!    !!:
-    // /  ::!!:!   :!:  !:!   :!:      :!:      !:!     :!:
-    // /   ::::    ::   :::   :: ::::   ::  :::: ::      ::
-    // /    :       :   : :  : :: : :  :    :: : :       :
+
+                                    //     @@@@@  @@@@@    @@@@@@@  @@@@@@@   @@@@@@   @@@@@@@      @@@@@@     @@@@@@@    \\
+                                    //    @@@@@@@@@@@@@@   @@@@@@@  @@@@@@@  @@@@@@@@  @@@@@@@@    @@@@@@@@   @@@@@@@@@   \\
+                                    //    @@!  @@@@  @@@       !!@    @@@    @@!  @@@  @@    @@@   @@!  @@@  @@@     @@@  \\
+                                    //    !@!  !@!@  @!@       !!@    @@@    !@!  @!@  @@     @@@  !@!  @!@  !@!     @!@  \\
+                                    //    !@!  @!@!  !@!   @@@@!!@    @@@    @!@!@!@!  @@     @@@  @!@!@!@!  @!@     !@!  \\
+                                    //    !!!  !!!!  !!!   @@@@!!@    @@@    !!!@!!!!  @@     @@@  !!!@!!!!  !!!     !!!  \\
+                                    //    !!:  !!!!  !!!       !!@    @!@    !!:  !!!  @@     @@@  !!:  !!!  !!:     !!!  \\
+                                    //    :!:  :!:!  !:!       !!@    @@@    :!:  !:!  @@    @@@   :!:  !:!  :!:     !:!  \\  
+                                    //    :::  ::::  :::   @@@@@@@    @@@    ::   :::  @@   @@@    :::  :::  @@@@@@@@@@   \\
+                                    //    :::  ::::  :::   @@@@@@@    @@@    ::   :::  @@@@@@@     :::  : :    @@@@@@@    \\
+
+//  @@@  @@@   @@@@@@   @@@       @@@   @@@@@@   @@@@@@@    @@       @@   @@@@@@@   @@@@@@   @@@@@@@   @@@      @@@ ::::  @@@       @@@@@@   @@@       @@@  @@@@@@@     \\
+//  @@@  @@@  @@@@@@@@  @@@       @@@  @@@@@@@   @@@@@@@     @@     @@    @@@@@@@  @@@@@@@@  @@@@@@@@  @@@      @@@ ::::  @@@      @@@@@@@@  @@@::     @@@  @@@@@@@@    \\
+//  @@!  @@@  @@!  @@@  @@!       @@!  !@@         @@!        @@   @@       @@@    @@!  @@@  @@@   @@  @@!      @@!       @@@      @@!  @@@  @@! ::    @@!  @@    @@@   \\
+//  !@!  @!@  !@!  @!@  !@!       !@!  !@!         !@!         @@ @@        @@@    !@!  @!@  @@@   @@  !@!      !@!       @@@      !@!  @!@  !@!  ::   !@!  @@     @@@  \\
+//  @!@  !@!  @!@!@!@!  @!!       !!@  !!@@!!      @!!         @@@@         @@@    @!@!@!@!  @@@@@@@@  @!!      @!! ::::  @@@      @!@!@!@!  @!!   ::  @!!  @@     @@@  \\
+//  !@!  !!!  !!!@!!!!  !!!       !!!   !!@!!!     !!!         @@@@         @@@    !!!@!!!!  @@@@@@@@  !!!      !!! ::::  @@@      !!!@!!!!  !!!    :: !!!  @@     @@@  \\
+//  :!:  !!:  !!:  !!!  !!:       !!:       !:!    !!:        @@  @@        @!@    !!:  !!!  @@@   @@  !!:      !!:       @@@      !!:  !!!  !!:     ::!!:  @@     @@@  \\
+//   ::!!:!   :!:  !:!   :!:      :!:      !:!     :!:       @@    @@       @@@    :!:  !:!  @@@   @@  :!:      :!:       @@@      :!:  !:!  :!:      :::!  @@    @@@   \\
+//    ::::    ::   :::   :: ::::  :::  :::: ::      ::      @@      @@      @@@    ::   :::  @@@@@@@@  :: ::::  ::: ::::  @@@@@@@  ::   :::  ::        :::  @@   @@@    \\
+//     :       :   : :  : :: : :  :::  :: : :       :      @@        @@     @@@    ::   :::  @@@@@@@   :: ::::  ::: ::::  @@@@@@@   :   : :  ::         ::  @@@@@@@     \\
     
-    ITablelandTables private tablelandContract;
-    Im3taQuery       private queryContract;
+    using Counters for Counters.Counter;
+
+    mapping(address => bool) private profileExists;
+    mapping(uint => bool) private OrganizationExists;
+
+    Counters.Counter private profileID;
+    Counters.Counter private ValistID;
+    Counters.Counter private hireID;
+    Counters.Counter private proposalID;
     IValist          private valistRegistryContract;
-    Im3taUser        private m3taUserContract;
-    string  private _chainID;
-    uint    private _chainId;
+    ITablelandTables private tablelandContract;
+
     string  private _baseURIString;
-    string  private _metadataTable;
-    // Tableland Account-Project table variables
-    string  private _projectTable;
-    string  private _projectTablePrefix;
-    uint256 private _projectTableId;
-    // Tableland SubProject table variables
-    string  private _subProjectTable;
-    string  private _subProjectTablePrefix;
-    uint256 private _subProjectTableId;
-    // Tableland Release table variables
-    string  private _releaseTable;
-    string  private _releaseTablePrefix;
-    uint256 private _releaseTableId;
 
-    string  private _postTable;
-    string  private _postTablePrefix;
-    uint256 private _postTableId;
+    string  private _OrganizationTable;
+    uint256 private _OrganizationTableId;
+    string private constant M3TADAO_ORGANIZATION_PREFIX = "m3ta_organization";
+    string private constant ORGANIZATION_SCHEMA = "founderAddress text, identifier text, OrganizationID text, groupID text, OrganizationHex text, OrganizationName text, imageURI text, description text";
 
+    string  private _UserTable;
+    uint256 private _UserTableId;
+    string private constant M3TADAO_PROFILE_PREFIX = "m3ta_profile";
+    string private constant PROFILE_SCHEMA = "userAddress text, identifier text, userDID text, userName text, imageURI text, description text";
 
-    constructor(Im3taQuery initQueryContract,Im3taUser intitM3taUserContract)
+    string  private _ProposalTable;
+    uint256 private _proposalTableID;
+    string private constant PROPOSAL_PREFIX = "m3ta_proposal";
+    string private constant PROPOSAL_SCHEMA = "proposalid text, accountid text, proposer text, body text";
+
+    string  private _VotingTable;
+    uint256 private _votingTableID;
+    string private constant VOTES_PREFIX = "m3ta_vote";
+    string private constant VOTES_SCHEMA = "proposalid text, accountid text, respondent text, vote text";
+        // Tableland Hiring table variables
+
+    string  private _hireTable;
+    uint256 private _hiringTableId;
+    string private constant HIRE_PREFIX = "m3ta_hire";
+    string private constant HIRE_SCHEMA ="hireID text, profAddress text, accountid text, hireTitle text, hireDescription text";
+    
+
+    string[] private tableNames;
+
+    address private constant valistLicenceNFTs = 0x3cE643dc61bb40bB0557316539f4A93016051b81;
+
+// 0xD504d012D78B81fA27288628f3fC89B0e2f56e24
+    constructor(IValist ValistRegistryContract )
     {
-        // __Ownable_init();
-        // setting the external contracts
-        m3taUserContract = intitM3taUserContract;
-        queryContract = initQueryContract;
-        valistRegistryContract = IValist(0xD504d012D78B81fA27288628f3fC89B0e2f56e24);
+        //@dev setting the external valist contract
+        valistRegistryContract = ValistRegistryContract;
 
-        // Tableland Table Properties and Creation 
+        // Creating the M3taDao Tableland Tables on the constructor
         _baseURIString = "https://testnet.tableland.network/query?s=";
-        _projectTablePrefix = "M3taProject";
-        _subProjectTablePrefix = "M3taSubProject";
-        _releaseTablePrefix = "M3taRelease";
-        _postTablePrefix = "M3taPost";
+
         tablelandContract = TablelandDeployments.get();
-        _chainId = 80001;
-        _chainID = Strings.toString(_chainId);
-        // Creating the Project Table by taking the crea
-        _projectTableId = tablelandContract.createTable(
+
+        // Create m3tadao organizations table.
+        _OrganizationTableId = tablelandContract.createTable(
             address(this),
-            queryContract.getCreateValistProjectTableStatement(
-                _projectTablePrefix,
-                _chainID
-            )
+            SQLHelpers.toCreateFromSchema(ORGANIZATION_SCHEMA  , M3TADAO_ORGANIZATION_PREFIX)
         );
 
-        _projectTable = string.concat(
-            _projectTablePrefix,
-            "_",
-            _chainID,
-            "_",
-            Strings.toString(_projectTableId)
-        );
-        _subProjectTableId = tablelandContract.createTable(
+        _OrganizationTable = SQLHelpers.toNameFromId(M3TADAO_ORGANIZATION_PREFIX, _OrganizationTableId);
+        // Create m3tadao users profile table.
+        _UserTableId = tablelandContract.createTable(
             address(this),
-            queryContract.getCreateValistSubProjectTableStatement(
-                _subProjectTablePrefix,
-                _chainID
-            )
+            SQLHelpers.toCreateFromSchema(PROFILE_SCHEMA, M3TADAO_PROFILE_PREFIX)
         );
 
-        _subProjectTable = string.concat(
-            _subProjectTablePrefix,
-            "_",
-            _chainID,
-            "_",
-            Strings.toString(_subProjectTableId)
-        );
+        _UserTable = SQLHelpers.toNameFromId(M3TADAO_PROFILE_PREFIX, _UserTableId);
 
-        _releaseTableId = tablelandContract.createTable(
+        // Create proposals table for organizations.
+        _proposalTableID = tablelandContract.createTable(
             address(this),
-            queryContract.getCreateValistReleaseTableStatement(
-                _releaseTablePrefix,
-                _chainID
-            )
+            SQLHelpers.toCreateFromSchema(PROPOSAL_SCHEMA, PROPOSAL_PREFIX)
         );
 
-        _releaseTable = string.concat(
-            _subProjectTablePrefix,
-            "_",
-            _chainID,
-            "_",
-            Strings.toString(_releaseTableId)
-        );
+        _ProposalTable = SQLHelpers.toNameFromId(PROPOSAL_PREFIX, _proposalTableID);
 
-        _postTableId = tablelandContract.createTable(
+        // Create voting table on top of proposals.
+        _votingTableID = tablelandContract.createTable(
             address(this),
-            queryContract.getCreateValistProjectTableStatement(
-                _postTablePrefix,
-                _chainID
-            )
+            SQLHelpers.toCreateFromSchema(VOTES_SCHEMA , VOTES_PREFIX)
         );
 
-        _postTable = string.concat(
-            _projectTablePrefix,
-            "_",
-            _chainID,
-            "_",
-            Strings.toString(_postTableId)
+        _VotingTable = SQLHelpers.toNameFromId(VOTES_PREFIX, _votingTableID);
+
+        // Create hiring table for users to join organizations.
+        _hiringTableId = tablelandContract.createTable(
+            address(this),
+            SQLHelpers.toCreateFromSchema(HIRE_SCHEMA, HIRE_PREFIX)
+           
         );
+
+        _hireTable = SQLHelpers.toNameFromId(HIRE_PREFIX, _hiringTableId);
+
+
     }
 
-    function createLensProfile(DataTypes.ProfileTableStruct memory vars) public {
-        m3taUserContract.createProfile(vars);
-    }
-    // function createLensProfile1(
-    //     DataTypes.ProfileTableStruct2 memory vars,
-    //     uint256[8] calldata proof
-    // ) public {
-    //     m3taUserContract.createProfile1(vars, proof);
-    // }
+        // Function for creating posts for an Organization 
+    function indexProfile(string memory profiledid , string memory userName , string memory imageURI , string memory description) public {
+        // only one profile per address
+        require(profileExists[msg.sender] == false , "only one profile per address");
 
-    function createProjectAccount(DataTypes.AccountStruct memory vars)
-        public
-        payable
-    {
-        require(
-            m3taUserContract.getProfIdByAddress(vars.founderAddress) > 0,
-            "only m3taDao users can create an Account"
-        );
-        // accountID & accountHex null values
+        profileExists[msg.sender] = true;
 
-        vars.metadataTable = _projectTable;
+        profileID.increment();
 
-        vars.accountID = valistRegistryContract.generateID(_chainId, vars.accountName);
-
-        vars.accountHex = Strings.toHexString(vars.accountID);
-
-        valistRegistryContract.createAccount(
-            vars.accountName,
-            vars.metaURI,
-            vars.members
-        );
-
-        tablelandContract.runSQL(
-            address(this),
-            _projectTableId,
-            queryContract.getProjectInsertStatement(vars)
-        );
-    }
-
-    function createSubProject(DataTypes.ProjectStruct memory vars)
-        public
-        payable
-    {
-        require(
-            m3taUserContract.getProfIdByAddress(vars.sender) > 0,
-            "only m3taDao users can create a Project"
-        );
-        // projectID & projectHex null values
-        vars.metadataTable = _subProjectTable;
-
-        vars.projectID = valistRegistryContract.generateID(_chainId, vars.projectName);
-
-        vars.projectHex = Strings.toHexString(vars.projectID);
-
-        valistRegistryContract.createProject(
-            vars.accountID,
-            vars.projectName,
-            vars.metaURI,
-            vars.members
-        );
-
-        tablelandContract.runSQL(
-            address(this),
-            _subProjectTableId,
-            queryContract.getSubProjectInsertStatement(vars)
-        );
-    }
-
-    function createRelease(DataTypes.ReleaseStruct memory vars) public payable {
+        string memory statement =
+        SQLHelpers.toInsert(
+                M3TADAO_PROFILE_PREFIX,
+                _UserTableId,
+                "userAddress, identifier, userDID, userName, imageURI, description",
+                string.concat(
+                    SQLHelpers.quote(Strings.toHexString(msg.sender)),
+                    ",",
+                    SQLHelpers.quote(Strings.toString(profileID.current())),
+                    ",",
+                    SQLHelpers.quote(profiledid),
+                    ",",
+                    SQLHelpers.quote(userName),
+                    ",",
+                    SQLHelpers.quote(imageURI),
+                    ",",
+                    SQLHelpers.quote(description)
+                )
+            );
+        runSQL(_UserTableId,statement);      
+    }       
         
-        require(
-            m3taUserContract.getProfIdByAddress(vars.sender) > 0,
-            "only m3taDao users can create a Release"
-        );
-        // releaseID & releaseHex null values
-        vars.metadataTable = _releaseTable;
+    
 
-        vars.releaseID = valistRegistryContract.generateID(_chainId, vars.releaseName);
-
-        vars.releaseHex = Strings.toHexString(vars.releaseID);
-
-        valistRegistryContract.createRelease(
-            vars.projectID,
-            vars.releaseName,
-            vars.metaURI
-        );
-
-        tablelandContract.runSQL(
-            address(this),
-            _releaseTableId,
-            queryContract.getReleaseInsertStatement(vars)
-        );
-    }
-
-    function createPost(DataTypes.PostStruct memory vars) public {
-        require(
-            isAccountMember(vars.accountID, vars.posterAddress),
-            "only accountMembers can Post"
-        );
-
-        tablelandContract.runSQL(
-            address(this),
-            _postTableId,
-            queryContract.getPostInsertStatement(vars)
-        );
-    }
-
-    function updateAccountMetadata(uint _accountID, string calldata _metaURI)
-        public
+    // Creating a Valist Organization/Organization
+    function indexProjectOrganization(uint OrganizationID, string memory groupID, string memory OrganizationName , string memory imageURI , string memory description)
+        public  
     {
-        valistRegistryContract.setAccountMetaURI(_accountID, _metaURI);
+        require(isOrganizationMember(OrganizationID,msg.sender) && OrganizationExists[OrganizationID] == false);
+
+        string memory OrganizationHex = Strings.toHexString(OrganizationID);
+
+        ValistID.increment();
+
+        string memory statement =
+        SQLHelpers.toInsert(
+                M3TADAO_ORGANIZATION_PREFIX,
+                _OrganizationTableId,
+                "founderAddress, identifier, OrganizationID, groupID, OrganizationHex, OrganizationName, imageURI, description",
+                string.concat(
+                    SQLHelpers.quote(Strings.toHexString(msg.sender)),
+                    ",",
+                    SQLHelpers.quote(Strings.toString(ValistID.current())),
+                    ",",
+                    SQLHelpers.quote(Strings.toString(OrganizationID)),
+                    ",",
+                    SQLHelpers.quote(groupID),
+                    ",",
+                    SQLHelpers.quote(OrganizationHex),
+                    ",",
+                    SQLHelpers.quote(OrganizationName),
+                    ",",
+                    SQLHelpers.quote(imageURI),
+                    ",",
+                    SQLHelpers.quote(description)
+                )
+            );
+        runSQL(_OrganizationTableId,statement);      
     }
 
-    function updateProjectMetadata(uint _projectID, string calldata _metaURI)
-        public
-    {
-        valistRegistryContract.setProjectMetaURI(_projectID, _metaURI);
+    function Proposal(
+            uint256 accountID,
+            string memory proposal_CID
+        ) external {
+
+            require(
+                IERC1155(valistLicenceNFTs).balanceOf(msg.sender,accountID) > 0 || isOrganizationMember(accountID,msg.sender),
+                "sender is not token owner OR organization Member"
+            );
+            proposalID.increment();
+            string memory statement =
+                SQLHelpers.toInsert(
+                    PROPOSAL_PREFIX,
+                    _proposalTableID,
+                    "proposalid, accountid, proposer, body",
+                    string.concat(
+                        SQLHelpers.quote(Strings.toString(proposalID.current())),
+                        ",",
+                        SQLHelpers.quote(Strings.toString(accountID)),
+                        ",",
+                        SQLHelpers.quote(Strings.toHexString(msg.sender)),
+                        ",",
+                        SQLHelpers.quote(proposal_CID)
+                    )
+                );
+                runSQL(_proposalTableID,statement);      
+
+            
     }
 
-    function getProjectTableURI() public view returns (string memory) {
-        return queryContract.metadataURI(_projectTable, _baseURI());
+    function Vote(
+        uint256 proposalid,
+        uint256 accountID,
+        bool vote
+    ) external {
+
+        require(
+            IERC1155(valistLicenceNFTs).balanceOf(msg.sender,accountID) > 0,
+            "sender is not token owner"
+        );
+        string memory statement =
+            SQLHelpers.toInsert(
+                VOTES_PREFIX,
+                _votingTableID,
+                "proposalid, accountid, respondent, vote",
+                string.concat(
+                    SQLHelpers.quote(Strings.toString(proposalid)),
+                    ",",
+                    SQLHelpers.quote(Strings.toString(accountID)),
+                    ",",
+                    SQLHelpers.quote(Strings.toHexString(msg.sender)),
+                    ",",
+                    vote ? "'1'" : "'0'"
+                )
+            );
+            runSQL(_votingTableID,statement);      
+
+        
     }
 
-    function getUserTableName() public view returns (string memory) {
-        return m3taUserContract.metadataURI();
+     function createHiringRequest(uint accountID , string memory hireTitle , string memory hireDescription) public  {
+
+        // Only M3taDao Users can make a Hire request to an Organization
+        require(
+            profileExists[msg.sender] == true,
+            "only m3taDao users can create a Hiring Request"
+        );
+
+        hireID.increment();
+
+        string memory statement =
+            SQLHelpers.toInsert(
+                HIRE_PREFIX,
+                _hiringTableId,
+                "hireID, profAddress, accountid, hireTitle, hireDescription",
+                string.concat(
+                    SQLHelpers.quote(Strings.toString(hireID.current())),
+                    ",",
+                    SQLHelpers.quote(Strings.toHexString(msg.sender)),
+                    ",",
+                    SQLHelpers.quote(Strings.toString(accountID)),
+                    ",",
+                    SQLHelpers.quote(hireTitle),
+                    ",",
+                    SQLHelpers.quote(hireDescription)
+                )
+            );
+            runSQL(_hiringTableId,statement); 
+
+    }
+
+    function rejectHiringRequest(uint accountID, uint256 hireId) public {
+        require(isOrganizationMember(accountID,msg.sender) , "Only post creators and account members can Reject a Hiring Request");
+
+        string memory filter = string.concat("hireID=",Strings.toString(hireId));
+
+        string memory statement = SQLHelpers.toDelete(HIRE_PREFIX, _hiringTableId, filter);
+
+         runSQL(_hiringTableId,statement);
+        
+    }
+
+    // Function to make Insertions , Updates and Deletions to our Tableland Tables 
+    function runSQL(uint256 tableID, string memory statement) private{
+         tablelandContract.runSQL(
+            address(this),
+            tableID,
+            statement        
+        );
+    }
+
+
+    function organizationTableURI() 
+    public view returns (string memory) {
+        return string.concat(
+            _baseURI(), 
+            "SELECT%20*%20FROM%20",
+            _OrganizationTable
+        );
+    }
+
+    function profileTableURI() 
+    public view returns (string memory) {
+        return string.concat(
+            _baseURI(), 
+            "SELECT%20*%20FROM%20",
+            _UserTable
+        );
+    }
+    
+    function proposalTableURI() 
+    public view returns (string memory) {
+        return string.concat(
+            _baseURI(), 
+            "SELECT%20*%20FROM%20",
+            _ProposalTable
+        );
+    }    
+
+    function voteTableURI() 
+    public view returns (string memory) {
+        return string.concat(
+            _baseURI(), 
+            "SELECT%20*%20FROM%20",
+            _VotingTable
+        );
+    }    
+    
+    function hireTableURI() 
+    public view returns (string memory) {
+        return string.concat(
+            _baseURI(), 
+            "SELECT%20*%20FROM%20",
+            _hireTable
+        );
     }
 
     function _baseURI() internal view returns (string memory) {
         return _baseURIString;
     }
-
-    function isAccountMember(uint _accountID,address member) public view returns (bool) {
-       return  valistRegistryContract.isAccountMember(_accountID,member);
+    // Setting tableland BaseUri for future updates!!!
+    function setBaseURI(string memory baseURI) public onlyOwner {
+        _baseURIString = baseURI;
     }
 
-    /**
-     * @dev Set baseURI
-     */
-    function setBaseURI(string calldata newBaseURI) external  {
-        _baseURIString = newBaseURI;
+
+    function isOrganizationMember(uint _OrganizationID,address member) internal view returns (bool) {
+       return  valistRegistryContract.isAccountMember(_OrganizationID,member);
     }
 
 }

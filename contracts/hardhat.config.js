@@ -3,14 +3,36 @@ require("@openzeppelin/hardhat-upgrades");
 require("@nomiclabs/hardhat-etherscan");
 
 module.exports = {
-    solidity: "0.8.12",
+    solidity: {
+        version: "0.8.12",
+        settings: {
+            optimizer: {
+                enabled: true,
+                runs: 200,
+            },
+        },
+    },
+    dependencyCompiler: {
+        paths: ["@tableland/evm/contracts/TablelandTables.sol"],
+    },
+    contractSizer: {
+        alphaSort: true,
+        disambiguatePaths: false,
+        runOnCompile: false,
+        strict: true,
+        only: [],
+    },
+    gasReporter: {
+        enabled: process.env.REPORT_GAS !== undefined,
+        currency: "USD",
+    },
     networks: {
         mumbai: {
-            url: `Provider URL for mumbai Testnet`,
-            accounts: ["Your Wallet Private Key"],
+            url: `https://polygon-mumbai.g.alchemy.com/v2/`,
+            accounts: [""],
         },
     },
     etherscan: {
-        apiKey: "Your etherscan API Key",
+        apiKey: "",
     },
 }
