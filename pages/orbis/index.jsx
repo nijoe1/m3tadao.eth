@@ -112,12 +112,8 @@ function App({ Component, pageProps }) {
       </Head>
       <GlobalContext.Provider value={{ user, setUser, group_id, orbis }}>
         <ModalsContext.Provider value={{ setModalVis, navigationVis }}>
-          <div className={styles.container} style={{marginTop: "-76px"}}>
-            {/** Show navigation on every pages */}
+          <div className={styles.container}>
             <Navigation />
-
-            {/** Show page content */}
-            {/*<Component {...pageProps} />*/}
             <GroupHome {...pageProps} />
           </div>
         </ModalsContext.Provider>

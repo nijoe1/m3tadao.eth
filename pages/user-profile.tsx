@@ -24,14 +24,10 @@ const UserProfile: NextPage = () => {
     const [isPostCountFetched, setIsPostCountFetched] = useState(false)
     const { getUserData } = useTableland()
     const { getLensPostCount } = useContract()
-    const { getOrbisProfileFollowing, getOrbisProfileFollowers, getOrbisProfile, getOrbisIsFollowing } = useOrbis()
+    const { getOrbisProfileFollowing, getOrbisProfileFollowers, getOrbisProfile, getOrbisIsFollowing, createOrbisConversation } = useOrbis()
     const [userExists, setIsUserExists] = useState(0) // 0 : checking, 1 : exists, 2 : not exists
     const [userDid, setUserDid] = useState("") // did of user of current profile page and not the user using the website
     const [isFollowing, setIsFollowing] = useState(false)
-    const client = new ApolloClient({
-        uri: "https://api-mumbai.lens.dev/",
-        cache: new InMemoryCache(),
-    })
     useEffect(() => {
         if (router.query.address && router.query.address.length !== 0) {
             initialize().then()
@@ -41,6 +37,7 @@ const UserProfile: NextPage = () => {
     const initialize = async () => {
         const walletAddress = router.query.address
         const user = await getUserData(walletAddress)
+        console.log(user)
         if (!walletAddress && !user && user.length === 0) {
             setIsUserExists(2)
             return
@@ -48,19 +45,14 @@ const UserProfile: NextPage = () => {
         setIsUserExists(1)
         const did = user[2].toLowerCase()
         setUserDid(did)
-        console.log("user", user)
-        const temp = await getOrbisProfile(did)
-        console.log("temp", temp)
         const profileDetails = (await getOrbisProfile(did)).data.details.profile
-        console.log("profileDetails", profileDetails)
         const userStats = {
             image: profileDetails.cover,
-            avatar: "https://ipfs.io/ipfs/" + user[5] + "/image",
-            name: user[4],
+            avatar: "https://ipfs.io/ipfs/" + user[4] + "/image",
+            name: user[3],
+            description: user[5]
         }
         setStats((oldStats) => ({ ...oldStats, ...userStats, ...profileDetails.data }))
-        // fetchPostsCount(user[1])
-        // fetchExternalURIs(user[4])
         fetchFollowStats(did)
         const follows = await getOrbisIsFollowing(`did:pkh:eip155:80001:${address?.toLowerCase()}`,did)
         setIsFollowing(follows.data)
@@ -69,8 +61,6 @@ const UserProfile: NextPage = () => {
     const fetchFollowStats = async (did: String) => {
         const following = await getOrbisProfileFollowing(did)
         const followers = await getOrbisProfileFollowers(did)
-        // console.log("following", following)
-        // console.log("followers", followers)
         setStats((oldStats) => ({
             ...oldStats,
             stats: [

@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import styles from '../../styles/orbis.home.module.css'
-import Head from 'next/head'
-import ChannelDetails from "../../components/Orbis/ChannelDetails";
 import {Layout} from "../../components/Layout";
-
 /** Import some Orbis modules */
 import { Navigation } from "../../components/Orbis/Navigation";
 import { CreateChannelModal } from "../../components/Orbis/modals/CreateChannel"
@@ -20,6 +17,7 @@ import { Orbis } from "@orbisclub/orbis-sdk";
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en.json'
 import {useRouter} from "next/router";
+import ConversationDetails from "../../components/Orbis/ConversationDetails";
 en.long.minute = {
     current: "this minute",
     future: {one: '{0} min.', other: '{0} min.'},
@@ -44,7 +42,7 @@ function App({ Component, pageProps }) {
     const [createChannelModalVisible, setCreateChannelModalVisible] = useState(false);
     const [updateChannelModalVisible, setUpdateChannelModalVisible] = useState(false);
     const router = useRouter()
-    const {groupId: group_id, } = router.query
+    const {conversationId} = router.query
 
     /** Once user is connected we load the user groups */
     useEffect(() => {
@@ -58,7 +56,7 @@ function App({ Component, pageProps }) {
         let res = await orbis.isConnected();
 
         /** If SDK returns user details we save it in state */
-        if(res && res.status === 200) {
+        if(res && res.status == 200) {
             setUser(res.details);
         }
     }
@@ -99,7 +97,7 @@ function App({ Component, pageProps }) {
 
     return(
         <Layout>
-            <GlobalContext.Provider value={{ user, setUser, group_id, orbis }}>
+            <GlobalContext.Provider value={{ user, setUser, conversationId, orbis }}>
                 <ModalsContext.Provider value={{ setModalVis, navigationVis }}>
                     <div className={styles.container}>
                         {/** Show navigation on every pages */}
@@ -107,7 +105,7 @@ function App({ Component, pageProps }) {
 
                         {/** Show page content */}
                         {/*<Component {...pageProps} />*/}
-                        <ChannelDetails {...pageProps} />
+                        <ConversationDetails {...pageProps} />
                     </div>
                 </ModalsContext.Provider>
 

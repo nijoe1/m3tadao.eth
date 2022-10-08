@@ -1,7 +1,7 @@
 {
-    "m3taUser": "M3taUser_80001_3309",
-    "m3taOrganisation": "M3taAccount_80001_3308",
-    "m3taHiring": "M3taHire_80001_3258",
-    "m3taPost": "M3taPost_80001_3144",
-    "m3taProject": "M3taProject_80001_3257"
+    "m3taUser": "m3ta_profile_80001_3469",
+    "m3taOrganisation": "m3ta_organization_80001_3468",
+    "m3taHiring": "m3ta_hire_80001_3472",
+    "m3taProposal": "m3ta_proposal_80001_3470",
+    "m3taVote": "m3ta_vote_80001_3471"
 }

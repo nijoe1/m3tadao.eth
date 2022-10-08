@@ -20,7 +20,6 @@ export function CreateOrganisation() {
     const [members, membersHandlers] = useListState<string>([]);
     const {createProjectAccount} = useContract()
     const router = useRouter()
-    const {createOrbisGroup, connectOrbis} = useOrbis()
 
     const removeMember = (member: string) => {
         membersHandlers.filter(

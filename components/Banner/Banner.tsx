@@ -1,17 +1,4 @@
-import {
-    createStyles,
-    Card,
-    ActionIcon,
-    Avatar,
-    Text,
-    Group,
-    Button,
-    Center,
-    Stack,
-    Badge,
-    Title,
-    Container,
-} from "@mantine/core"
+import {createStyles, Card, ActionIcon, Avatar, Text, Group, Button, Center, Stack, Badge, Title,} from "@mantine/core"
 import Link from "next/link"
 import {
     IconBrandGithub,
@@ -20,14 +7,9 @@ import {
     IconCheck,
     IconAlertCircle,
 } from "@tabler/icons"
-import { showNotification, updateNotification } from "@mantine/notifications"
-import { Worldcoin } from "../Worldcoin"
-import useContract from "../../hooks/useContract"
-import { useRouter } from "next/router"
-import useTableland from "../../hooks/useTableland"
+import {showNotification, updateNotification} from "@mantine/notifications"
 import useEPNS from "../../hooks/useEPNS"
 import useOrbis from "../../hooks/useOrbis"
-import {useState} from "react";
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -58,24 +40,24 @@ interface UserCardImageProps {
 }
 
 export function Banner({
-    image,
-    avatar,
-    name,
-    designation,
-    stats,
-    website,
-    interests,
-    skills,
-    github,
-    twitter,
-    isOwner,
-    userExists,
-    userDid,
-    isFollowing,
-}: UserCardImageProps) {
-    const { classes, theme } = useStyles()
-    const { optIn } = useEPNS()
-    const { setFollow, connectOrbis } = useOrbis() // TODO: fix this
+                           image,
+                           avatar,
+                           name,
+                           designation,
+                           stats,
+                           website,
+                           interests,
+                           skills,
+                           github,
+                           twitter,
+                           isOwner,
+                           userExists,
+                           userDid,
+                           isFollowing,
+                       }: UserCardImageProps) {
+    const {classes, theme} = useStyles()
+    const {optIn} = useEPNS()
+    const {setFollow, connectOrbis, createOrbisConversation} = useOrbis()
 
     console.log("stats", stats)
     console.log("userExists", userExists)
@@ -134,7 +116,7 @@ export function Banner({
                 color: "teal",
                 title: "Success",
                 message: follow ? "Followed successfully" : "Unfollowed successfully",
-                icon: <IconCheck size={16} />,
+                icon: <IconCheck size={16}/>,
                 autoClose: 2000,
             })
 
@@ -146,20 +128,54 @@ export function Banner({
                 id: "load-data",
                 color: "red",
                 title: "Error",
-                message: follow ?  "Failed to follow" : "Failed to unfollow",
-                icon: <IconAlertCircle size={16} />,
+                message: follow ? "Failed to follow" : "Failed to unfollow",
+                icon: <IconAlertCircle size={16}/>,
                 autoClose: 2000,
             })
         }
     }
 
+    const handleContact = async () => {
+        showNotification({
+            id: "load-data",
+            loading: true,
+            title: "Creating conversation",
+            message: "Please wait!",
+            autoClose: false,
+            disallowClose: true,
+        })
+        try {
+            await connectOrbis()
+            const conversation = await createOrbisConversation([userDid], "Hello", "test")
+            console.log("conversation", conversation)
+            updateNotification({
+                id: "load-data",
+                color: "teal",
+                title: "Success",
+                message: "Conversation created successfully",
+                icon: <IconCheck size={16}/>,
+                autoClose: 2000,
+            })
+        } catch (e) {
+            console.log(e)
+            updateNotification({
+                id: "load-data",
+                color: "red",
+                title: "Error",
+                message: "Failed to create conversation",
+                icon: <IconAlertCircle size={16}/>,
+                autoClose: 2000,
+            })
+        }
+    }
 
     return (
-        <Card p="xl" className={classes.card}>
+        <Card px="xl" className={classes.card}>
             <Card.Section
                 sx={(theme) => ({
                     backgroundImage: `url(${image})`,
                     height: 225,
+                    backgroundSize: "cover",
                     [theme.fn.smallerThan("md")]: {
                         height: 150,
                     },
@@ -183,21 +199,21 @@ export function Banner({
                 {twitter && (
                     <Link href={twitter ? twitter : "https://twitter.com"} passHref>
                         <ActionIcon component={"a"} target={"_blank"}>
-                            <IconBrandTwitter size={32} />
+                            <IconBrandTwitter size={32}/>
                         </ActionIcon>
                     </Link>
                 )}
                 {github && (
                     <Link href={github ? github : "https://github.com"} passHref>
                         <ActionIcon component={"a"} target={"_blank"}>
-                            <IconBrandGithub size={32} />
+                            <IconBrandGithub size={32}/>
                         </ActionIcon>
                     </Link>
                 )}
                 {website && (
                     <Link href={website ? website : "#"} passHref>
                         <ActionIcon component={"a"} target={"_blank"}>
-                            <IconWorldWww size={32} />
+                            <IconWorldWww size={32}/>
                         </ActionIcon>
                     </Link>
                 )}
@@ -260,7 +276,7 @@ export function Banner({
                             size="md"
                             fullWidth={false}
                             variant="gradient"
-                            gradient={{ from: "indigo", to: "cyan" }}
+                            gradient={{from: "indigo", to: "cyan"}}
                             color={theme.colorScheme === "dark" ? undefined : "dark"}
                             onClick={() => {
                                 handleFollow(!isFollowing)
@@ -269,13 +285,26 @@ export function Banner({
                             {isFollowing ? "Unfollow" : "Follow"}
                         </Button>
                     </Center>
+                    <Center mb={0}>
+                        <Button
+                            radius="md"
+                            mt="xl"
+                            size="md"
+                            fullWidth={false}
+                            variant="gradient"
+                            gradient={{from: "indigo", to: "cyan"}}
+                            color={theme.colorScheme === "dark" ? undefined : "dark"}
+                            onClick={() => {
+                                handleContact()
+                            }}
+                        >
+                            Chat with me
+                        </Button>
+                    </Center>
                 </Stack>
             )}
             {isOwner && (
                 <Stack m={"md"}>
-                    {/*<Center my={0}>*/}
-                    {/*    <Worldcoin profId={profId} />*/}
-                    {/*</Center>*/}
                     <Center my={0}>
                         <Button
                             radius="md"
@@ -289,8 +318,6 @@ export function Banner({
                             Opt In To EPNS Notification Channel
                         </Button>
                     </Center>
-                    {/*    </Container>*/}
-                    {/*</Center>*/}
                 </Stack>
             )}
         </Card>

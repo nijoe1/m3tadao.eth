@@ -12,34 +12,30 @@ import { GlobalContext, ModalsContext } from "../../contexts/GlobalContext";
 
 import { useRouter } from 'next/router'
 
-export default function ChannelDetails() {
+export default function ConversationDetails() {
     const [loading, setLoading] = useState(true);
-    const [channel, setChannel] = useState();
+    const [conversation, setConversation] = useState();
 
-    const { user, group_id, orbis } = useContext(GlobalContext);
-
-    /** Use Next router to get group_id */
-    const router = useRouter();
-    const { channelId: channel_id } = router.query;
-    console.log("channel_id", channel_id);
+    const { user, conversationId, orbis } = useContext(GlobalContext);
 
     useEffect(() => {
-        if(channel_id) {
-            loadChannelDetails();
+        if(conversationId) {
+            loadConversationDetails();
         }
-    }, [channel_id])
+    }, [conversationId])
 
     /** Load channels details */
-    async function loadChannelDetails() {
+    async function loadConversationDetails() {
         setLoading(true);
-        let { data, error, status } = await orbis.getChannel(channel_id);
+        let { data, error } = await orbis.getConversation(conversationId);
+        console.log(data);
 
         if(error) {
-            console.log("There was an error loading the channel details: ", error);
+            console.log("There was an error loading the conversation details: ", error);
         }
 
         if(data) {
-            setChannel(data);
+            setConversation(data);
             setLoading(false);
         }
     }
@@ -47,7 +43,7 @@ export default function ChannelDetails() {
     return (
         <>
             <Head>
-                <title key="title">Orbis | Channel details</title>
+                <title key="title">Orbis | Conversation details</title>
                 <meta name="description" content="Orbis is a fully decentralized social layer for the internet that any developers can use to build their own social apps or features." key="description"></meta>
                 <meta property="og:title" content={"Orbis | Group details"} key="og_title" />
                 <meta property="og:description" content="Orbis is a fully decentralized social layer for the internet that any developers can use to build their own social apps or features." key="og_description"/>
@@ -58,28 +54,28 @@ export default function ChannelDetails() {
             <div className="main-container">
                 {/** Feed container */}
                 <div className="main dashed-card">
-                    {loading === false && channel ?
+                    {loading == false && conversation ?
                         <div className="flex-column flex-1">
                             {/** Show channel details */}
                             <div className="channel-details flex-row v-justify-content-center mbottom-15">
                                 <div className="flex-column flex-1">
                                     <div className="flex-row">
-                                        <img src={getChannelIcon(channel, true)} height="15" className="mright-5" />
-                                        <p className="m-0 fw-400">{channel.content.name}</p>
+                                        <img src={getChannelIcon(conversation, true)} height="15" className="mright-5" />
+                                        <p className="m-0 fw-400">{conversation.content.name}</p>
                                     </div>
-                                    {channel.content.description &&
-                                        <p className="secondary m-0 mtop-5 fs-14">{channel.content.description}</p>
+                                    {conversation.content.description &&
+                                        <p className="secondary m-0 mtop-5 fs-14">{conversation.content.description}</p>
                                     }
                                 </div>
                                 <div className="flex v-align-items-start">
-                                    {channel &&
-                                        <EditChannelContainer channel={channel} setChannel={setChannel} />
+                                    {conversation &&
+                                        <EditChannelContainer channel={conversation} setChannel={setConversation} />
                                     }
                                 </div>
                             </div>
 
                             {/** Show posts feed */}
-                            <Feed type={channel.content.type ? channel.content.type : "feed"} encryptionRules={channel.content?.encryptionRules} context={channel_id} autoRefresh={true} />
+                            <Feed type={conversation.content.type ? conversation.content.type : "feed"} encryptionRules={conversation.content?.encryptionRules} context={"m3tadao"} autoRefresh={true} />
                         </div>
                         :
                         <p className="center w-100">
@@ -90,7 +86,7 @@ export default function ChannelDetails() {
                 </div>
 
                 {/** Right side */}
-                <RightSide type="group-members" details={group_id} />
+                <RightSide type="group-members" details={conversationId} />
             </div>
         </>
     )

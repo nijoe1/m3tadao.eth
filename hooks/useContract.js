@@ -41,12 +41,6 @@ const useContract = () => {
             skills,
             designation,
         }
-        let externalURIs
-        if (isJsonEmpty(externalJson)) {
-            externalURIs = ""
-        } else {
-            externalURIs = await uploadJsonToIpfs(externalJson, "json")
-        }
 
         let bannerURI
         if (banner) {
@@ -71,15 +65,13 @@ const useContract = () => {
         const res = await updateProfile(imageURI, bannerURI, handle, description, externalJson)
         console.log("res", res)
 
-        const groupId = await createOrbisGroup(imageURI, handle, description)
-        console.log("groupId", groupId)
+        // const groupId = await createOrbisGroup(imageURI, handle, description)
         const tx = await m3taDaoContractInstance.indexProfile(
             orbisDid,
-            groupId.doc,
             handle,
             imageURI,
             description,
-            { gasLimit: 5000000 }
+            { gasLimit: 500000 }
         )
         return await tx.wait()
     }
@@ -90,7 +82,6 @@ const useContract = () => {
         requirements, // for now empty string
         image, // for now empty string
         description,
-        // we should add into the members the contract address of metadao to be able to make updates
         members
     ) => {
         let imageURI
@@ -113,8 +104,6 @@ const useContract = () => {
 
         let accountStruct = [
             address,
-            "0",
-            "0",
             groupCreateRes.doc,
             "0x0",
             accountName,
@@ -127,8 +116,8 @@ const useContract = () => {
             [...members, contractAddresses.m3taDao],
         ]
         console.log("accountStruct", accountStruct)
-        const tx = await m3taDaoContractInstance.createProjectAccount(accountStruct, {
-            gasLimit: 5000000,
+        const tx = await m3taDaoContractInstance.indexProjectOrganization(accountStruct, {
+            gasLimit: 500000,
         })
 
         return await tx.wait()
