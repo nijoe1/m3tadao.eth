@@ -80,11 +80,9 @@ const useContract = () => {
 
     const createProjectAccount = async (
         accountName,
-        website, // website url
-        // requirements, // for now empty string
-        image, // for now empty string
+        website,
+        image,
         description,
-        // we should add into the members the contract address of metadao to be able to make updates
         members
     ) => {
         let imageURI
@@ -103,18 +101,18 @@ const useContract = () => {
             new AccountMeta(accountName, description, externalURI, imageURI),
             members
         )
-        console.log("valistAccountTx", valistAccountTx)
+        // console.log("valistAccountTx", valistAccountTx)
         const valistAccountTxRes = await valistAccountTx.wait()
-        console.log("valistAccountTxRes", valistAccountTxRes)
+        // console.log("valistAccountTxRes", valistAccountTxRes)
 
         await connectOrbis()
         const orbisGroup = await createOrbisGroup(imageURI, accountName, description)
-        console.log("orbisGroup", orbisGroup)
+        // console.log("orbisGroup", orbisGroup)
         const groupID = orbisGroup.doc
 
-        console.log("valistAccountTx", valistAccountTx)
+        // console.log("valistAccountTx", valistAccountTx)
         const accountID = await valist.generateID(ethers.BigNumber.from("80001"), accountName)
-        console.log("accountID", accountID)
+        // console.log("accountID", accountID)
 
         const m3taDaoContractInstance = new ethers.Contract(
             contractAddresses.m3taDao,
@@ -122,14 +120,14 @@ const useContract = () => {
             signer
         )
 
-        const tx = await m3taDaoContractInstance.indexProjectAccount(
+        const tx = await m3taDaoContractInstance.indexProjectOrganization(
             accountID,
             groupID,
             accountName,
             imageURI,
             description,
             {
-                gasLimit: 5000000,
+                gasLimit: 500000,
             }
         )
 

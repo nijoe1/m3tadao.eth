@@ -29,13 +29,14 @@ export function NameInput(props: NameInputProps) {
     })
     useEffect(() => {
         const name = props.value
-        if(router.pathname === "/create-organisation" || router.pathname === "/create-release") { // TODO: fix this
+        if(router.pathname === "/create-organisation") {
             setQuery({
                 query: gql(ACCOUNTS_SEARCH__QUERY),
                 variables: {
-                    search: props.value,
+                    search: name,
                 }
             })
+            // console.log("query", query)
         }
         if(router.pathname === "/create-project"){
             setQuery({
@@ -64,7 +65,7 @@ export function NameInput(props: NameInputProps) {
                 setLoading(false)
                 return
             }
-            client.query(query).then(res => {
+            client.query(query!).then(res => {
                 if (router.pathname === "/create-organisation" && res.data.accounts.length > 0) {
                     setError("Name already exists")
                     setExists(true)
@@ -86,7 +87,7 @@ export function NameInput(props: NameInputProps) {
         }, 1000);
 
         return () => clearTimeout(timeout);
-    }, [props.value, props.parentId]);
+    }, [props.value, props.parentId, query]);
 
     useEffect(() => {
         if (exists) {
