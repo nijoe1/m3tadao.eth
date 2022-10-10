@@ -55,15 +55,10 @@ export function EditOrganisation(props: any) {
         "music",
     ]
 
-    const router = useRouter()
-
     const {updateProjectAccountRequirements} = useContract()
 
     useEffect(() => {
         membersHandlers.setState([...props.members])
-        // props.members.map((member) => {
-        //     membersHandlers.append(member)
-        // })
     }, [props.members])
 
     const removeMember = (member: string) => {

@@ -212,7 +212,14 @@ const useContract = () => {
     const deletePost = async (accountID, postID) => {
         const m3taDaoContractInstance = new ethers.Contract(contractAddresses.m3taDao, m3taDaoAbi, signer)
 
-        var tx = await m3taDaoContractInstance.createPost(accountID, postID, { gasLimit: 5000000 })
+        let tx = await m3taDaoContractInstance.createPost(accountID, postID, { gasLimit: 5000000 })
+        return await tx.wait()
+    }
+
+    const deleteHiring = async (hireId) => {
+        const m3taDaoContractInstance = new ethers.Contract(contractAddresses.m3taDao, m3taDaoAbi, signer)
+
+        let tx = await m3taDaoContractInstance.rejectHiringRequest(hireId)
         return await tx.wait()
     }
 
@@ -225,22 +232,6 @@ const useContract = () => {
         } else {
             imageURI = ""
         }
-
-        // const ipfsResult = await uploadJsonToIpfs({
-        //     version: "1.0.0",
-        //     mainContentFocus: "TEXT_ONLY",
-        //     metadata_id: v4uuid(),
-        //     description: description,
-        //     locale: "en-US",
-        //     content: "Content",
-        //     external_url: null,
-        //     image: imageURI,
-        //     imageMimeType: null,
-        //     name: name,
-        //     attributes: [],
-        //     tags: tags,
-        //     appId: "m3tadao.eth",
-        // })
 
         const jsonObj = {
             version: "1.0.0",
@@ -332,6 +323,7 @@ const useContract = () => {
         createFollow,
         addValistMember,
         deleteValistMember,
+        deleteHiring
     }
 }
 

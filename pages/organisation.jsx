@@ -14,12 +14,14 @@ import { ApolloClient, InMemoryCache, ApolloProvider, gql } from "@apollo/client
 import { HiringRequestTable } from "../components/HiringRequestTable"
 import { RequirementsCard } from "../components/RequirementsCard"
 import useOrbis from "../hooks/useOrbis"
+import useTableland from "../hooks/useTableland";
 
 const Organisation = () => {
     const [activeTab, setActiveTab] = useState("first")
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [projectsData, setProjectsData] = useState([])
     const [requirementsData, setRequirementsData] = useState([])
+    const [hiringRequestsData, setHiringRequestsData] = useState()
     const [members, setMembers] = useState([])
     const [name, setName] = useState("")
     const [accId, setAccId] = useState("")
@@ -28,19 +30,24 @@ const Organisation = () => {
 
     const router = useRouter()
     const { createOrbisChannel, connectOrbis, getOrbisPosts } = useOrbis()
+    const {getHiringData} = useTableland()
     const client = new ApolloClient({
         uri: "https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai",
         cache: new InMemoryCache(),
     })
 
     useEffect(() => {
-        initialize().then()
-        setAccId(router.query.accId)
-        setGroupId(router.query.groupId)
+        if(router.query.accHex) {
+            console.log("rq",router.query)
+            initialize().then()
+            setAccId(router.query.accId)
+            setGroupId(router.query.groupId)
+        }
     }, [router.query])
 
     const initialize = async () => {
         fetchRequirements()
+        getHiringData(router.query.accId).then(res => {setHiringRequestsData(res)})
         const accHex = router.query.accHex
 
         const query = {
@@ -54,7 +61,7 @@ const Organisation = () => {
         const graphRes = (await client.query(query)).data?.account
         setName(graphRes.name)
         setProjectsData(graphRes.projects)
-        setMembers(graphRes.members.filter((mem) => mem.id !== "0x28fb200c401bcc2eb407d29aed6b5bae2d3f98c3"))
+        setMembers(graphRes.members)
     }
 
     const fetchRequirements = async () => {
@@ -109,6 +116,9 @@ const Organisation = () => {
                 <Button.Group>
                     <Button radius="md" mt="xl" size="md" variant={"light"} onClick={() => setIsModalOpen(true)}>
                         New Post
+                    </Button>
+                    <Button radius="md" mt="xl" size="md" variant={"light"} onClick={() => router.push(`/orbis?groupId=${groupId}`)}>
+                        Group Chat
                     </Button>
                     <Button
                         radius="md"
@@ -198,10 +208,9 @@ const Organisation = () => {
                 <Tabs.Panel value={"requirements"}>
                     <Container size={"lg"} mb={"xl"}>
                         <SimpleGrid cols={2} spacing={"md"} breakpoints={[{ maxWidth: 600, cols: 1, spacing: "sm" }]}>
-                            {requirementsData.map((requirement) => (
-                                <RequirementsCard accountID={accId} description={requirement.description} title={requirement.title} price={requirement.price} deadline={requirement.deadline} badges={requirement.tags} />
+                            {requirementsData.map((requirement, index) => (
+                                <RequirementsCard key={index} accountID={accId} description={requirement.description} title={requirement.title} price={requirement.price} deadline={requirement.deadline} badges={requirement.tags} />
                             ))}
-                            {/* <RequirementsCard description={"We are looking for project managers."} title={"Project manager"} price={"20 MATIC"} deadline={"30 Sept 2022"} badges={["Defi", "Design", "Management"]} /> */}
                         </SimpleGrid>
                     </Container>
                 </Tabs.Panel>
@@ -220,13 +229,8 @@ const Organisation = () => {
                 <Tabs.Panel value={"fourth"}>
                     <Container>
                         <Paper shadow="xl" radius="lg" p="md" pt={"lg"}>
-                            <HiringRequestTable
-                                data={{
-                                    title: "some title",
-                                    description: "some description",
-                                    address: "0x0000000000000000000000000000000000000000",
-                                }}
-                            />
+                            {hiringRequestsData?.length > 0 && <HiringRequestTable data={hiringRequestsData}/>}
+                            {hiringRequestsData?.length === 0 && <Text>No requests at the moment</Text>}
                         </Paper>
                     </Container>
                 </Tabs.Panel>

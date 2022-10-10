@@ -1,17 +1,18 @@
 import {Avatar, Table, Group, Text, ActionIcon, Menu, ScrollArea, Modal, Title, Center} from '@mantine/core';
-import {IconMessages, IconNote, IconTrash, IconDots,} from '@tabler/icons'
+import {IconMessages, IconNote, IconTrash, IconDots, IconCheck, IconAlertCircle,} from '@tabler/icons'
 import makeBlockie from "ethereum-blockies-base64"
 import {useState} from 'react';
+import useContract from '../../hooks/useContract';
 import {CreateStream} from '../CreateStream';
+import {showNotification, updateNotification} from "@mantine/notifications";
+import {useRouter} from "next/router";
 
-interface UsersStackProps {
-    data: { title: string; description: string; address: string; }[];
-}
 
-export function HiringRequestTable({someotheredata}: UsersStackProps) {
+export function HiringRequestTable({data}: any) {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [receiver, setReceiver] = useState("")
-
+    const {deleteHiring} = useContract()
+    const router = useRouter()
 
     let postModal = <Modal
         opened={isModalOpen}
@@ -26,41 +27,65 @@ export function HiringRequestTable({someotheredata}: UsersStackProps) {
         </Center>
     </Modal>
 
-    const handleClick = (address) => {
+    const handleClick = (address: string) => {
         setReceiver(address)
         setIsModalOpen(true)
     }
 
-    // TODO: set data to actual end
-    const data = [
-        {
-            title: "Project Manager",
-            description: "Hey there!I have a lot of experience in management and I think I am the best fit for this position :)",
-            address: "0x044B595C9b94A17Adc489bD29696af40ccb3E4d2",
-        },
-        {
-            title: "Digital Marketing",
-            description: "Hey! I have done a lot of stuff in digital marketing and I think I am the best fit for this position :)",
-            address: "0x9e03C44b5A09db89bf152F8C5500dF3360c1C5bF",
+    const handleDelete = async (hireID: string) => {
+        showNotification({
+            id: "load-data",
+            loading: true,
+            title: "Deleting request...",
+            message: "Please wait while we delete this hiring request",
+            autoClose: false,
+            disallowClose: true,
+        })
+        try {
+
+            await deleteHiring(hireID)
+
+            updateNotification({
+                id: "load-data",
+                color: "teal",
+                title: "Success",
+                message: "Hiring Request deleted successfully",
+                icon: <IconCheck size={16}/>,
+                autoClose: 2000,
+            })
+
+            router.reload()
+        } catch (e) {
+            console.log(e)
+            updateNotification({
+                id: "load-data",
+                color: "red",
+                title: "Error",
+                message: "Failed to delete hiring request",
+                icon: <IconAlertCircle size={16}/>,
+                autoClose: 2000,
+            })
         }
-    ]
-    const rows = data.map((item) => (
-        <tr key={item.address}>
+
+    }
+
+    const rows = data && data.map((item: any) => (
+        <tr key={item[0]}>
             <td>
                 <Group spacing="sm">
-                    <Avatar size={40} src={makeBlockie(item.address)} radius={40}/>
+                    <Avatar size={40} src={makeBlockie(item[1])} radius={40}/>
                     <div>
                         <Text size="sm" weight={500}>
-                            {item.address.slice(0, 6) + "..." + item.address.slice(-4)}
+                            {item[1].slice(0, 6) + "..." + item[1].slice(-4)}
                         </Text>
                     </div>
                 </Group>
             </td>
             <td>
-                <Text size="sm">{item.title}</Text>
+                <Text size="sm">{item[3]}</Text>
             </td>
             <td>
-                <Text size="sm">{item.description}</Text>
+                <Text size="sm">{item[4]}</Text>
             </td>
             <td>
                 <Group spacing={0} position="right">
@@ -73,10 +98,8 @@ export function HiringRequestTable({someotheredata}: UsersStackProps) {
                         <Menu.Dropdown>
                             <Menu.Item icon={<IconMessages size={16} stroke={1.5}/>}>Send message</Menu.Item>
                             <Menu.Item onClick={() => handleClick(item.address)}
-                                       icon={<IconNote size={16} stroke={1.5}/>}>Start
-                                payment
-                                stream</Menu.Item>
-                            <Menu.Item icon={<IconTrash size={16} stroke={1.5}/>} color="red">
+                                       icon={<IconNote size={16} stroke={1.5}/>}>Start payment stream</Menu.Item>
+                            <Menu.Item onClick={() => handleDelete(item[0])} icon={<IconTrash size={16} stroke={1.5}/>} color="red">
                                 Terminate contract
                             </Menu.Item>
                         </Menu.Dropdown>
