@@ -18,23 +18,27 @@ const AuthWrapper = (props) => {
     }, [])
     useEffect(() => {
         console.log("authwrapper", signer)
-        if (router && orbis) {
-            if (isDisconnected && router.pathname !== "/" && router.pathname !== "/registration") {
+        console.log("router", router)
+        console.log(router.pathname)
+        if (router.pathname) {
+            console.log("If statement")
+            if(isDisconnected){
+                router.push("/")
+            }else if (router.pathname !== "/" && router.pathname !== "/registration") {
+                console.log("isDisconnected")
                 handleAuth()
             }
         }
-    }, [status, router, orbis])
+    }, [status, router.pathname])
 
     const handleAuth = async () => {
         let connectStatus = await orbis.isConnected()
-        if (connectStatus.status != 200) {
+        console.log("authwrapper connectStatus", connectStatus)
+        if (connectStatus.status !== 200) {
             const res = await orbis.connect(window.ethereum)
-        } else {
-            console.log("reached")
-            router.push("/")
         }
         connectStatus = await orbis.isConnected()
-        if (connectStatus.status == 200) {
+        if (connectStatus.status !== 200) {
             console.log("reached")
             router.push("/")
         }

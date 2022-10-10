@@ -23,9 +23,10 @@ const Organisation = () => {
     const [name, setName] = useState("")
     const [accId, setAccId] = useState("")
     const [groupId, setGroupId] = useState("")
+    const requirementChannel = "kjzl6cwe1jw149hdnh0zckt617o2jwk4so5uuveko5t8ojrx6anfsod0sgsnw30"
 
     const router = useRouter()
-    const {createOrbisChannel, connectOrbis} = useOrbis()
+    const {createOrbisChannel, connectOrbis, getOrbisPosts} = useOrbis()
     const client = new ApolloClient({
         uri: 'https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai',
         cache: new InMemoryCache(),
@@ -35,6 +36,7 @@ const Organisation = () => {
         initialize().then()
         setAccId(router.query.accId)
         setGroupId(router.query.groupId)
+        getOrbisPosts({context: requirementChannel}).then(res => console.log("posts",res))
     }, [router.query])
 
     const initialize = async () => {
@@ -63,12 +65,11 @@ const Organisation = () => {
     const projects = projectsData.map((project, index) => {
         return (
             <ProjectCard
-                key={index}
+                key={project.id}
                 organisationName={name}
                 projectId={project.id}
-                avatar={project.avatar}
                 name={project.name}
-                shortDescription={project.shortDescription}
+                metaURI={project.metaURI}
             />
         )
     })
@@ -222,13 +223,6 @@ const Organisation = () => {
                                 deadline={"30 Sept 2022"}
                                 badges={["Defi", "Design", "Management"]}
                             />
-                            <RequirementsCard
-                                description={"We need people who can help us with marketing."}
-                                title={"Digital Marketer"}
-                                price={"50 MATIC"}
-                                deadline={"26 Sept 2022"}
-                                badges={["Defi", "Design", "Management"]}
-                            />
                         </SimpleGrid>
                     </Container>
                 </Tabs.Panel>
@@ -236,6 +230,7 @@ const Organisation = () => {
                     <Container>
                         <Paper shadow="xl" radius="lg" p="md" pt={"lg"}>
                             <EditOrganisation
+                                requirementsChannel={requirementChannel}
                                 members={Object.keys(members).map(function (key) {
                                     return members[key].id
                                 })}

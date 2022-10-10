@@ -71,8 +71,8 @@ const useOrbis = () => {
         return await orbis.setFollow(did, active)
     }
 
-    const getOrbisPosts = async (context, did, page = 0) => {
-        return await orbis.getPosts({ context, did }, page)
+    const getOrbisPosts = async (options, page = 0) => {
+        return await orbis.getPosts({...options}, page)
     }
 
     const getOrbisPost = async (post_id) => {

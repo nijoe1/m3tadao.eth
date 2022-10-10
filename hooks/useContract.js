@@ -6,6 +6,7 @@ import {v4 as uuidv4} from "uuid"
 import {defaultAbiCoder} from "ethers/lib/utils"
 import useOrbis from "./useOrbis"
 import {AccountMeta, create, ProjectMeta} from "@valist/sdk"
+import {Orbis} from "@orbisclub/orbis-sdk";
 
 const isJsonEmpty = (jsonObj) => {
     return (
@@ -18,7 +19,7 @@ const isJsonEmpty = (jsonObj) => {
 const useContract = () => {
     const {data: signer, isError, isLoading} = useSigner()
     const {address} = useAccount()
-    const {updateProfile, createOrbisGroup, connectOrbis} = useOrbis()
+    const {updateProfile, createOrbisGroup, createOrbisChannel, connectOrbis, createOrbisPost} = useOrbis()
 
     const createUserProfile = async (
         orbisDid,
@@ -111,6 +112,13 @@ const useContract = () => {
         // console.log("orbisGroup", orbisGroup)
         const groupID = orbisGroup.doc
 
+        const requirementsChannel = await createOrbisChannel(groupID, {
+            name: "Requirements",
+            description: "Requirements for this organisation",
+            type: "feed"
+        })
+        const requirementsChannelID = requirementsChannel.doc
+
         // console.log("valistAccountTx", valistAccountTx)
         const accountID = await valist.generateID(ethers.BigNumber.from("80001"), accountName)
         // console.log("accountID", accountID)
@@ -124,6 +132,7 @@ const useContract = () => {
         const tx = await m3taDaoContractInstance.indexProjectOrganization(
             accountID,
             groupID,
+            // requirementsChannelID,
             accountName,
             imageURI,
             description,
@@ -136,7 +145,7 @@ const useContract = () => {
     }
 
     const updateProjectAccountRequirements = async (
-        accountID,
+        channelId,
         reqTitle,
         reqDescription,
         reqTags,
@@ -144,29 +153,15 @@ const useContract = () => {
         reqDeadline
     ) => {
         const inputStruct = {
-            accountID,
-            reqTitle,
             reqDescription,
             reqTags,
             reqPrice,
             reqDeadline,
         }
-        const requirementsURI = await uploadJsonToIpfs(inputStruct, "json")
-
-        // console.log("valistAccountTx", valistAccountTx)
-        const valistAccountTxRes = await valistAccountTx.wait()
-
-        const m3taDaoContractInstance = new ethers.Contract(
-            contractAddresses.m3taDao,
-            m3taDaoAbi,
-            signer
-        )
-
-        var tx = await m3taDaoContractInstance.updateAccountMetadata(accountID, requirementsURI, {
-            gasLimit: 5000000,
-        })
-
-        return await tx.wait()
+        await connectOrbis()
+        const post = JSON.stringify(inputStruct)
+        const postRes = await createOrbisPost(channelId, {title: reqTitle, body: post})
+        return postRes.status === 200;
     }
 
     const createSubProject = async (
