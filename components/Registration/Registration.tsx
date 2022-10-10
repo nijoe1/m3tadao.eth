@@ -1,26 +1,8 @@
 import { useEffect, useState } from "react"
-import {
-    Stepper,
-    Button,
-    Group,
-    TextInput,
-    Code,
-    Title,
-    Checkbox,
-    Container,
-    Tooltip,
-    Input,
-    Textarea,
-} from "@mantine/core"
+import { Stepper, Button, Group, TextInput, Code, Title, Checkbox, Container, Tooltip, Input, Textarea } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { ImageInput } from "../ImageInput"
-import {
-    IconAlertCircle,
-    IconBrandTwitter,
-    IconBrandGithub,
-    IconWorldWww,
-    IconCheck,
-} from "@tabler/icons"
+import { IconAlertCircle, IconBrandTwitter, IconBrandGithub, IconWorldWww, IconCheck } from "@tabler/icons"
 import useContract from "../../hooks/useContract"
 import { useAccount } from "wagmi"
 import { showNotification, updateNotification } from "@mantine/notifications"
@@ -42,8 +24,10 @@ export function Registration() {
     const { getUserExists } = useTableland()
 
     useEffect(() => {
-        checkStatus() // TODO: Removed here, but should be added back in
-    }, [])
+        if (address) {
+            checkStatus() // TODO: Removed here, but should be added back in
+        }
+    }, [address])
 
     const checkStatus = async () => {
         const isUserExists = await getUserExists()
@@ -75,10 +59,7 @@ export function Registration() {
         validate: (values) => {
             if (active === 0) {
                 return {
-                    name:
-                        values.name.trim().length < 4
-                            ? "Name must include at least 4 characters"
-                            : null,
+                    name: values.name.trim().length < 4 ? "Name must include at least 4 characters" : null,
                 }
             }
             return {}
@@ -100,8 +81,7 @@ export function Registration() {
             id: "load-data",
             loading: true,
             title: "Registering you on m3tadao",
-            message:
-                "Please wait while we upload your images to web3.storage and create your profile",
+            message: "Please wait while we upload your images to web3.storage and create your profile",
             autoClose: false,
             disallowClose: true,
         })
@@ -110,20 +90,7 @@ export function Registration() {
             console.log(res)
             form.setFieldValue("orbisDid", res.did)
             // form.setFieldValue("orbisDid", "IamAHMED")
-            await createUserProfile(
-                res.did,
-                address,
-                form.values.name,
-                image,
-                banner,
-                form.values.description,
-                form.values.designation,
-                form.values.github,
-                form.values.twitter,
-                form.values.website,
-                interests,
-                skills
-            )
+            await createUserProfile(res.did, address, form.values.name, image, banner, form.values.description, form.values.designation, form.values.github, form.values.twitter, form.values.website, interests, skills)
             updateNotification({
                 id: "load-data",
                 color: "teal",
@@ -159,19 +126,11 @@ export function Registration() {
                     <Title order={4}>
                         Your Designation <span style={{ color: "red" }}>*</span>
                     </Title>
-                    <TextInput
-                        required
-                        placeholder="Student / web3 developer / full stack engineer"
-                        {...form.getInputProps("designation")}
-                    />
+                    <TextInput required placeholder="Student / web3 developer / full stack engineer" {...form.getInputProps("designation")} />
                     <Title order={4}>
                         Something About Yourself <span style={{ color: "red" }}>*</span>
                     </Title>
-                    <Textarea
-                        required
-                        placeholder="I am a web3 enthusiast..."
-                        {...form.getInputProps("description")}
-                    />
+                    <Textarea required placeholder="I am a web3 enthusiast..." {...form.getInputProps("description")} />
                 </Stepper.Step>
 
                 <Stepper.Step label="Social Media">
@@ -185,10 +144,7 @@ export function Registration() {
                         rightSection={
                             <Tooltip label="This is public" position="top-end" withArrow>
                                 <div>
-                                    <IconAlertCircle
-                                        size={18}
-                                        style={{ display: "block", opacity: 0.5 }}
-                                    />
+                                    <IconAlertCircle size={18} style={{ display: "block", opacity: 0.5 }} />
                                 </div>
                             </Tooltip>
                         }
@@ -201,10 +157,7 @@ export function Registration() {
                         rightSection={
                             <Tooltip label="This is public" position="top-end" withArrow>
                                 <div>
-                                    <IconAlertCircle
-                                        size={18}
-                                        style={{ display: "block", opacity: 0.5 }}
-                                    />
+                                    <IconAlertCircle size={18} style={{ display: "block", opacity: 0.5 }} />
                                 </div>
                             </Tooltip>
                         }
@@ -217,10 +170,7 @@ export function Registration() {
                         rightSection={
                             <Tooltip label="This is public" position="top-end" withArrow>
                                 <div>
-                                    <IconAlertCircle
-                                        size={18}
-                                        style={{ display: "block", opacity: 0.5 }}
-                                    />
+                                    <IconAlertCircle size={18} style={{ display: "block", opacity: 0.5 }} />
                                 </div>
                             </Tooltip>
                         }
@@ -229,15 +179,7 @@ export function Registration() {
 
                 <Stepper.Step label="Your skills and interests">
                     <Container p={"sm"} m={"md"}>
-                        <Checkbox.Group
-                            value={skills}
-                            onChange={setSkills}
-                            orientation="vertical"
-                            label="What are your skills"
-                            description="Select some stuff that you're good at"
-                            spacing="xl"
-                            size="md"
-                        >
+                        <Checkbox.Group value={skills} onChange={setSkills} orientation="vertical" label="What are your skills" description="Select some stuff that you're good at" spacing="xl" size="md">
                             <Checkbox value="development" label="Development" />
                             <Checkbox value="design" label="Design" />
                             <Checkbox value="dim" label="Digital Marketing" />
@@ -246,15 +188,7 @@ export function Registration() {
                         </Checkbox.Group>
                     </Container>
                     <Container>
-                        <Checkbox.Group
-                            value={interests}
-                            onChange={setInterests}
-                            orientation="vertical"
-                            label="What are your interests"
-                            description="Select some stuff that you're interested in"
-                            spacing="xl"
-                            size="md"
-                        >
+                        <Checkbox.Group value={interests} onChange={setInterests} orientation="vertical" label="What are your interests" description="Select some stuff that you're interested in" spacing="xl" size="md">
                             <Checkbox value="nft" label="NFTs" />
                             <Checkbox value="defi" label="DeFi" />
                             <Checkbox value="dao" label="DAOs" />

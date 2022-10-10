@@ -1,25 +1,21 @@
-import {ethers} from "ethers"
-import {contractAddresses, lensAbi, m3taDaoAbi, valistAbi} from "../constants/"
-import {useAccount, useSigner} from "wagmi"
-import {uploadFileToIpfs, uploadJsonToIpfs} from "../utils/uploadToIpfs"
-import {v4 as uuidv4} from "uuid"
-import {defaultAbiCoder} from "ethers/lib/utils"
+import { ethers } from "ethers"
+import { contractAddresses, lensAbi, m3taDaoAbi, valistAbi } from "../constants/"
+import { useAccount, useSigner } from "wagmi"
+import { uploadFileToIpfs, uploadJsonToIpfs } from "../utils/uploadToIpfs"
+import { v4 as uuidv4 } from "uuid"
+import { defaultAbiCoder } from "ethers/lib/utils"
 import useOrbis from "./useOrbis"
-import {AccountMeta, create, ProjectMeta} from "@valist/sdk"
-import {Orbis} from "@orbisclub/orbis-sdk";
+import { AccountMeta, create, ProjectMeta } from "@valist/sdk"
+import { Orbis } from "@orbisclub/orbis-sdk"
 
 const isJsonEmpty = (jsonObj) => {
-    return (
-        jsonObj &&
-        Object.keys(jsonObj).length === 0 &&
-        Object.getPrototypeOf(jsonObj) === Object.prototype
-    )
+    return jsonObj && Object.keys(jsonObj).length === 0 && Object.getPrototypeOf(jsonObj) === Object.prototype
 }
 
 const useContract = () => {
-    const {data: signer, isError, isLoading} = useSigner()
-    const {address} = useAccount()
-    const {updateProfile, createOrbisGroup, createOrbisChannel, connectOrbis, createOrbisPost} = useOrbis()
+    const { data: signer, isError, isLoading } = useSigner()
+    const { address } = useAccount()
+    const { updateProfile, createOrbisGroup, createOrbisChannel, connectOrbis, createOrbisPost } = useOrbis()
 
     const createUserProfile = async (
         orbisDid,
@@ -58,34 +54,16 @@ const useContract = () => {
             imageURI = ""
         }
 
-        const m3taDaoContractInstance = new ethers.Contract(
-            contractAddresses.m3taDao,
-            m3taDaoAbi,
-            signer
-        )
+        const m3taDaoContractInstance = new ethers.Contract(contractAddresses.m3taDao, m3taDaoAbi, signer)
 
         const res = await updateProfile(imageURI, bannerURI, handle, description, externalJson)
         console.log("res", res)
 
-        // const groupId = await createOrbisGroup(imageURI, handle, description)
-        const tx = await m3taDaoContractInstance.indexProfile(
-            orbisDid,
-            groupId.doc,
-            handle,
-            imageURI,
-            description,
-            {gasLimit: 500000}
-        )
+        const tx = await m3taDaoContractInstance.indexProfile(orbisDid, handle, imageURI, description, { gasLimit: 500000 })
         return await tx.wait()
     }
 
-    const createProjectAccount = async (
-        accountName,
-        website,
-        image,
-        description,
-        members
-    ) => {
+    const createProjectAccount = async (accountName, website, image, description, members) => {
         console.log("members", members)
         let imageURI
         if (image) {
@@ -93,16 +71,12 @@ const useContract = () => {
         } else {
             imageURI = ""
         }
-        const externalJson = {website, description, accountName, imageURI}
+        const externalJson = { website, description, accountName, imageURI }
         const externalURI = await uploadJsonToIpfs(externalJson, "json")
 
         // valist
-        const valist = await create(signer.provider, {signer, metaTx: true})
-        const valistAccountTx = await valist.createAccount(
-            accountName,
-            new AccountMeta(accountName, description, externalURI, imageURI),
-            members
-        )
+        const valist = await create(signer.provider, { signer, metaTx: true })
+        const valistAccountTx = await valist.createAccount(accountName, new AccountMeta(accountName, description, externalURI, imageURI), members)
         // console.log("valistAccountTx", valistAccountTx)
         const valistAccountTxRes = await valistAccountTx.wait()
         // console.log("valistAccountTxRes", valistAccountTxRes)
@@ -115,7 +89,7 @@ const useContract = () => {
         const requirementsChannel = await createOrbisChannel(groupID, {
             name: "Requirements",
             description: "Requirements for this organisation",
-            type: "feed"
+            type: "feed",
         })
         const requirementsChannelID = requirementsChannel.doc
 
@@ -123,11 +97,7 @@ const useContract = () => {
         const accountID = await valist.generateID(ethers.BigNumber.from("80001"), accountName)
         // console.log("accountID", accountID)
 
-        const m3taDaoContractInstance = new ethers.Contract(
-            contractAddresses.m3taDao,
-            m3taDaoAbi,
-            signer
-        )
+        const m3taDaoContractInstance = new ethers.Contract(contractAddresses.m3taDao, m3taDaoAbi, signer)
 
         const tx = await m3taDaoContractInstance.indexProjectOrganization(
             accountID,
@@ -144,14 +114,7 @@ const useContract = () => {
         return await tx.wait()
     }
 
-    const updateProjectAccountRequirements = async (
-        channelId,
-        reqTitle,
-        reqDescription,
-        reqTags,
-        reqPrice,
-        reqDeadline
-    ) => {
+    const updateProjectAccountRequirements = async (channelId, reqTitle, reqDescription, reqTags, reqPrice, reqDeadline) => {
         const inputStruct = {
             reqDescription,
             reqTags,
@@ -160,8 +123,8 @@ const useContract = () => {
         }
         await connectOrbis()
         const post = JSON.stringify(inputStruct)
-        const postRes = await createOrbisPost(channelId, {title: reqTitle, body: post})
-        return postRes.status === 200;
+        const postRes = await createOrbisPost(channelId, { title: reqTitle, body: post })
+        return postRes.status === 200
     }
 
     const createSubProject = async (
@@ -186,7 +149,7 @@ const useContract = () => {
         }
 
         // valist
-        const valist = await create(signer.provider, {signer, metaTx: true})
+        const valist = await create(signer.provider, { signer, metaTx: true })
         console.log("valist", valist)
         const meta = new ProjectMeta()
         meta.name = displayName
@@ -195,7 +158,7 @@ const useContract = () => {
         meta.external_url = website
         meta.launch_external = website
         meta.short_description = shortDescription
-        if (youTubeLink) meta.gallery = [{name: '', type: 'youtube', src: youTubeLink}]
+        if (youTubeLink) meta.gallery = [{ name: "", type: "youtube", src: youTubeLink }]
         meta.tags = tags
         // const meta = {
         //     name : displayName,
@@ -208,57 +171,23 @@ const useContract = () => {
         //     tags : tags
         // };
         console.log("meta", meta)
-        const valistProjectTx = await valist.createProject(
-            ethers.BigNumber.from(accountID),
-            projectName,
-            meta,
-            members
-        )
+        const valistProjectTx = await valist.createProject(ethers.BigNumber.from(accountID), projectName, meta, members)
         const temp = await valistProjectTx.wait()
         console.log("temp", temp)
         return temp
     }
 
-    const createRelease = async (
-        projectID,
-        releaseName,
-        metaURI,
-        releaseType,
-        imageURI,
-        description,
-        releaseURI
-    ) => {
-        const m3taDaoContractInstance = new ethers.Contract(
-            contractAddresses.m3taDao,
-            m3taDaoAbi,
-            signer
-        )
+    const createRelease = async (projectID, releaseName, metaURI, releaseType, imageURI, description, releaseURI) => {
+        const m3taDaoContractInstance = new ethers.Contract(contractAddresses.m3taDao, m3taDaoAbi, signer)
 
-        const ReleaseStruct = [
-            (sender = "0x0000000000000000000000000000000000000000"),
-            (id = "0"),
-            (releaseID = "0"),
-            projectID,
-            (metadataTable = "a"),
-            (releaseHex = "a"),
-            releaseName,
-            metaURI,
-            releaseType,
-            imageURI,
-            description,
-            releaseURI,
-        ]
+        const ReleaseStruct = [(sender = "0x0000000000000000000000000000000000000000"), (id = "0"), (releaseID = "0"), projectID, (metadataTable = "a"), (releaseHex = "a"), releaseName, metaURI, releaseType, imageURI, description, releaseURI]
 
-        var tx = await m3taDaoContractInstance.createRelease(ReleaseStruct, {gasLimit: 5000000})
+        var tx = await m3taDaoContractInstance.createRelease(ReleaseStruct, { gasLimit: 5000000 })
         return await tx
     }
 
     const createPost = async (accountID, postDescription, postTitle, postGalery) => {
-        const m3taDaoContractInstance = new ethers.Contract(
-            contractAddresses.m3taDao,
-            m3taDaoAbi,
-            signer
-        )
+        const m3taDaoContractInstance = new ethers.Contract(contractAddresses.m3taDao, m3taDaoAbi, signer)
 
         let postGaleryURI
         if (postGalery) {
@@ -269,18 +198,21 @@ const useContract = () => {
 
         const PostStruct = [address, "0", accountID, "a", postDescription, postTitle, postGalery]
 
-        var tx = await m3taDaoContractInstance.createPost(PostStruct, {gasLimit: 5000000})
+        var tx = await m3taDaoContractInstance.createPost(PostStruct, { gasLimit: 5000000 })
+        return await tx.wait()
+    }
+
+    const createHiringRequest = async (accountID, title, description) => {
+        const m3taDaoContractInstance = new ethers.Contract(contractAddresses.m3taDao, m3taDaoAbi, signer)
+
+        var tx = await m3taDaoContractInstance.createHiringRequest(accountID, title, description, { gasLimit: 5000000 })
         return await tx.wait()
     }
 
     const deletePost = async (accountID, postID) => {
-        const m3taDaoContractInstance = new ethers.Contract(
-            contractAddresses.m3taDao,
-            m3taDaoAbi,
-            signer
-        )
+        const m3taDaoContractInstance = new ethers.Contract(contractAddresses.m3taDao, m3taDaoAbi, signer)
 
-        var tx = await m3taDaoContractInstance.createPost(accountID, postID, {gasLimit: 5000000})
+        var tx = await m3taDaoContractInstance.createPost(accountID, postID, { gasLimit: 5000000 })
         return await tx.wait()
     }
 
@@ -343,14 +275,14 @@ const useContract = () => {
             referenceModuleInitData: [],
         }
 
-        var tx = await lensContractInstance.post(inputStruct, {gasLimit: 5000000})
+        var tx = await lensContractInstance.post(inputStruct, { gasLimit: 5000000 })
         return await tx.wait()
     }
 
     const getLensPostCount = async (profId) => {
         const lensContractInstance = new ethers.Contract(contractAddresses.lens, lensAbi, signer)
         console.log("profID", profId)
-        var tx = await lensContractInstance.getPubCount(profId, {gasLimit: 5000000})
+        var tx = await lensContractInstance.getPubCount(profId, { gasLimit: 5000000 })
         return tx.toString()
     }
 
@@ -358,23 +290,19 @@ const useContract = () => {
     const getLensPost = async (profId, pubId) => {
         const lensContractInstance = new ethers.Contract(contractAddresses.lens, lensAbi, signer)
         console.log("profID", profId)
-        var tx = await lensContractInstance.getPub(profId, pubId, {gasLimit: 5000000})
+        var tx = await lensContractInstance.getPub(profId, pubId, { gasLimit: 5000000 })
         return tx.toString()
     }
 
     const createFollow = async (profileIDs) => {
         const lensContractInstance = new ethers.Contract(contractAddresses.lens, lensAbi, signer)
 
-        var tx = await lensContractInstance.follow(profileIDs, [[]], {gasLimit: 5000000})
+        var tx = await lensContractInstance.follow(profileIDs, [[]], { gasLimit: 5000000 })
         return await tx.wait()
     }
 
     const addValistMember = async (accountID, newUserWalletAddress) => {
-        const valistContractInstance = new ethers.Contract(
-            contractAddresses.valist,
-            valistAbi,
-            signer
-        )
+        const valistContractInstance = new ethers.Contract(contractAddresses.valist, valistAbi, signer)
 
         var tx = await valistContractInstance.addAccountMember(accountID, newUserWalletAddress, {
             gasLimit: 5000000,
@@ -383,17 +311,9 @@ const useContract = () => {
     }
 
     const deleteValistMember = async (accountID, newUserWalletAddress) => {
-        const valistContractInstance = new ethers.Contract(
-            contractAddresses.valist,
-            valistAbi,
-            signer
-        )
+        const valistContractInstance = new ethers.Contract(contractAddresses.valist, valistAbi, signer)
 
-        var tx = await valistContractInstance.removeAccountMember(
-            accountID,
-            newUserWalletAddress,
-            {gasLimit: 5000000}
-        )
+        var tx = await valistContractInstance.removeAccountMember(accountID, newUserWalletAddress, { gasLimit: 5000000 })
         return await tx.wait()
     }
 
@@ -404,6 +324,7 @@ const useContract = () => {
         createSubProject,
         createRelease,
         createPost,
+        createHiringRequest,
         deletePost,
         createLensPost,
         getLensPostCount,

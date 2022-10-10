@@ -1,6 +1,6 @@
 import { Layout } from "../components/Layout"
 import Head from "next/head"
-import {Text, Container, Grid, Tabs, Title, Paper, Center, Stack, SimpleGrid, Button, Group, Modal,} from "@mantine/core"
+import { Text, Container, Grid, Tabs, Title, Paper, Center, Stack, SimpleGrid, Button, Group, Modal } from "@mantine/core"
 import { ProjectCard } from "../components/ProjectCard"
 import { useEffect, useState } from "react"
 import { IconPlus } from "@tabler/icons"
@@ -10,15 +10,16 @@ import { MemberCard } from "../components/MemberCard"
 import { CreatePost } from "../components/CreatePost"
 import { useRouter } from "next/router"
 import { fetchOrganisationDetails } from "../constants/graphql/queries"
-import {ApolloClient, InMemoryCache, ApolloProvider, gql} from '@apollo/client'
+import { ApolloClient, InMemoryCache, ApolloProvider, gql } from "@apollo/client"
 import { HiringRequestTable } from "../components/HiringRequestTable"
 import { RequirementsCard } from "../components/RequirementsCard"
-import useOrbis from "../hooks/useOrbis";
+import useOrbis from "../hooks/useOrbis"
 
 const Organisation = () => {
     const [activeTab, setActiveTab] = useState("first")
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [projectsData, setProjectsData] = useState([])
+    const [requirementsData, setRequirementsData] = useState([])
     const [members, setMembers] = useState([])
     const [name, setName] = useState("")
     const [accId, setAccId] = useState("")
@@ -26,9 +27,9 @@ const Organisation = () => {
     const requirementChannel = "kjzl6cwe1jw149hdnh0zckt617o2jwk4so5uuveko5t8ojrx6anfsod0sgsnw30"
 
     const router = useRouter()
-    const {createOrbisChannel, connectOrbis, getOrbisPosts} = useOrbis()
+    const { createOrbisChannel, connectOrbis, getOrbisPosts } = useOrbis()
     const client = new ApolloClient({
-        uri: 'https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai',
+        uri: "https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai",
         cache: new InMemoryCache(),
     })
 
@@ -36,10 +37,10 @@ const Organisation = () => {
         initialize().then()
         setAccId(router.query.accId)
         setGroupId(router.query.groupId)
-        getOrbisPosts({context: requirementChannel}).then(res => console.log("posts",res))
     }, [router.query])
 
     const initialize = async () => {
+        fetchRequirements()
         const accHex = router.query.accHex
 
         const query = {
@@ -50,40 +51,43 @@ const Organisation = () => {
         }
 
         // const graphRes = (await graphql.fetchGraphQL("https://api.thegraph.com/subgraphs/name/valist-io/valistmumbai", query)).data.accounts
-        const graphRes = (
-            await client.query(query)
-        ).data?.account
+        const graphRes = (await client.query(query)).data?.account
         setName(graphRes.name)
         setProjectsData(graphRes.projects)
-        setMembers(
-            graphRes.members.filter(
-                (mem) => mem.id !== "0x28fb200c401bcc2eb407d29aed6b5bae2d3f98c3"
-            )
+        setMembers(graphRes.members.filter((mem) => mem.id !== "0x28fb200c401bcc2eb407d29aed6b5bae2d3f98c3"))
+    }
+
+    const fetchRequirements = async () => {
+        const { data: requirements } = await getOrbisPosts({ context: requirementChannel })
+        console.log("posts", requirements)
+        setRequirementsData(
+            requirements.map((requirement) => {
+                const content = requirement.content
+                const title = content.title
+                const body = JSON.parse(content.body)
+                const description = body.reqDescription
+                const tags = body.reqTags
+                const price = body.reqPrice
+                const deadline = new Date(body.reqDeadline).toLocaleDateString()
+
+                return {
+                    title,
+                    body,
+                    description,
+                    tags,
+                    price,
+                    deadline,
+                }
+            })
         )
     }
 
     const projects = projectsData.map((project, index) => {
-        return (
-            <ProjectCard
-                key={project.id}
-                organisationName={name}
-                projectId={project.id}
-                name={project.name}
-                metaURI={project.metaURI}
-            />
-        )
+        return <ProjectCard key={project.id} organisationName={name} projectId={project.id} name={project.name} metaURI={project.metaURI} />
     })
 
     const postModal = (
-        <Modal
-            opened={isModalOpen}
-            size="60%"
-            transition="fade"
-            transitionDuration={500}
-            transitionTimingFunction="ease"
-            title={<Title>Add a post</Title>}
-            onClose={() => setIsModalOpen(false)}
-        >
+        <Modal opened={isModalOpen} size="60%" transition="fade" transitionDuration={500} transitionTimingFunction="ease" title={<Title>Add a post</Title>} onClose={() => setIsModalOpen(false)}>
             <Center>
                 <CreatePost />
             </Center>
@@ -103,13 +107,7 @@ const Organisation = () => {
                     </Text>
                 </Group>
                 <Button.Group>
-                    <Button
-                        radius="md"
-                        mt="xl"
-                        size="md"
-                        variant={"light"}
-                        onClick={() => setIsModalOpen(true)}
-                    >
+                    <Button radius="md" mt="xl" size="md" variant={"light"} onClick={() => setIsModalOpen(true)}>
                         New Post
                     </Button>
                     <Button
@@ -122,7 +120,7 @@ const Organisation = () => {
                             const createChannelRes = await createOrbisChannel(groupId, {
                                 name: "General",
                                 description: "General discussion",
-                                type: "chat"
+                                type: "chat",
                             })
                             console.log(createChannelRes)
                         }}
@@ -158,20 +156,14 @@ const Organisation = () => {
                                                     { maxWidth: "sm", cols: 1, spacing: "sm" },
                                                 ]}
                                             >
-                                                <Link
-                                                    href={`/create-project?accId=${accId}`}
-                                                    passHref
-                                                >
+                                                <Link href={`/create-project?accId=${accId}`} passHref>
                                                     <Grid.Col>
                                                         <Paper
                                                             radius="md"
                                                             withBorder
                                                             p="lg"
                                                             sx={(theme) => ({
-                                                                backgroundColor:
-                                                                    theme.colorScheme === "dark"
-                                                                        ? theme.colors.dark[8]
-                                                                        : theme.white,
+                                                                backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.white,
                                                                 cursor: "pointer",
                                                             })}
                                                         >
@@ -195,13 +187,7 @@ const Organisation = () => {
                                     <Grid.Col lg={2}>
                                         <Text weight={700}>Members</Text>
                                         {members.map((member, index) => {
-                                            return (
-                                                <MemberCard
-                                                    key={index}
-                                                    address={member.id}
-                                                    name="Admin"
-                                                />
-                                            )
+                                            return <MemberCard key={index} address={member.id} name="Admin" />
                                         })}
                                     </Grid.Col>
                                 </Grid>
@@ -211,18 +197,11 @@ const Organisation = () => {
                 </Tabs.Panel>
                 <Tabs.Panel value={"requirements"}>
                     <Container size={"lg"} mb={"xl"}>
-                        <SimpleGrid
-                            cols={2}
-                            spacing={"md"}
-                            breakpoints={[{ maxWidth: 600, cols: 1, spacing: "sm" }]}
-                        >
-                            <RequirementsCard
-                                description={"We are looking for project managers."}
-                                title={"Project manager"}
-                                price={"20 MATIC"}
-                                deadline={"30 Sept 2022"}
-                                badges={["Defi", "Design", "Management"]}
-                            />
+                        <SimpleGrid cols={2} spacing={"md"} breakpoints={[{ maxWidth: 600, cols: 1, spacing: "sm" }]}>
+                            {requirementsData.map((requirement) => (
+                                <RequirementsCard accountID={accId} description={requirement.description} title={requirement.title} price={requirement.price} deadline={requirement.deadline} badges={requirement.tags} />
+                            ))}
+                            {/* <RequirementsCard description={"We are looking for project managers."} title={"Project manager"} price={"20 MATIC"} deadline={"30 Sept 2022"} badges={["Defi", "Design", "Management"]} /> */}
                         </SimpleGrid>
                     </Container>
                 </Tabs.Panel>

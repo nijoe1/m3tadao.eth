@@ -1,14 +1,14 @@
-import { Card, Text, Group, Badge, Button, createStyles } from '@mantine/core';
+import { Card, Text, Group, Badge, Button, createStyles, Modal, Title, Center } from "@mantine/core"
+import { useState } from "react"
+import { CreateHiringRequest } from "../CreateHiringRequest"
 
 const useStyles = createStyles((theme) => ({
     card: {
-        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
+        backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
     },
 
     section: {
-        borderBottom: `1px solid ${
-            theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
-        }`,
+        borderBottom: `1px solid ${theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3]}`,
         padding: theme.spacing.md,
     },
 
@@ -17,31 +17,42 @@ const useStyles = createStyles((theme) => ({
     },
 
     label: {
-        textTransform: 'uppercase',
+        textTransform: "uppercase",
         fontSize: theme.fontSizes.xs,
         fontWeight: 700,
     },
-}));
+}))
 
 interface BadgeCardProps {
-    description: string;
-    title: string;
-    price: string;
-    deadline: string;
-    badges: [];
+    description: string
+    title: string
+    price: string
+    deadline: string
+    badges: []
 }
 
-export function RequirementsCard({ title, description, price, deadline, badges }: BadgeCardProps) {
-    const { classes, theme } = useStyles();
+export function RequirementsCard({ accountID, title, description, price, deadline, badges }: BadgeCardProps) {
+    const { classes, theme } = useStyles()
+
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     const features = badges.map((badge, index) => (
-        <Badge
-            color={theme.colorScheme === 'dark' ? 'dark' : 'gray'}
-            key={index}
-        >
+        <Badge color={theme.colorScheme === "dark" ? "dark" : "gray"} key={index}>
             {badge}
         </Badge>
-    ));
+    ))
+
+    const postModal = (
+        <Modal opened={isModalOpen} size="60%" transition="fade" transitionDuration={500} transitionTimingFunction="ease" onClose={() => setIsModalOpen(false)}>
+            <Center>
+                <CreateHiringRequest organisationID={accountID} title={title} />
+            </Center>
+        </Modal>
+    )
+
+    const handleSubmit = async () => {
+        setIsModalOpen(true)
+    }
 
     return (
         <Card withBorder radius="md" p="md" className={classes.card}>
@@ -59,11 +70,13 @@ export function RequirementsCard({ title, description, price, deadline, badges }
             <Card.Section className={classes.section} mt="md">
                 <Group position="apart">
                     <Text size="lg" weight={500}>
-                        <span style={{fontWeight: 700}}>Price: </span>{price}
+                        <span style={{ fontWeight: 700 }}>Price: </span>
+                        {price}
                     </Text>
                 </Group>
                 <Text size="sm" mt="xs">
-                    <span style={{fontWeight: 700}}>Deadline: </span>{deadline}
+                    <span style={{ fontWeight: 700 }}>Deadline: </span>
+                    {deadline}
                 </Text>
             </Card.Section>
 
@@ -77,10 +90,11 @@ export function RequirementsCard({ title, description, price, deadline, badges }
             </Card.Section>
 
             <Group mt="xs">
-                <Button radius="md" style={{ flex: 1 }}>
+                <Button radius="md" style={{ flex: 1 }} onClick={handleSubmit}>
                     Contact project admin
                 </Button>
             </Group>
+            {postModal}
         </Card>
-    );
+    )
 }
