@@ -97,7 +97,7 @@ export function HiringRequestTable({data}: any) {
                         </Menu.Target>
                         <Menu.Dropdown>
                             <Menu.Item icon={<IconMessages size={16} stroke={1.5}/>}>Send message</Menu.Item>
-                            <Menu.Item onClick={() => handleClick(item.address)}
+                            <Menu.Item onClick={() => handleClick(item[1])}
                                        icon={<IconNote size={16} stroke={1.5}/>}>Start payment stream</Menu.Item>
                             <Menu.Item onClick={() => handleDelete(item[0])} icon={<IconTrash size={16} stroke={1.5}/>} color="red">
                                 Terminate contract
