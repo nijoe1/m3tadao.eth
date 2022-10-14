@@ -37,7 +37,7 @@ const Home = () => {
     return (
         <>
             <Head>
-                <title>m3tadao</title>
+                <title>M3tadao</title>
                 <meta
                     name="viewport"
                     content="minimum-scale=1, initial-scale=1, width=device-width"

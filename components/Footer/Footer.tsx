@@ -1,5 +1,5 @@
 import {createStyles, Container, Group, ActionIcon, Title} from '@mantine/core';
-import { IconBrandTwitter, IconBrandYoutube, IconBrandInstagram } from '@tabler/icons';
+import { IconBrandTwitter, IconBrandYoutube, IconBrandLinkedin, IconBrandLinktree } from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
     footer: {
@@ -37,13 +37,16 @@ export function Footer() {
                 <Title color={"dimmed"} order={1}>M3tadao</Title>
                 <Group spacing={0} className={classes.links} position="right" noWrap>
                     <ActionIcon size="lg">
-                        <IconBrandTwitter size={18} stroke={1.5} />
+                        <a href="https://twitter.com/m3tadao" target="_blank" style={{color:"gray"}}><IconBrandTwitter size={18} stroke={1.5} /></a>
                     </ActionIcon>
                     <ActionIcon size="lg">
-                        <IconBrandYoutube size={18} stroke={1.5} />
+                      <a href="https://www.youtube.com/channel/UC6dT4HnO7JSQFQT_tMm_kYg" target="_blank" style={{color:"gray"}}>  <IconBrandYoutube size={18} stroke={1.5} /></a>
                     </ActionIcon>
                     <ActionIcon size="lg">
-                        <IconBrandInstagram size={18} stroke={1.5} />
+                        <a href="https://www.linkedin.com/company/89174367/admin/" target="_blank" style={{color:"gray"}}><IconBrandLinkedin size={18} stroke={1.5} /></a>
+                    </ActionIcon>
+                    <ActionIcon size="lg">
+                        <a href="https://withkoji.com/@M3tadao" target="_blank" style={{color:"gray"}}><IconBrandLinktree size={18} stroke={1.5} /></a>
                     </ActionIcon>
                 </Group>
             </Container>
