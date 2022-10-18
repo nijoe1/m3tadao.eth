@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { sleep } from "../../utils";
+import React, {useState, useEffect, useRef, useContext} from 'react';
+import {sleep} from "../../utils";
 
 /** Import Context */
-import { GlobalContext } from "../../contexts/GlobalContext";
-
+import {GlobalContext} from "../../contexts/GlobalContext";
+import orbisStyles from "../../styles/orbis.module.css"
 /** Manage WalletConnect */
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
 /** Render a connect button that can be used to connect to Ceramic using the Orbis SDK */
 export function ConnectButton() {
-  const { user, setUser, groups, setGroups, orbis } = useContext(GlobalContext);
+  const {user, setUser, groups, setGroups, orbis} = useContext(GlobalContext);
   const [status, setStatus] = useState(0);
 
   /** Returns a valid provider to use to connect the user's wallet */
@@ -88,13 +88,18 @@ export function ConnectButton() {
   /** Display button according to its status */
   switch (status) {
     case 0:
-      return <button className="btn md purple pointer" onClick={() => connect()}>Connect</button>;
+      return <button
+          className={orbisStyles["btn"] + " " + orbisStyles["md"] + " " + orbisStyles["purple"] + " " + orbisStyles["pointer"]}
+          onClick={() => connect()}>Connect</button>;
     case 1:
-      return <button className="btn md  transparent-dashed">Loading...</button>;
+      return <button
+          className={orbisStyles["btn"] + " " + orbisStyles["md"] + " " + orbisStyles["transparent-dashed"]}>Loading...</button>;
     case 2:
-      return <button className="btn md  green">Success</button>;
+      return <button
+          className={orbisStyles["btn"] + " " + orbisStyles["md"] + " " + orbisStyles["green"]}>Success</button>;
     case 3:
-      return <button className="btn md  red">Error</button>
+      return <button
+          className={orbisStyles["btn"] + " " + orbisStyles["md"] + " " + orbisStyles["red"]}>Error</button>
 
   }
 }

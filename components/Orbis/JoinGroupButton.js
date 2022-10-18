@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-
-import { sleep } from "../../utils/";
-import { useHover } from "../../hooks/useHover";
+import React, {useState, useEffect, useRef, useContext} from 'react';
+import orbisStyles from "../../styles/orbis.module.css"
+import {sleep} from "../../utils/";
+import {useHover} from "../../hooks/useHover";
 
 /** Import Context */
-import { GlobalContext } from "../../contexts/GlobalContext";
-import { SaveButton } from "./SaveButton";
+import {GlobalContext} from "../../contexts/GlobalContext";
+import {SaveButton} from "./SaveButton";
 
 /** Simple join group button */
 export function JoinGroupButton({group_id}) {
-  const { user, getUserGroups, orbis } = useContext(GlobalContext);
+  const {user, getUserGroups, orbis} = useContext(GlobalContext);
   const [joinStatus, setJoinStatus] = useState(0);
   const [hasJoined, setHasJoined] = useState(false);
 
@@ -82,10 +82,14 @@ export function JoinGroupButton({group_id}) {
 function HasJoinedButton ({setGroupMember, joinStatus}) {
   const [hoverRef, isHovered] = useHover();
 
-  if(isHovered) {
-    return <div ref={hoverRef}><SaveButton className="red-border flex pointer" title="Leave" status={joinStatus} onClick={() => setGroupMember(false)} /></div>;
+  if (isHovered) {
+    return <div ref={hoverRef}><SaveButton
+        className={orbisStyles["red-border"] + " " + orbisStyles["flex"] + " " + orbisStyles["pointer"]} title="Leave"
+        status={joinStatus} onClick={() => setGroupMember(false)}/></div>;
   }
 
   /** Show default `hasJoined` button state */
-  return <div className="btn green-border flex pointer" ref={hoverRef}><img src="/img/icons/check-green.png" className="mright-5" height="15" /><span>Joined</span></div>
+  return <div
+      className={orbisStyles["btn"] + " " + orbisStyles["green-border"] + " " + orbisStyles["flex"] + " " + orbisStyles["pointer"]}
+      ref={hoverRef}><img src="/img/icons/check-green.png" className="mright-5" height="15"/><span>Joined</span></div>
 }

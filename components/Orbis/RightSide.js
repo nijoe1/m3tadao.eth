@@ -1,54 +1,56 @@
-import React, { useState, useEffect, useRef, useContext, useMemo } from 'react';
-import { useRouter } from 'next/router'
-import { useOutsideClick } from "../../hooks/useOutsideClick";
+import React, {useState, useEffect, useRef, useContext, useMemo} from 'react';
+import {useRouter} from 'next/router'
+import {useOutsideClick} from "../../hooks/useOutsideClick";
 import Link from 'next/link'
-
-import { ConnectButton } from "./ConnectButton";
-import { User } from "./User";
-import { Group } from "./Group";
-import { JoinGroupButton } from "./JoinGroupButton";
-import { FollowButton } from "./FollowButton";
-import { getTimestamp } from "../../utils";
+import orbisStyles from "../../styles/orbis.module.css"
+import {ConnectButton} from "./ConnectButton";
+import {User} from "./User";
+import {Group} from "./Group";
+import {JoinGroupButton} from "./JoinGroupButton";
+import {FollowButton} from "./FollowButton";
+import {getTimestamp} from "../../utils";
 
 /** Import Context */
-import { GlobalContext, ModalsContext } from "../../contexts/GlobalContext";
+import {GlobalContext, ModalsContext} from "../../contexts/GlobalContext";
 
 export function RightSide({type, details}) {
   const { user, setUser, orbis } = useContext(GlobalContext);
   const { setModalVis } = useContext(ModalsContext);
-  const [userMenuVis, setUserMenuVis] = useState(false);
-  const wrapperRef = useRef(null);
-  useOutsideClick(wrapperRef, () => setUserMenuVis(false));
+    const [userMenuVis, setUserMenuVis] = useState(false);
+    const wrapperRef = useRef(null);
+    useOutsideClick(wrapperRef, () => setUserMenuVis(false));
 
-  function logout() {
-    let res = orbis.logout();
-    setUser(null);
-    setUserMenuVis(false);
-  }
+    function logout() {
+        let res = orbis.logout();
+        setUser(null);
+        setUserMenuVis(false);
+    }
 
-  return(
-    <div className="right-side">
-      <div className="top-right hide-tablet">
-        {user ?
-          <>
-            <div className="relative flex-row v-align-items-center">
-              <User details={user} />
-              <img className="pointer" src="/img/icons/menu-dots.png" height="20" onClick={() => setUserMenuVis(true)} />
-              {userMenuVis &&
-                <div className="floating-menu" ref={wrapperRef}>
-                  <p onClick={() => logout()}>Logout</p>
-                </div>
-              }
+    return (
+        <div className={orbisStyles["right-side"]}>
+            <div className={orbisStyles["top-right"] + " " + orbisStyles["hide-tablet"]}>
+                {user ?
+                    <>
+                        <div
+                            className={orbisStyles["relative"] + " " + orbisStyles["flex-row"] + " " + orbisStyles["v-align-items-center"]}>
+                            <User details={user}/>
+                            <img className={orbisStyles["pointer"]} src="/img/icons/menu-dots.png" height="20"
+                                 onClick={() => setUserMenuVis(true)}/>
+                            {userMenuVis &&
+                                <div className={orbisStyles["floating-menu"]} ref={wrapperRef}>
+                                    <p onClick={() => logout()}>Logout</p>
+                                </div>
+                            }
+                        </div>
+                    </>
+                    :
+                    <ConnectButton/>
+                }
+
             </div>
-          </>
-        :
-          <ConnectButton />
-        }
-
-      </div>
-      <Content type={type} details={details} />
-    </div>
-  )
+            <Content type={type} details={details}/>
+        </div>
+    )
 }
 
 /** Switch  */
@@ -117,34 +119,42 @@ function Default() {
   }
 
   return(
-    <>
-      <div className="community-banner">
-        <h3>COMMUNITY NOTES</h3>
-        <p className="mtop-10">We just launched Orbis on mainnet 🥳 You can learn more about it using our <a href="https://twitter.com/OrbisClub/status/1549062199213268994" rel="noreferrer" target="_blank">Twitter thread</a> or the <Link href="/post/kjzl6cwe1jw14a9l1l49tv4u2e8qrj1sql5ox84xn5a7jm3yh3yhlw5a9layd1r">introduction post</Link>.</p>
-        <p className="center mtop-5 mbottom-5">
-          <a className="btn white-border" href="https://twitter.com/OrbisClub/status/1549062199213268994" rel="noreferrer" target="_blank">ANNOUNCEMENT</a>
-        </p>
+      <>
+          <div className={orbisStyles["community-banner"]}>
+              <h3>COMMUNITY NOTES</h3>
+              <p className={orbisStyles["mtop-10"]}>We just launched Orbis on mainnet 🥳 You can learn more about it
+                  using
+                  our <a href="https://twitter.com/OrbisClub/status/1549062199213268994" rel="noreferrer"
+                         target="_blank">Twitter
+                      thread</a> or the <Link
+                      href="/post/kjzl6cwe1jw14a9l1l49tv4u2e8qrj1sql5ox84xn5a7jm3yh3yhlw5a9layd1r">introduction
+                      post</Link>.</p>
+              <p className={orbisStyles["center"] + " " + orbisStyles["mtop-5"] + " " + orbisStyles["mbottom-5"]}>
+                  <a className={orbisStyles["btn"] + " " + orbisStyles["white-border"]}
+                     href="https://twitter.com/OrbisClub/status/1549062199213268994" rel="noreferrer"
+                     target="_blank">ANNOUNCEMENT</a>
+              </p>
 
-      </div>
-      <div>
-        <h3>ACTIVE GROUPS</h3>
-        {groupsLoading ?
-          <p className="center h-align-self-center w-100">
-            <img src="/img/icons/loading-white.svg" height="35" />
-          </p>
-        :
-          <LoopActiveGroups activeGroups={activeGroups} />
-        }
+          </div>
+          <div>
+              <h3>ACTIVE GROUPS</h3>
+              {groupsLoading ?
+                  <p className={orbisStyles["center"] + " " + orbisStyles["h-align-self-center"] + " " + orbisStyles["w-100"]}>
+                      <img src="/img/icons/loading-white.svg" height="35"/>
+                  </p>
+                  :
+                  <LoopActiveGroups activeGroups={activeGroups}/>
+              }
 
-      </div>
-      <div>
-        <h3 className="mtop-30">ACTIVE USERS</h3>
-        {userLoading ?
-          <p className="center h-align-self-center w-100">
-            <img src="/img/icons/loading-white.svg" height="35" />
-          </p>
-        :
-          <LoopActiveUsers activeUsers={activeUsers} />
+          </div>
+          <div>
+              <h3 className={orbisStyles["mtop-30"]}>ACTIVE USERS</h3>
+              {userLoading ?
+                  <p className={orbisStyles["center"] + " " + orbisStyles["h-align-self-center"] + " " + orbisStyles["w-100"]}>
+                      <img src="/img/icons/loading-white.svg" height="35"/>
+                  </p>
+                  :
+                  <LoopActiveUsers activeUsers={activeUsers}/>
         }
       </div>
     </>
@@ -155,17 +165,21 @@ function Default() {
 function LoopActiveUsers({activeUsers}) {
   if(activeUsers && activeUsers.length > 0) {
     return activeUsers.map((_user, key) => {
-      return(
-        <div className="mbottom-15 flex-row one-group-container" key={_user.did}>
-          <div className="flex-1">
-            <User details={_user.profile} />
-          </div>
-          <FollowButton did={_user.profile?.did} />
-        </div>
-      )
+        return (
+            <div
+                className={orbisStyles["mbottom-15"] + " " + orbisStyles["flex-row"] + " " + orbisStyles["one-group-container"]}
+                key={_user.did}>
+                <div className={orbisStyles["flex-1"]}>
+                    <User details={_user.profile}/>
+                </div>
+                <FollowButton did={_user.profile?.did}/>
+            </div>
+        )
     });
   } else {
-    return(<p className="w-100 secondary center">There isn't any new user to discover.</p>)
+      return (
+          <p className={orbisStyles["w-100"] + " " + orbisStyles["secondary"] + " " + orbisStyles["center"]}>There isn't
+              any new user to discover.</p>)
   }
 }
 
@@ -173,17 +187,21 @@ function LoopActiveUsers({activeUsers}) {
 function LoopActiveGroups({activeGroups}) {
   if(activeGroups && activeGroups.length > 0) {
     return activeGroups.map((group, key) => {
-      return(
-        <div className="mbottom-15 flex-row one-group-container" key={key}>
-          <div className="flex-1">
-            <Group id={group.stream_id} details={group.content} isLink={true} />
-          </div>
-          <JoinGroupButton group_id={group.stream_id} />
-        </div>
-      )
+        return (
+            <div
+                className={orbisStyles["mbottom-15"] + " " + orbisStyles["flex-row"] + " " + orbisStyles["one-group-container"]}
+                key={key}>
+                <div className={orbisStyles["flex-1"]}>
+                    <Group id={group.stream_id} details={group.content} isLink={true}/>
+                </div>
+                <JoinGroupButton group_id={group.stream_id}/>
+            </div>
+        )
     });
   } else {
-    return(<p className="w-100 secondary center">There isn't any new group to discover.</p>)
+      return (
+          <p className={orbisStyles["w-100"] + " " + orbisStyles["secondary"] + " " + orbisStyles["center"]}>There isn't
+              any new group to discover.</p>)
   }
 }
 
@@ -224,36 +242,43 @@ function ConversationDetails() {
   function LoopRecipients() {
     if(conversation && conversation.recipients_details) {
       return conversation.recipients_details.map((recipient, key) => {
-        return(
-          <div className="mbottom-15" key={key}>
-            <User details={recipient}/>
-          </div>
+        return (
+            <div className={orbisStyles["mbottom-15"]} key={key}>
+                <User details={recipient}/>
+            </div>
         )
       });
     }
   }
 
-  return(
-    <div className="conversation-details">
-      {/** Show conversation details   */}
-      {conversation && conversation.content &&
-      <div className="details-container">
-      {(conversation.content.name || conversation.content.context) &&
-        <>
-          <h3>DETAILS</h3>
-          {conversation.content.name ?
-            <p>{conversation.content.name}</p>
-          :
-            <p><button className="btn transparent link">+ Add a name</button></p>
-          }
+  return (
+      <div className={orbisStyles["conversation-details"]}>
+          {/** Show conversation details   */}
+          {conversation && conversation.content &&
+              <div className={orbisStyles["details-container"]}>
+                  {(conversation.content.name || conversation.content.context) &&
+                      <>
+                          <h3>DETAILS</h3>
+                          {conversation.content.name ?
+                              <p>{conversation.content.name}</p>
+                              :
+                              <p>
+                                  <button
+                                      className={orbisStyles["btn"] + " " + orbisStyles["transparent"] + " " + orbisStyles["link"]}>+
+                                      Add a name
+                                  </button>
+                              </p>
+                          }
 
-          {conversation.content.context &&
-            <div className="flex-row v-align-items-center"><span className="fs-13 secondary fw-500 mright-5">In:</span><p>{conversation.content.context}</p></div>
-          }
-        </>
-      }
-          {/** <MiniModal />*/}
-      </div>
+                          {conversation.content.context &&
+                              <div className={orbisStyles["flex-row"] + " " + orbisStyles["v-align-items-center"]}><span
+                                  className="fs-13 secondary fw-500 mright-5">In:</span>
+                                  <p>{conversation.content.context}</p></div>
+                          }
+                      </>
+                  }
+                  {/** <MiniModal />*/}
+              </div>
       }
 
 
@@ -262,11 +287,11 @@ function ConversationDetails() {
         <div>
           <h3>PARTICIPANTS</h3>
           {loading ?
-            <p className="center h-align-self-center w-100">
-              <img src="/img/icons/loading-white.svg" height="35" />
-            </p>
-          :
-            <LoopRecipients />
+              <p className={orbisStyles["center"] + " " + orbisStyles["h-align-self-center"] + " " + orbisStyles["w-100"]}>
+                  <img src="/img/icons/loading-white.svg" height="35"/>
+              </p>
+              :
+              <LoopRecipients/>
           }
         </div>
       }
@@ -305,11 +330,11 @@ function UserDetails({did}) {
     <>
       <h3>MEMBER OF</h3>
       {loading ?
-        <p className="center h-align-self-center w-100">
-          <img src="/img/icons/loading-white.svg" height="35" />
-        </p>
-      :
-        <LoopUserGroups groupMemberships={groupMemberships} />
+          <p className={orbisStyles["center"] + " " + orbisStyles["h-align-self-center"] + " " + orbisStyles["w-100"]}>
+              <img src="/img/icons/loading-white.svg" height="35"/>
+          </p>
+          :
+          <LoopUserGroups groupMemberships={groupMemberships}/>
       }
 
     </>
@@ -320,17 +345,21 @@ function UserDetails({did}) {
 function LoopUserGroups({groupMemberships}) {
   if(groupMemberships && groupMemberships.length > 0) {
     return groupMemberships.map((groupMembership, key) => {
-      return(
-        <div className="mbottom-15 flex-row one-group-container" key={key}>
-          <div className="flex-1">
-            <Group id={groupMembership.group_id} details={groupMembership.group_details} isLink={true} />
-          </div>
-          <JoinGroupButton group_id={groupMembership.group_id} />
-        </div>
-      )
+        return (
+            <div
+                className={orbisStyles["mbottom-15"] + " " + orbisStyles["flex-row"] + " " + orbisStyles["one-group-container"]}
+                key={key}>
+                <div className={orbisStyles["flex-1"]}>
+                    <Group id={groupMembership.group_id} details={groupMembership.group_details} isLink={true}/>
+                </div>
+                <JoinGroupButton group_id={groupMembership.group_id}/>
+            </div>
+        )
     });
   } else {
-    return <p className="w-100 center tertiary mtop-10">This user isn't a member of any group.</p>
+      return <p
+          className={orbisStyles["w-100"] + " " + orbisStyles["center"] + " " + orbisStyles["tertiary"] + " " + orbisStyles["mtop-10"]}>This
+          user isn't a member of any group.</p>
   }
 }
 
@@ -360,10 +389,10 @@ function GroupMembers({group_id}) {
   /** Loop members */
   function LoopMembers() {
     return members.map((member, key) => {
-      return(
-        <div className="mbottom-15" key={key}>
-          <User details={member.profile_details} />
-        </div>
+      return (
+          <div className={orbisStyles["mbottom-15"]} key={key}>
+              <User details={member.profile_details}/>
+          </div>
       )
     });
   }
@@ -372,11 +401,11 @@ function GroupMembers({group_id}) {
     <>
       <h3>MEMBERS</h3>
       {loading ?
-        <p className="center h-align-self-center w-100">
-          <img src="/img/icons/loading-white.svg" height="35" />
-        </p>
-      :
-        <LoopMembers />
+          <p className={orbisStyles["center"] + " " + orbisStyles["h-align-self-center"] + " " + orbisStyles["w-100"]}>
+              <img src="/img/icons/loading-white.svg" height="35"/>
+          </p>
+          :
+          <LoopMembers/>
       }
 
     </>
@@ -385,9 +414,9 @@ function GroupMembers({group_id}) {
 
 /** Unfinished component that will be used to update some simple settings without opening a full modal */
 function MiniModal() {
-  return(
-    <div className="mini-modal">
-      <input type="text" placeholder="Enter group name" />
-    </div>
+  return (
+      <div className={orbisStyles["mini-modal"]}>
+          <input type="text" placeholder="Enter group name"/>
+      </div>
   )
 }

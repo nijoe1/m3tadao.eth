@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { sleep, randomId, shortAddress, contractToCleanName, cleanBody } from "../../utils";
 import reactStringReplace from 'react-string-replace';
-
+import orbisStyles from "../../styles/orbis.module.css"
 /** Import UI components */
 import { User, PfP } from "./User"
 import { ConnectButton } from "./ConnectButton"
@@ -299,128 +299,136 @@ export function PostBox({ type = "feed", action = "share-post", editedPost = nul
 
   if(!user) {
     return (
-      <div className="postbox connect p-15">
-        <p className="center mtop-0">You can connect using your <b>Ethereum</b> or <b>Solana</b> wallet to share content.</p>
-        <div className="center">
-          <ConnectButton />
+        <div className={orbisStyles["postbox"] + " " + orbisStyles["connect"] + " " + orbisStyles["p-15"]}>
+          <p className={orbisStyles["center"] + " " + orbisStyles["mtop-0"]}>You can connect using
+            your <b>Ethereum</b> or <b>Solana</b> wallet to share content.</p>
+          <div className={orbisStyles["center"]}>
+            <ConnectButton/>
+          </div>
         </div>
-      </div>
     )
   }
 
   if(user && user.a_r < 0) {
-    return(
-      <div className="postbox connect p-15">
-        <p className="center mtop-0 mbottom-0">You can't post on Orbis right now.</p>
-      </div>
+    return (
+        <div className={orbisStyles["postbox"] + " " + orbisStyles["connect"] + " " + orbisStyles["p-15"]}>
+          <p className={orbisStyles["center"] + " " + orbisStyles["mtop-0"] + " " + orbisStyles["mbottom-0"]}>You
+            can't post on Orbis right now.</p>
+        </div>
     )
   }
 
   /** User doesn't have any activity on a blockchain */
   if(user.nonces && user.nonces?.global <= 0 && user.a_r <= 1) {
     return (
-      <div className="no-blockchain-activity">
-        <img src="/img/icons/eye-crossed-yellow.png" height="18" />
-        <p>It looks like you are joining from an inactive wallet so your posts might not be visible for other users for now. We recommend joining with an active wallet.</p>
-      </div>
+        <div className={orbisStyles["no-blockchain-activity"]}>
+          <img src="/img/icons/eye-crossed-yellow.png" height="18"/>
+          <p>It looks like you are joining from an inactive wallet so your posts might not be visible for other users
+            for now. We recommend joining with an active wallet.</p>
+        </div>
     )
   }
 
   if(encryptionRules && user.hasLit == false) {
-    return(
-      <div className="no-blockchain-activity flex-column w-100">
-        <div className="flex-row">
-          <img src="/img/icons/locked-tertiary.png" height="18" />
-          <p>You need to setup your private account to share token gated content.</p>
+    return (
+        <div
+            className={orbisStyles["no-blockchain-activity"] + " " + orbisStyles["flex-column"] + " " + orbisStyles["w-100"]}>
+          <div className={orbisStyles["flex-row"]}>
+            <img src="/img/icons/locked-tertiary.png" height="18"/>
+            <p>You need to setup your private account to share token gated content.</p>
+          </div>
+          <p className={orbisStyles["mtop-10"] + " " + orbisStyles["center"]}>
+            <ConnectButton onlyLit={true} title="Generate private account"/>
+          </p>
         </div>
-        <p className="mtop-10 center">
-          <ConnectButton onlyLit={true} title="Generate private account" />
-        </p>
-      </div>
     )
   }
 
   /** Render edit-post container */
   if(action == "edit-post") {
-    return(
-      <div className="edit-post-container">
-        <div
-          ref={postBoxArea}
-          id="postbox-area"
-          className="content editable"
-          contentEditable={true}
-          autoFocus={true}
-          data-placeholder={placeholder}
-          onInput={(e) => handleInput(e)}>{defaultBody}</div>
-        <div className="flex flex-1 relative">
-          {/** Show mentions box if state is true */}
-          {mentionBoxVis &&
-            <MentionsBox
-              add={addMention}
-              hideMentionsBoxVis={hideMentionsBoxVis}
-              visible={mentionBoxVis}/>
-          }
+    return (
+        <div className={orbisStyles["edit-post-container"]}>
+          <div
+              ref={postBoxArea}
+              id="postbox-area"
+              className={orbisStyles["content"] + " " + orbisStyles["editable"]}
+              contentEditable={true}
+              autoFocus={true}
+              data-placeholder={placeholder}
+              onInput={(e) => handleInput(e)}>{defaultBody}</div>
+          <div className={orbisStyles["flex"] + " " + orbisStyles["flex-1"] + " " + orbisStyles["relative"]}>
+            {/** Show mentions box if state is true */}
+            {mentionBoxVis &&
+                <MentionsBox
+                    add={addMention}
+                    hideMentionsBoxVis={hideMentionsBoxVis}
+                    visible={mentionBoxVis}/>
+            }
+          </div>
+          <p className={orbisStyles["content"] + " " + orbisStyles["mtop-5"] + " " + orbisStyles["flex-row"]}>
+            <span className={orbisStyles["link-edit"]} onClick={() => setEditPost(false)}>Cancel</span>
+            <span
+                className={orbisStyles["mleft-5"] + " " + orbisStyles["mright-5"] + " " + orbisStyles["secondary"]}> · </span><ShareButtonContent
+              type="edit-post" status={status} share={share}/>
+          </p>
         </div>
-        <p className="content mtop-5 flex-row">
-          <span className="link-edit" onClick={() => setEditPost(false)}>Cancel</span>
-          <span className="mleft-5 mright-5 secondary"> · </span><ShareButtonContent type="edit-post" status={status} share={share} />
-        </p>
-      </div>
     )
   }
 
-  return(
-    <div className="flex-column w-100">
-      {/** If user is replying to another post, we show the parent details here */}
-      {(reply_to && reply_to.stream_id != master ) &&
-        <div className="postbox-reply-to">
-          <p className="mright-5 tertiary">Replying to:</p>
-          <User details={reply_to.creator} showBadge={false} />
-        </div>
-      }
-      <div className={"postbox flex-column " + type}>
-        {/** If sharing an encrypted post */}
-        {encryptionRules &&
-          <EncryptedPostDetails encryptionRules={encryptionRules} />
-        }
-
-
-        {/** Allow send by pressing enter only if type is chat */}
-        {(type == "chat" || type == "reply") &&
-          <div className="flex-row v-align-items-center" style={{marginBottom: 8}}>
-            <input type="checkbox" checked={enterTrigger} value={enterTrigger} onChange={(e) => setEnterTrigger(e.target.checked)}/>
-            <label className="tertiary fs-12">Send by pressing enter</label>
-          </div>
-        }
-        <div className={type == "chat" ? "flex flex-row" : "flex flex-column" }>
-          <div className="editable-container">
-            <div
-              id="postbox-area"
-              ref={postBoxArea}
-              autoFocus={true}
-              className="editable"
-              contentEditable={true}
-              data-placeholder={placeholder}
-              onInput={(e) => handleInput(e)}>
+  return (
+      <div className={orbisStyles["flex-column"] + " " + orbisStyles["w-100"]}>
+        {/** If user is replying to another post, we show the parent details here */}
+        {(reply_to && reply_to.stream_id != master) &&
+            <div className={orbisStyles["postbox-reply-to"]}>
+              <p className={orbisStyles["mright-5"] + " " + orbisStyles["tertiary"]}>Replying to:</p>
+              <User details={reply_to.creator} showBadge={false}/>
             </div>
-          </div>
+        }
+        <div className={"postbox flex-column " + type}>
+          {/** If sharing an encrypted post */}
+          {encryptionRules &&
+              <EncryptedPostDetails encryptionRules={encryptionRules}/>
+          }
 
-          {(enterTrigger == false || ( enterTrigger == true && status != 0)) &&
-            <div className="share-btn-container">
-              <ShareButtonContent type={type} status={status} share={share} />
+
+          {/** Allow send by pressing enter only if type is chat */}
+          {(type == "chat" || type == "reply") &&
+              <div className={orbisStyles["flex-row"] + " " + orbisStyles["v-align-items-center"]}
+                   style={{marginBottom: 8}}>
+                <input type="checkbox" checked={enterTrigger} value={enterTrigger}
+                       onChange={(e) => setEnterTrigger(e.target.checked)}/>
+                <label className={orbisStyles["tertiary"] + " " + orbisStyles["fs-12"]}>Send by pressing enter</label>
+              </div>
+        }
+          <div className={type == "chat" ? "flex flex-row" : "flex flex-column"}>
+            <div className={orbisStyles["editable-container"]}>
+              <div
+                  id="postbox-area"
+                  ref={postBoxArea}
+                  autoFocus={true}
+                  className={orbisStyles["editable"]}
+                  contentEditable={true}
+                  data-placeholder={placeholder}
+                  onInput={(e) => handleInput(e)}>
+              </div>
             </div>
-          }
+
+            {(enterTrigger == false || (enterTrigger == true && status != 0)) &&
+                <div className={orbisStyles["share-btn-container"]}>
+                  <ShareButtonContent type={type} status={status} share={share}/>
+                </div>
+            }
+          </div>
+          <div className={orbisStyles["flex"] + " " + orbisStyles["flex-1"] + " " + orbisStyles["relative"]}>
+            {/** Show mentions box if state is true */}
+            {mentionBoxVis &&
+                <MentionsBox
+                    add={addMention}
+                    hideMentionsBoxVis={hideMentionsBoxVis}
+                    visible={mentionBoxVis}/>
+            }
+          </div>
         </div>
-        <div className="flex flex-1 relative">
-          {/** Show mentions box if state is true */}
-          {mentionBoxVis &&
-            <MentionsBox
-              add={addMention}
-              hideMentionsBoxVis={hideMentionsBoxVis}
-              visible={mentionBoxVis}/>
-          }
-        </div>
-      </div>
     </div>
   )
 }
@@ -443,11 +451,13 @@ function EncryptedPostDetails({encryptionRules}) {
     setExplorerLink("https://etherscan.io/address/" + contract);
   }
 
-  return(
-    <div className="no-blockchain-activity">
-      <img src="/img/icons/locked-tertiary.png" height="18" />
-      <p>Your post will be encrypted for <a className="blue-bold-link mleft-5 mright-5" href={explorerLink} target="_blank" rel="noreferrer">{contract}</a> holders.</p>
-    </div>
+  return (
+      <div className={orbisStyles["no-blockchain-activity"]}>
+        <img src="/img/icons/locked-tertiary.png" height="18"/>
+        <p>Your post will be encrypted for <a
+            className={orbisStyles["blue-bold-link"] + " " + orbisStyles["mleft-5"] + " " + orbisStyles["mright-5"]}
+            href={explorerLink} target="_blank" rel="noreferrer">{contract}</a> holders.</p>
+      </div>
   )
 }
 
@@ -459,23 +469,30 @@ function ShareButtonContent({type, status, share}) {
       switch (status) {
         /** User hasn't started sharing */
         case 0:
-          return <div className="btn purple md share pointer" onClick={() => share()}>Share</div>;
+          return <div
+              className={orbisStyles["btn"] + " " + orbisStyles["purple"] + " " + orbisStyles["md"] + " " + orbisStyles["share"] + " " + orbisStyles["pointer"]}
+              onClick={() => share()}>Share</div>;
 
         /** Waiting for response from Orbis SDK */
         case 1:
-          return <div className="btn transparent-dashed md share pointer"><img src="/img/icons/loading-white.svg" height="15" /></div>;
+          return <div
+              className={orbisStyles["btn"] + " " + orbisStyles["transparent-dashed"] + " " + orbisStyles["md"] + " " + orbisStyles["share"] + " " + orbisStyles["pointer"]}>
+            <img src="/img/icons/loading-white.svg" height="15"/></div>;
 
         /** Sharing was successful */
         case 2:
-          return <div className="btn green md share pointer">Success</div>;
+          return <div
+              className={orbisStyles["btn"] + " " + orbisStyles["green"] + " " + orbisStyles["md"] + " " + orbisStyles["share"] + " " + orbisStyles["pointer"]}>Success</div>;
 
         /** Error sharing post */
         case 3:
-          return <div className="btn red md share pointer">Error!</div>;
+          return <div
+              className={orbisStyles["btn"] + " " + orbisStyles["red"] + " " + orbisStyles["md"] + " " + orbisStyles["share"] + " " + orbisStyles["pointer"]}>Error!</div>;
 
         /** Default */
         default:
-          return <div className="btn md purple pointer">Share</div>;
+          return <div
+              className={orbisStyles["btn"] + " " + orbisStyles["md"] + " " + orbisStyles["purple"] + " " + orbisStyles["pointer"]}>Share</div>;
       }
       break;
 
@@ -484,23 +501,24 @@ function ShareButtonContent({type, status, share}) {
       switch (status) {
         /** User hasn't started sharing */
         case 0:
-          return <span className="link-edit" onClick={() => share()}>Save</span>;
+          return <span className={orbisStyles["link-edit"]} onClick={() => share()}>Save</span>;
 
         /** Waiting for response from Orbis SDK */
         case 1:
-          return <span className="link-edit align-items-v-center"><img src="/img/icons/loading-white.svg" height="15" /></span>;
+          return <span className={orbisStyles["link-edit"] + " " + orbisStyles["align-items-v-center"]}><img
+              src="/img/icons/loading-white.svg" height="15"/></span>;
 
         /** Sharing was successful */
         case 2:
-          return <span className="link-edit">Success</span>;
+          return <span className={orbisStyles["link-edit"]}>Success</span>;
 
         /** Error sharing post */
         case 3:
-          return <span className="red">Error!</span>;
+          return <span className={orbisStyles["red"]}>Error!</span>;
 
         /** Default */
         default:
-          return <span className="link-edit" onClick={() => share()}>Share</span>;
+          return <span className={orbisStyles["link-edit"]} onClick={() => share()}>Share</span>;
       }
         break;
 
@@ -509,23 +527,32 @@ function ShareButtonContent({type, status, share}) {
       switch (status) {
         /** User hasn't started sharing */
         case 0:
-          return <div className="btn purple rounded md share pointer" onClick={() => share()}><img src="/img/icons/send-white.png" height="15" /></div>;
+          return <div
+              className={orbisStyles["btn"] + " " + orbisStyles["purple"] + " " + orbisStyles["rounded"] + " " + orbisStyles["md"] + " " + orbisStyles["share"] + " " + orbisStyles["pointer"]}
+              onClick={() => share()}><img src="/img/icons/send-white.png" height="15"/></div>;
 
         /** Waiting for response from Orbis SDK */
         case 1:
-          return <div className="btn rounded transparent-dashed md share pointer"><img src="/img/icons/loading-white.svg" height="15" /></div>;
+          return <div
+              className={orbisStyles["btn"] + " " + orbisStyles["rounded"] + " " + orbisStyles["transparent-dashed"] + " " + orbisStyles["md"] + " " + orbisStyles["share"] + " " + orbisStyles["pointer"]}>
+            <img src="/img/icons/loading-white.svg" height="15"/></div>;
 
         /** Sharing was successful */
         case 2:
-          return <div className="btn rounded green md share pointer"><img src="/img/icons/checkmark-black.png" height="15" /></div>;
+          return <div
+              className={orbisStyles["btn"] + " " + orbisStyles["rounded"] + " " + orbisStyles["green"] + " " + orbisStyles["md"] + " " + orbisStyles["share"] + " " + orbisStyles["pointer"]}>
+            <img src="/img/icons/checkmark-black.png" height="15"/></div>;
 
         /** Error sharing post */
         case 3:
-          return <div className="btn rounded red md share pointer"><img src="/img/icons/error-white.png" height="15" /></div>;
+          return <div
+              className={orbisStyles["btn"] + " " + orbisStyles["rounded"] + " " + orbisStyles["red"] + " " + orbisStyles["md"] + " " + orbisStyles["share"] + " " + orbisStyles["pointer"]}>
+            <img src="/img/icons/error-white.png" height="15"/></div>;
 
         /** Default */
         default:
-          return <div className="btn md purple pointer">Ok</div>;
+          return <div
+              className={orbisStyles["btn"] + " " + orbisStyles["md"] + " " + orbisStyles["purple"] + " " + orbisStyles["pointer"]}>Ok</div>;
       }
       break;
 

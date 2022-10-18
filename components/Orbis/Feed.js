@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef, useContext, useMemo } from 'react';
-import { sleep } from "../../utils";
-import { useOutsideClick } from "../../hooks/useOutsideClick";
-
+import React, {useState, useEffect, useRef, useContext, useMemo} from 'react';
+import {sleep} from "../../utils";
+import {useOutsideClick} from "../../hooks/useOutsideClick";
+import orbisStyles from "../../styles/orbis.module.css"
 /** Import UI components */
-import { User } from "./User"
-import { Post } from "./post/"
-import { PostBox } from "./PostBox"
-import { ConnectButton } from "./ConnectButton"
+import {User} from "./User"
+import {Post} from "./post/"
+import {PostBox} from "./PostBox"
+import {ConnectButton} from "./ConnectButton"
 
 /** Import Context */
-import { GlobalContext } from "../../contexts/GlobalContext";
+import {GlobalContext} from "../../contexts/GlobalContext";
 
 /** Returns the feed component which will be displayed differently according to its type */
 export function Feed({type = "feed", showPostBox = true, context = null, did = null, autoRefresh = false, encryptionRules = null}) {
@@ -127,12 +127,15 @@ export function Feed({type = "feed", showPostBox = true, context = null, did = n
   /** Simple component used to refresh the list of posts */
   function RefreshButton() {
     if(refreshing) {
-      return(
-          <button className="btn black rounded-border"><img src="/img/icons/loading-white.svg" height="15" /></button>
+      return (
+          <button className={orbisStyles["btn"] + " " + orbisStyles["black"] + " " + orbisStyles["rounded-border"]}><img
+              src="/img/icons/loading-white.svg" height="15"/></button>
       );
     } else {
-      return(
-          <button className="btn black rounded-border" onClick={() => refresh()}><img src="/img/icons/refresh-white.png" height="11" className="mright-5" /><span>Refresh</span></button>
+      return (
+          <button className={orbisStyles["btn"] + " " + orbisStyles["black"] + " " + orbisStyles["rounded-border"]}
+                  onClick={() => refresh()}><img src="/img/icons/refresh-white.png" height="11"
+                                                 className="mright-5"/><span>Refresh</span></button>
       );
     }
   }
@@ -164,18 +167,27 @@ export function Feed({type = "feed", showPostBox = true, context = null, did = n
     }
 
     return(
-      <div ref={wrapperRef}>
-        <button className="btn black rounded-border v-align-items-center" onClick={() => setShowAlgos(true)}><span className="mright-5"><CurrentAlgo /></span><img src="/img/icons/caret-down-white.png" height="5" /></button>
-        {showAlgos &&
-          <div className="floating-menu">
-              <p onClick={() => updateAlgo("recommendations")}>{algo == "recommendations" && <img src="/img/icons/check-green.png" className="mright-5" height="14" />}Recommendations</p>
-              <p onClick={() => updateAlgo("all-posts")}>{algo == "all-posts" && <img src="/img/icons/check-green.png" className="mright-5" height="14" />}All posts</p>
+        <div ref={wrapperRef}>
+          <button
+              className={orbisStyles["btn"] + " " + orbisStyles["black"] + " " + orbisStyles["rounded-border"] + " " + orbisStyles["v-align-items-center"]}
+              onClick={() => setShowAlgos(true)}><span className="mright-5"><CurrentAlgo/></span><img
+              src="/img/icons/caret-down-white.png" height="5"/></button>
+          {showAlgos &&
+              <div className={orbisStyles["floating-menu"]}>
+                <p onClick={() => updateAlgo("recommendations")}>{algo == "recommendations" &&
+                    <img src="/img/icons/check-green.png" className={orbisStyles["mright-5"]}
+                         height="14"/>}Recommendations</p>
+                <p onClick={() => updateAlgo("all-posts")}>{algo == "all-posts" &&
+                    <img src="/img/icons/check-green.png" className={orbisStyles["mright-5"]} height="14"/>}All
+                  posts</p>
 
-              {/** Only show "All filtered posts" to admins */}
-              {user && (user.did == "did:pkh:eip155:1:0x075286d1a22b083ebcaf6b7fb4cf970cfc4a18f0" || user.did == "did:pkh:eip155:1:0x9fd07f4ee4f18e27f9d958fb42e8ea2e6ee547bd") &&
-                <p onClick={() => updateAlgo("all-posts-non-filtered")}>{algo == "all-posts-non-filtered" && <img src="/img/icons/check-green.png" className="mright-5" height="14" />}Non filtered all posts</p>
-              }
-          </div>
+                {/** Only show "All filtered posts" to admins */}
+                {user && (user.did == "did:pkh:eip155:1:0x075286d1a22b083ebcaf6b7fb4cf970cfc4a18f0" || user.did == "did:pkh:eip155:1:0x9fd07f4ee4f18e27f9d958fb42e8ea2e6ee547bd") &&
+                    <p onClick={() => updateAlgo("all-posts-non-filtered")}>{algo == "all-posts-non-filtered" &&
+                        <img src="/img/icons/check-green.png" className={orbisStyles["mright-5"]} height="14"/>}Non
+                      filtered all posts</p>
+                }
+              </div>
         }
       </div>
     )
@@ -184,16 +196,19 @@ export function Feed({type = "feed", showPostBox = true, context = null, did = n
   /** Simple component used to load more posts */
   function LoadMoreButton() {
     if(refreshing) {
-      return(
-        <div className="p-15">
-          <div className="btn black"><img src="/img/icons/loading-white.svg" height="15" /></div>
-        </div>
+      return (
+          <div className={orbisStyles["p-15"]}>
+            <div className={orbisStyles["btn"] + " " + orbisStyles["black"]}><img src="/img/icons/loading-white.svg"
+                                                                                  height="15"/></div>
+          </div>
       );
     } else {
-      return(
-        <div className="p-15">
-          <div className="btn black" onClick={() => loadMore()}>Load older posts</div>
-        </div>
+      return (
+          <div className={orbisStyles["p-15"]}>
+            <div className={orbisStyles["btn"] + " " + orbisStyles["black"]} onClick={() => loadMore()}>Load older
+              posts
+            </div>
+          </div>
       );
     }
   }
@@ -202,40 +217,42 @@ export function Feed({type = "feed", showPostBox = true, context = null, did = n
     /** Display component as a classic social feed */
     case "feed":
       return(
-        <div className="flex-column w-100">
+          <div className={orbisStyles["flex-column"] + " " + orbisStyles["w-100"]}>
 
-          {/** Show post box on top of the feed */}
-          {showPostBox &&
-            <div className="mbottom-15 z-index-15">
-              <PostBox callback={callbackPostShared} context={context} encryptionRules={encryptionRules} />
-            </div>
-          }
+            {/** Show post box on top of the feed */}
+            {showPostBox &&
+                <div className={orbisStyles["mbottom-15"] + " " + orbisStyles["z-index-15"]}>
+                  <PostBox callback={callbackPostShared} context={context} encryptionRules={encryptionRules}/>
+                </div>
+            }
 
-          {loading ?
-            <p className="center h-align-self-center w-100">
-              <img src="/img/icons/loading-white.svg" height="35" />
-            </p>
-          :
-            <>
-              {/** Show posts or empty state */}
-              {!posts || posts.length == 0 ?
-                <p className="center w-100 tertiary">There isn't any post shared here.</p>
-              :
+            {loading ?
+                <p className={orbisStyles["center"] + " " + orbisStyles["h-align-self-center"] + " " + orbisStyles["w-100"]}>
+                  <img src="/img/icons/loading-white.svg" height="35"/>
+                </p>
+                :
                 <>
-                  <div className="flex-row mbottom-10 relative">
-                    <RefreshButton />
-                    <div className="flex-1"></div>
-                    {/** We only show the algo picker on the global feed */}
-                    {!context && !did &&
-                      <AlgoPicker />
-                    }
-                  </div>
-                  <Posts posts={posts} context={context} type="feed" />
+                  {/** Show posts or empty state */}
+                  {!posts || posts.length == 0 ?
+                      <p className={orbisStyles["center"] + " " + orbisStyles["w-100"] + " " + orbisStyles["tertiary"]}>There
+                        isn't any post shared here.</p>
+                      :
+                      <>
+                        <div
+                            className={orbisStyles["flex-row"] + " " + orbisStyles["mbottom-10"] + " " + orbisStyles["relative"]}>
+                          <RefreshButton/>
+                          <div className={orbisStyles["flex-1"]}></div>
+                          {/** We only show the algo picker on the global feed */}
+                          {!context && !did &&
+                              <AlgoPicker/>
+                          }
+                        </div>
+                        <Posts posts={posts} context={context} type="feed"/>
 
-                  {posts.length >= ((page + 1) * 50 - 1) &&
-                    <LoadMoreButton />
-                  }
-                </>
+                        {posts.length >= ((page + 1) * 50 - 1) &&
+                            <LoadMoreButton/>
+                        }
+                      </>
               }
             </>
           }
@@ -248,37 +265,41 @@ export function Feed({type = "feed", showPostBox = true, context = null, did = n
         <>
           {/** Show posts or empty state */}
           {!posts || posts.length == 0 ?
-            <div className="flex-1">
-              <p className="center w-100 tertiary">There isn't any post shared in this channel.</p>
-            </div>
-          :
-            <div className="flex-1 feed-posts-container chat">
-              {loading ?
-                <p className="center h-align-self-center w-100">
-                  <img src="/img/icons/loading-white.svg" height="35" />
-                </p>
+              <div className={orbisStyles["flex-1"]}>
+                <p className={orbisStyles["center"] + " " + orbisStyles["w-100"] + " " + orbisStyles["tertiary"]}>There
+                  isn't any post shared in this channel.</p>
+              </div>
               :
-                <>
-                  <Posts replyTo={replyTo} setReplyTo={setReplyTo} posts={posts} context={context} type="chat" />
-                  {posts.length >= ((page + 1) * 50 - 1) &&
-                    <LoadMoreButton />
-                  }
-                </>
-              }
+              <div
+                  className={orbisStyles["flex-1"] + " " + orbisStyles["feed-posts-container"] + " " + orbisStyles["chat"]}>
+                {loading ?
+                    <p className={orbisStyles["center"] + " " + orbisStyles["h-align-self-center"] + " " + orbisStyles["w-100"]}>
+                      <img src="/img/icons/loading-white.svg" height="35"/>
+                    </p>
+                    :
+                    <>
+                      <Posts replyTo={replyTo} setReplyTo={setReplyTo} posts={posts} context={context} type="chat"/>
+                      {posts.length >= ((page + 1) * 50 - 1) &&
+                          <LoadMoreButton/>
+                      }
+                    </>
+                }
 
-            </div>
+              </div>
           }
 
-          <div className="flex mtop-15">
+          <div className={orbisStyles["flex"] + " " + orbisStyles["mtop-15"]}>
             {user ?
-              <PostBox reply_to={replyTo} setReplyTo={setReplyTo} type="chat" callback={callbackPostShared} context={context} encryptionRules={encryptionRules} />
-            :
-              <div className="postbox connect p-15">
-                <p className="center mtop-0">You need to be connected to share content.</p>
-                <div className="center">
-                  <ConnectButton />
+                <PostBox reply_to={replyTo} setReplyTo={setReplyTo} type="chat" callback={callbackPostShared}
+                         context={context} encryptionRules={encryptionRules}/>
+                :
+                <div className={orbisStyles["postbox"] + " " + orbisStyles["connect"] + " " + orbisStyles["p-15"]}>
+                  <p className={orbisStyles["center"] + " " + orbisStyles["mtop-0"]}>You need to be connected to
+                    share content.</p>
+                  <div className={orbisStyles["center"]}>
+                    <ConnectButton/>
+                  </div>
                 </div>
-              </div>
             }
 
           </div>
@@ -301,6 +322,6 @@ function Posts({ posts, context, type, replyTo, setReplyTo }) {
       )
     });
   } else {
-    return <p className="white">Loading...</p>
+    return <p className={orbisStyles["white"]}>Loading...</p>
   }
 }

@@ -1,31 +1,32 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, {useState, useEffect, useRef, useContext} from 'react';
 
-import { User } from "./User";
-
+import {User} from "./User";
+import orbisStyles from "../../styles/orbis.module.css"
 /** Import Context */
-import { GlobalContext } from "../../contexts/GlobalContext";
+import {GlobalContext} from "../../contexts/GlobalContext";
 
 /** Search box to retrive users based on the searched username */
 export function MentionsBox({add}) {
-  const [search, setSearch] = useState();
-  const searchInput = useRef(null);
+    const [search, setSearch] = useState();
+    const searchInput = useRef(null);
 
-  useEffect(() => {
-    if(searchInput.current) {
-        searchInput.current.focus();
-    }
-  }, []);
+    useEffect(() => {
+        if (searchInput.current) {
+            searchInput.current.focus();
+        }
+    }, []);
 
-  return(
-    <div className="mentions-box">
-      <div className="search-input-container">
-        <input ref={searchInput} value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Username" />
-      </div>
-      <div className="search-results">
-        <SearchResults search={search} add={add} />
-      </div>
-    </div>
-  )
+    return (
+        <div className={orbisStyles["mentions-box"]}>
+            <div className={orbisStyles["search-input-container"]}>
+                <input ref={searchInput} value={search} onChange={(e) => setSearch(e.target.value)}
+                       placeholder="Username"/>
+            </div>
+            <div className={orbisStyles["search-results"]}>
+                <SearchResults search={search} add={add}/>
+            </div>
+        </div>
+    )
 }
 
 /** Will query the indexer and display the search results */
@@ -57,20 +58,20 @@ function SearchResults({search, add}) {
 
   /** Show loading state */
   if(loading) {
-    return(
-      <p className="center">
-        <img src="/img/icons/loading-white.svg" height="15" />
-      </p>
+    return (
+        <p className={orbisStyles["center"]}>
+            <img src="/img/icons/loading-white.svg" height="15"/>
+        </p>
     )
   }
 
   /** Display results */
   if(users && users.length > 0) {
     return users.map((_user, key) => {
-      return(
-        <div className="one-user-suggestion" onClick={() => add(_user.details)} key={key}>
-          <User  details={_user.details} key={key} isLink={false} />
-        </div>
+      return (
+          <div className={orbisStyles["one-user-suggestion"]} onClick={() => add(_user.details)} key={key}>
+              <User details={_user.details} key={key} isLink={false}/>
+          </div>
       )
     });
   } else {

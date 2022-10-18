@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { useRouter } from 'next/router'
-import { sleep } from "../../../utils"
-
+import React, {useState, useEffect, useRef, useContext} from 'react';
+import {useRouter} from 'next/router'
+import {sleep} from "../../../utils"
+import orbisStyles from "../../../styles/orbis.module.css"
 /** Internal components */
-import { Modal } from "../Modal";
-import { SaveButton } from "../SaveButton";
+import {Modal} from "../Modal";
+import {SaveButton} from "../SaveButton";
 
 /** Import Context */
-import { GlobalContext } from "../../../contexts/GlobalContext";
+import {GlobalContext} from "../../../contexts/GlobalContext";
 
 /** Modal to send a message */
-export function CreateChannelModal({ visible, setVisible, group, callback }) {
-  const { user, setUser, getUserGroups, orbis } = useContext(GlobalContext);
+export function CreateChannelModal({visible, setVisible, group, callback}) {
+    const {user, setUser, getUserGroups, orbis} = useContext(GlobalContext);
   const router = useRouter()
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -76,44 +76,45 @@ export function CreateChannelModal({ visible, setVisible, group, callback }) {
     <Modal title="Create a new channel" visible={visible} setVisible={setVisible}>
       {user ?
         <>
-          <div className="modal-body">
+            <div className={orbisStyles["modal-body"]}>
 
-            {/** Channel type */}
-            <div className="input-container">
-              <label className="filled">Channel type</label>
-              <select value={type} onChange={(e) => setType(e.target.value)}>
-                <option value="chat">Chat (Similar to a Discord experience)</option>
-                <option value="feed">Feed (Posts with likes and thread)</option>
-              </select>
+                {/** Channel type */}
+                <div className={orbisStyles["input-container"]}>
+                    <label className={orbisStyles["filled"]}>Channel type</label>
+                    <select value={type} onChange={(e) => setType(e.target.value)}>
+                        <option value="chat">Chat (Similar to a Discord experience)</option>
+                        <option value="feed">Feed (Posts with likes and thread)</option>
+                    </select>
+                </div>
+
+                {/** Channel name */}
+                <div className={orbisStyles["input-container"] + " " + orbisStyles["mtop-10"]}>
+                    <label className={name && 'filled'}>Channel name</label>
+                    <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
+                </div>
+
+                {/** Channel description */}
+                <div className={orbisStyles["input-container"] + " " + orbisStyles["mtop-10"]}>
+                    <label className={description && 'filled'}>Channel description</label>
+                    <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}/>
+                </div>
+
             </div>
 
-            {/** Channel name */}
-            <div className="input-container mtop-10">
-               <label className={name && 'filled'}>Channel name</label>
-               <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+            {/** Show modal footer */}
+            <div
+                className={orbisStyles["modal-footer"] + " " + orbisStyles["flex-row"] + " " + orbisStyles["h-justify-content-end"]}>
+                <SaveButton title="Create" status={status} onClick={createChannel}/>
             </div>
-
-            {/** Channel description */}
-            <div className="input-container mtop-10">
-              <label className={description && 'filled'}>Channel description</label>
-              <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)} />
-            </div>
-
-          </div>
-
-          {/** Show modal footer */}
-          <div className="modal-footer flex-row h-justify-content-end">
-            <SaveButton title="Create" status={status} onClick={createChannel} />
-          </div>
         </>
       :
-        <>
-          <div className="modal-body">
-            <p>You must be connected to create a channel.</p>
-          </div>
-        </>
+          <>
+              <div className={orbisStyles["modal-body"]}>
+                  <p>You must be connected to create a channel.</p>
+              </div>
+          </>
       }
 
     </Modal>

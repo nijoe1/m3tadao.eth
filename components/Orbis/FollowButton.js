@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, {useState, useEffect, useRef, useContext} from 'react';
 
-import { sleep } from "../../utils/";
-import { useHover } from "../../hooks/useHover";
-
+import {sleep} from "../../utils/";
+import {useHover} from "../../hooks/useHover";
+import orbisStyles from "../../styles/orbis.module.css"
 /** Import Context */
-import { GlobalContext } from "../../contexts/GlobalContext";
-import { SaveButton } from "./SaveButton";
+import {GlobalContext} from "../../contexts/GlobalContext";
+import {SaveButton} from "./SaveButton";
 
 /** Simple join group button */
 export function FollowButton({did}) {
-  const { user, orbis, following, addFollowing } = useContext(GlobalContext);
+  const {user, orbis, following, addFollowing} = useContext(GlobalContext);
   const [followStatus, setFollowStatus] = useState(0);
   const [hasFollowed, setHasFollowed] = useState(false);
 
@@ -65,10 +65,15 @@ export function FollowButton({did}) {
 function HasFollowedButton ({follow, followStatus}) {
   const [hoverRef, isHovered] = useHover();
 
-  if(isHovered) {
-    return <div ref={hoverRef}><SaveButton className="red-border flex pointer" title="Unfollow" status={followStatus} onClick={() => follow(false)} /></div>;
+  if (isHovered) {
+    return <div ref={hoverRef}><SaveButton
+        className={orbisStyles["red-border"] + " " + orbisStyles["flex"] + " " + orbisStyles["pointer"]}
+        title="Unfollow" status={followStatus} onClick={() => follow(false)}/></div>;
   }
 
   /** Show default `hasJoined` button state */
-  return <div className="btn green-border flex pointer" ref={hoverRef}><img src="/img/icons/check-green.png" className="mright-5" height="15" /><span>Following</span></div>
+  return <div
+      className={orbisStyles["btn"] + " " + orbisStyles["green-border"] + " " + orbisStyles["flex"] + " " + orbisStyles["pointer"]}
+      ref={hoverRef}><img src="/img/icons/check-green.png" className="mright-5" height="15"/><span>Following</span>
+  </div>
 }

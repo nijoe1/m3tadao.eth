@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-
+import React, {useState, useEffect, useRef, useContext} from 'react';
+import orbisStyles from "../../../styles/orbis.module.css"
 /** Import Context */
-import { GlobalContext } from "../../../contexts/GlobalContext";
+import {GlobalContext} from "../../../contexts/GlobalContext";
 
 /** Reaction component */
 export function Reaction({post_id, type, count, active}) {
-  const { user, orbis } = useContext(GlobalContext);
+  const {user, orbis} = useContext(GlobalContext);
   const [rCount, setRCount] = useState(count);
   const [hasReacted, setHasReacted] = useState(active)
   const [shake, setShake] = useState(false)

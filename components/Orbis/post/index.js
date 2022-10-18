@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-
+import React, {useState, useEffect, useRef, useContext} from 'react';
+import orbisStyles from "../../../styles/orbis.module.css"
 /** Import internal components */
-import { Reaction }  from "./Reaction"
-import { User, PfP } from "../User"
-import { Group }  from "../Group"
-import { Channel } from "../Channel"
-import { FollowButton } from "../FollowButton"
-import { shortAddress, sleep, contractToCleanName, getChannelIcon } from "../../../utils";
+import {Reaction} from "./Reaction"
+import {User, PfP} from "../User"
+import {Group} from "../Group"
+import {Channel} from "../Channel"
+import {FollowButton} from "../FollowButton"
+import {shortAddress, sleep, contractToCleanName, getChannelIcon} from "../../../utils";
 import Link from 'next/link'
 
 /** Import custom hooks */
@@ -80,10 +80,10 @@ export function Post({post, type, showContext = true, replyTo, setReplyTo = fals
       return reactions.map((reaction, key) => {
         if(key < 3) {
           return(
-            <>
-              <span className="fw-500"><ReactionUser reaction={reaction} key={key} /></span>
-              <ReactionSuffix value={key} length={reactions.length} />
-            </>
+              <>
+                <span className={orbisStyles["fw-500"]}><ReactionUser reaction={reaction} key={key}/></span>
+                <ReactionSuffix value={key} length={reactions.length}/>
+              </>
           )
         } else {
           return null;
@@ -95,7 +95,7 @@ export function Post({post, type, showContext = true, replyTo, setReplyTo = fals
       <>
         <LoopReactions />
         {reactions.length > 3 &&
-          <span className="fw-500">+ {reactions.length - 3} user(s)</span>
+            <span className={orbisStyles["fw-500"]}>+ {reactions.length - 3} user(s)</span>
         }
       </>
     )
@@ -105,56 +105,66 @@ export function Post({post, type, showContext = true, replyTo, setReplyTo = fals
     <div className={isNew ? "post new" : "post"} ref={hoverRef}>
       {/** Show if this post was liked by following user */}
       {post.reactions_from_following && post.reactions_from_following.length > 0 &&
-        <p className="secondary fs-13 m-0 mbottom-10 reaction-following">Reaction(s) from <LoopFollowingReaction reactions={post.reactions_from_following} />.</p>
+          <p className={orbisStyles["secondary"] + " " + orbisStyles["fs-13"] + " " + orbisStyles["m-0"] + " " + orbisStyles["mbottom-10"] + " " + orbisStyles["reaction-following"]}>Reaction(s)
+            from <LoopFollowingReaction reactions={post.reactions_from_following}/>.</p>
       }
 
       {/** If post is a reply to another one, we display the parent details here */}
       {post.reply_to && post.reply_to_details && showReplyTo &&
-        <ReplyTo
-          creatorDetails={post.reply_to_creator_details}
-          details={post.reply_to_details}
-          onClick={() => setModalVis("post-details", true, post.master ? post.master : post.stream_id)} />
+          <ReplyTo
+              creatorDetails={post.reply_to_creator_details}
+              details={post.reply_to_details}
+              onClick={() => setModalVis("post-details", true, post.master ? post.master : post.stream_id)}/>
       }
 
       {/** User who shared the post */}
-      <div className="flex-row">
+      <div className={orbisStyles["flex-row"]}>
         <div className={type == "feed" ? "flex-1 flex-row v-align-items-start" : "flex-row v-align-items-start"}>
-          <User details={post.creator_details} />
+          <User details={post.creator_details}/>
           {/** If post was shared in a specific context display those contexts */}
           {(post.context != null && type == "feed" && showContext) &&
-            <Context context={post.context} contextDetails={post.context_details} />
+              <Context context={post.context} contextDetails={post.context_details}/>
           }
         </div>
 
         {type == "feed" ?
-          <div className="flex suffix h-flex-end">
-            {post.timestamp &&
-              <span className="secondary fs-14"><ReactTimeAgo date={post.timestamp * 1000} locale="en-US" /></span>
-            }
-          </div>
-        :
-          <div className="flex suffix h-flex-start ptop-2">
-            {post.timestamp &&
-              <span className="secondary fs-13 mleft-5"> · <ReactTimeAgo date={post.timestamp * 1000} locale="en-US" /></span>
-            }
-          </div>
+            <div className={orbisStyles["flex"] + " " + orbisStyles["suffix"] + " " + orbisStyles["h-flex-end"]}>
+              {post.timestamp &&
+                  <span className={orbisStyles["secondary"] + " " + orbisStyles["fs-14"]}><ReactTimeAgo
+                      date={post.timestamp * 1000} locale="en-US"/></span>
+              }
+            </div>
+            :
+            <div
+                className={orbisStyles["flex"] + " " + orbisStyles["suffix"] + " " + orbisStyles["h-flex-start"] + " " + orbisStyles["ptop-2"]}>
+              {post.timestamp &&
+                  <span
+                      className={orbisStyles["secondary"] + " " + orbisStyles["fs-13"] + " " + orbisStyles["mleft-5"]}> · <ReactTimeAgo
+                      date={post.timestamp * 1000} locale="en-US"/></span>
+              }
+            </div>
         }
       </div>
       {type == "chat" && isHovered && post.stream_id != "none" &&
-        <div className="post-action-hover-container">
-          <div className="item" onClick={() => setReplyTo({stream_id: post.stream_id, creator: post.creator_details, reply_to_details: post.content})}>
-            {replyTo && (replyTo.stream_id == post.stream_id) ?
-              <img src={"/img/icons/reaction-replyto-active.png"} height="15" />
-            :
-              <img src={"/img/icons/reaction-replyto.png"} height="15" />
-            }
+          <div className={orbisStyles["post-action-hover-container"]}>
+            <div className={orbisStyles["item"]} onClick={() => setReplyTo({
+              stream_id: post.stream_id,
+              creator: post.creator_details,
+              reply_to_details: post.content
+            })}>
+              {replyTo && (replyTo.stream_id == post.stream_id) ?
+                  <img src={"/img/icons/reaction-replyto-active.png"} height="15"/>
+                  :
+                  <img src={"/img/icons/reaction-replyto.png"} height="15"/>
+              }
+            </div>
+            <div className={orbisStyles["item"]}>
+              <a href={"https://cerscan.com/mainnet/stream/" + post.stream_id} target="_blank" rel="noreferrer"
+                 className={orbisStyles["flex"]}>
+                <img src="/img/icons/cerscan-proof.png" height="15"/>
+              </a>
+            </div>
           </div>
-          <div className="item">
-            <a href={"https://cerscan.com/mainnet/stream/" + post.stream_id} target="_blank" rel="noreferrer" className="flex">
-                <img src="/img/icons/cerscan-proof.png" height="15" />
-            </a>
-          </div>
-        </div>
       }
 
       {/** Show post content */}
@@ -162,75 +172,85 @@ export function Post({post, type, showContext = true, replyTo, setReplyTo = fals
 
       {/** Show follow bar */}
       {user && following && following.length > 0 && user.did != post.creator && following.includes(post.creator) == false && type == "feed" &&
-        <div className="no-blockchain-activity follow flex-row center mtop-10" style={{justifyContent: "center", padding: 10}}>
-          <p className="mright-10">You aren't following this user</p>
-          <FollowButton did={post.creator} />
-        </div>
+          <div
+              className={orbisStyles["no-blockchain-activity"] + " " + orbisStyles["follow"] + " " + orbisStyles["flex-row"] + " " + orbisStyles["center"] + " " + orbisStyles["mtop-10"]}
+              style={{justifyContent: "center", padding: 10}}>
+            <p className={orbisStyles["mright-10"]}>You aren't following this user</p>
+            <FollowButton did={post.creator}/>
+          </div>
       }
 
       {/** Show reactions only if post is in a feed */}
 
       {type == "feed" &&
-        <div className="flex-row">
-          <div className="reactions flex-row flex-1">
-            {/** Show reply to CTA only if `setReplyTo` function is passed as a parameter */}
-            {setReplyTo ?
-              <>
-                {user &&
+          <div className={orbisStyles["flex-row"]}>
+            <div className={orbisStyles["reactions"] + " " + orbisStyles["flex-row"] + " " + orbisStyles["flex-1"]}>
+              {/** Show reply to CTA only if `setReplyTo` function is passed as a parameter */}
+              {setReplyTo ?
                   <>
-                    {(replyTo == post.stream_id) ?
-                      <div className="one-reaction active">
-                        <img src={"/img/icons/reaction-replyto-active.png"} height="18" />
-                        <span>Reply</span>
-                      </div>
-                    :
-                      <div className="one-reaction" onClick={() => setReplyTo({stream_id: post.stream_id, creator: post.creator_details})}>
-                        <img src={"/img/icons/reaction-replyto.png"} height="18" />
-                        <span>Reply</span>
-                      </div>
-                    }
-                  </>
+                    {user &&
+                        <>
+                          {(replyTo == post.stream_id) ?
+                              <div className={orbisStyles["one-reaction"] + " " + orbisStyles["active"]}>
+                                <img src={"/img/icons/reaction-replyto-active.png"} height="18"/>
+                                <span>Reply</span>
+                              </div>
+                              :
+                              <div className={orbisStyles["one-reaction"]} onClick={() => setReplyTo({
+                                stream_id: post.stream_id,
+                                creator: post.creator_details
+                              })}>
+                                <img src={"/img/icons/reaction-replyto.png"} height="18"/>
+                                <span>Reply</span>
+                              </div>
+                          }
+                        </>
                 }
 
               </>
             :
-              <>
-                {/** Show reactions count */}
-                <div className="one-reaction" onClick={() => setModalVis("post-details", true, post.master ? post.master : post.stream_id)}>
-                  <img src={"/img/icons/reaction-comment.png"} height="18" />
-                  <span>{post.count_replies}</span>
-                </div>
-              </>
-            }
+                  <>
+                    {/** Show reactions count */}
+                    <div className={orbisStyles["one-reaction"]}
+                         onClick={() => setModalVis("post-details", true, post.master ? post.master : post.stream_id)}>
+                      <img src={"/img/icons/reaction-comment.png"} height="18"/>
+                      <span>{post.count_replies}</span>
+                    </div>
+                  </>
+              }
 
-            {/** Show post reactions CTA (like, haha and downvote) */}
-            <Reaction active={userReaction == "like" ? true : false} post_id={post.stream_id} type="like" count={post.count_likes ? post.count_likes : 0} />
-            <Reaction active={userReaction == "haha" ? true : false} post_id={post.stream_id} type="haha" count={post.count_haha ? post.count_haha : 0} />
-            <Reaction active={userReaction == "downvote" ? true : false} post_id={post.stream_id} type="downvote" />
-          </div>
-
-          <div className="reactions flex-row h-flex-end v-align-items-center">
-            {/** Share button */}
-            <div className="one-reaction" onClick={() => setShowShareMenu(true)}>
-              <img src="/img/icons/share.png" height="18" />
+              {/** Show post reactions CTA (like, haha and downvote) */}
+              <Reaction active={userReaction == "like" ? true : false} post_id={post.stream_id} type="like"
+                        count={post.count_likes ? post.count_likes : 0}/>
+              <Reaction active={userReaction == "haha" ? true : false} post_id={post.stream_id} type="haha"
+                        count={post.count_haha ? post.count_haha : 0}/>
+              <Reaction active={userReaction == "downvote" ? true : false} post_id={post.stream_id} type="downvote"/>
             </div>
-            {showShareMenu &&
-                <ShowShareMenu setShowShareMenu={setShowShareMenu} post_id={post.stream_id} />
-            }
 
-            {/** Link to Cerscan proof */}
-            {post.stream_id != "none" ?
-                <div className="one-reaction mright-5">
-                    <a href={"https://cerscan.com/mainnet/stream/" + post.stream_id} target="_blank" rel="noreferrer" className="flex">
-                        <img src="/img/icons/cerscan-proof.png" height="18" />
+            <div
+                className={orbisStyles["reactions"] + " " + orbisStyles["flex-row"] + " " + orbisStyles["h-flex-end"] + " " + orbisStyles["v-align-items-center"]}>
+              {/** Share button */}
+              <div className={orbisStyles["one-reaction"]} onClick={() => setShowShareMenu(true)}>
+                <img src="/img/icons/share.png" height="18"/>
+              </div>
+              {showShareMenu &&
+                  <ShowShareMenu setShowShareMenu={setShowShareMenu} post_id={post.stream_id}/>
+              }
+
+              {/** Link to Cerscan proof */}
+              {post.stream_id != "none" ?
+                  <div className={orbisStyles["one-reaction"] + " " + orbisStyles["mright-5"]}>
+                    <a href={"https://cerscan.com/mainnet/stream/" + post.stream_id} target="_blank"
+                       rel="noreferrer" className={orbisStyles["flex"]}>
+                      <img src="/img/icons/cerscan-proof.png" height="18"/>
                     </a>
-                </div>
-            :
-                <div className="one-reaction mright-5">
-                    <img src="/img/icons/loading-white.svg" height="15" />
-                </div>
-            }
-          </div>
+                  </div>
+                  :
+                  <div className={orbisStyles["one-reaction"] + " " + orbisStyles["mright-5"]}>
+                    <img src="/img/icons/loading-white.svg" height="15"/>
+                  </div>
+              }
+            </div>
         </div>
       }
     </div>
@@ -250,27 +270,29 @@ function ShowShareMenu({ setShowShareMenu, post_id }) {
     setCopyBtnState(0);
     setShowShareMenu(false);
   }
-  return(
-    <div className="floating-menu" style={{top: "initial", bottom: 35, right: 35}} ref={wrapperRef}>
-      {copyBtnState == 0 ?
-        <p onClick={() => copyLink()}>Copy post link</p>
-      :
-        <p style={{color: "#5ef8a1"}}><img src="/img/icons/check-green.png" className="mright-5" height="14" /> <span>Copied!</span></p>
-      }
-    </div>
+  return (
+      <div className={orbisStyles["floating-menu"]} style={{top: "initial", bottom: 35, right: 35}} ref={wrapperRef}>
+        {copyBtnState == 0 ?
+            <p onClick={() => copyLink()}>Copy post link</p>
+            :
+            <p style={{color: "#5ef8a1"}}><img src="/img/icons/check-green.png" className={orbisStyles["mright-5"]}
+                                               height="14"/> <span>Copied!</span></p>
+        }
+      </div>
   );
 }
 
 /** Show reply to component */
 function ReplyTo({creatorDetails, creatorDid, details, onClick}) {
-  return(
-    <p className="flex-row reply-to-container" onClick={onClick}>
-        <div className="link-reply"></div>
-        <div className="reply-to-content">
-          <User showBadge={false} details={creatorDetails} isLink={false} />
-          <span className="primary reply-to-content-post">{details.body?.substring(0, 60)}...</span>
+  return (
+      <p className={orbisStyles["flex-row"] + " " + orbisStyles["reply-to-container"]} onClick={onClick}>
+        <div className={orbisStyles["link-reply"]}></div>
+        <div className={orbisStyles["reply-to-content"]}>
+          <User showBadge={false} details={creatorDetails} isLink={false}/>
+          <span
+              className={orbisStyles["primary"] + " " + orbisStyles["reply-to-content-post"]}>{details.body?.substring(0, 60)}...</span>
         </div>
-    </p>
+      </p>
   );
 }
 
@@ -281,11 +303,13 @@ function PostContent({post, characterLimit: _characterLimit}) {
   const [showContent, setShowContent] = useState(false);
 
   if(showContent == false && (post.creator_details.nonces && post.creator_details.nonces?.global <= 0 && post.creator_details.a_r <= 1)) {
-    return(
-      <div className="no-blockchain-activity">
-        <img src="/img/icons/eye-crossed-tertiary.png" height="18" />
-        <p>This post was shared from a user with an inactive wallet. <span className="mleft-5 blue-bold-link" onClick={() => setShowContent(true)}>Show content</span></p>
-      </div>
+    return (
+        <div className={orbisStyles["no-blockchain-activity"]}>
+          <img src="/img/icons/eye-crossed-tertiary.png" height="18"/>
+          <p>This post was shared from a user with an inactive wallet. <span
+              className={orbisStyles["mleft-5"] + " " + orbisStyles["blue-bold-link"]}
+              onClick={() => setShowContent(true)}>Show content</span></p>
+        </div>
     )
   } else {
     return (
@@ -297,9 +321,12 @@ function PostContent({post, characterLimit: _characterLimit}) {
         }
 
         {post.content?.body && characterLimit && post.content.body.length > characterLimit &&
-          <div className="no-blockchain-activity flex-row center mtop-10" style={{justifyContent: "center", padding: 10}}>
-            <span className="blue-bold-link fs-14" onClick={() => setCharacterLimit(null)}>View more</span>
-          </div>
+            <div
+                className={orbisStyles["no-blockchain-activity"] + " " + orbisStyles["flex-row"] + " " + orbisStyles["center"] + " " + orbisStyles["mtop-10"]}
+                style={{justifyContent: "center", padding: 10}}>
+                <span className={orbisStyles["blue-bold-link"] + " " + orbisStyles["fs-14"]}
+                      onClick={() => setCharacterLimit(null)}>View more</span>
+            </div>
         }
       </>
     );
@@ -310,7 +337,7 @@ function PostContent({post, characterLimit: _characterLimit}) {
 function PostBody({post, characterLimit}) {
   const body = useCleanPostBody(post, characterLimit);
 
-  return <p className="content">{body}</p>
+  return <p className={orbisStyles["content"]}>{body}</p>
 }
 
 /** Try to decrypt and display an encrypted post */
@@ -379,38 +406,42 @@ function EncryptedPostBody({post, characterLimit}) {
 
   /** Show loading state */
   if(loading) {
-    return <div className="no-blockchain-activity">
-      <img src="/img/icons/eye-crossed-tertiary.png" height="18" />
+    return <div className={orbisStyles["no-blockchain-activity"]}>
+      <img src="/img/icons/eye-crossed-tertiary.png" height="18"/>
       <p>Decrypting the post...</p>
     </div>
   }
 
   if(status == 300) {
     return (
-      <div className="no-blockchain-activity">
-        <img src="/img/icons/locked-tertiary.png" height="18" />
-        <p>This post is token-gated for <a className="blue-bold-link" href={explorerLink} target="_blank" rel="noreferrer">{contract}</a> holders and you don't have access to it.</p>
-      </div>
+        <div className={orbisStyles["no-blockchain-activity"]}>
+          <img src="/img/icons/locked-tertiary.png" height="18"/>
+          <p>This post is token-gated for <a className={orbisStyles["blue-bold-link"]} href={explorerLink}
+                                             target="_blank" rel="noreferrer">{contract}</a> holders and you don't
+            have access to it.</p>
+        </div>
     )
   }
 
   /** Show body or encrypted content info */
   if(body) {
     return (
-      <>
-        <PostBody post={decryptedPost} characterLimit={characterLimit} />
-        <div className="no-blockchain-activity unlocked mtop-10">
-          <img src="/img/icons/unlocked-tertiary.png" height="18" />
-          <p>You unlocked this token-gated post for  <a className="blue-bold-link" href={explorerLink} target="_blank" rel="noreferrer" >{contract}</a> holders.</p>
-        </div>
-      </>
+        <>
+          <PostBody post={decryptedPost} characterLimit={characterLimit}/>
+          <div
+              className={orbisStyles["no-blockchain-activity"] + " " + orbisStyles["unlocked"] + " " + orbisStyles["mtop-10"]}>
+            <img src="/img/icons/unlocked-tertiary.png" height="18"/>
+            <p>You unlocked this token-gated post for <a className={orbisStyles["blue-bold-link"]} href={explorerLink}
+                                                         target="_blank" rel="noreferrer">{contract}</a> holders.</p>
+          </div>
+        </>
     );
   } else {
     return (
-      <div className="no-blockchain-activity">
-        <img src="/img/icons/locked-tertiary.png" height="18" />
-        <p>This post is token-gated.</p>
-      </div>
+        <div className={orbisStyles["no-blockchain-activity"]}>
+          <img src="/img/icons/locked-tertiary.png" height="18"/>
+          <p>This post is token-gated.</p>
+        </div>
     )
   }
 }
@@ -419,25 +450,29 @@ function EncryptedPostBody({post, characterLimit}) {
 function Context({context, contextDetails}) {
   if (typeof context === 'string' || context instanceof String) {
     if(contextDetails && contextDetails?.group_details) {
-      return(
-        <p className="context-details">
-          <div className={contextDetails?.channel_details ?  "hide-mobile flex-row" : "flex-row"}>
-            <span className="secondary mright-5">in </span>
-            <Group id={contextDetails?.group_id} details={contextDetails?.group_details} isLink={true} showPfp={false} />
-          </div>
-          {contextDetails?.channel_details &&
-            <>
-              <span className="tertiary mleft-5 mright-5"> / </span>
-              <Channel id={contextDetails?.channel_id} group_id={contextDetails?.group_id} details={contextDetails?.channel_details} isLink={true} />
-            </>
-          }
-        </p>
+      return (
+          <p className={orbisStyles["context-details"]}>
+            <div className={contextDetails?.channel_details ? "hide-mobile flex-row" : "flex-row"}>
+              <span className={orbisStyles["secondary"] + " " + orbisStyles["mright-5"]}>in </span>
+              <Group id={contextDetails?.group_id} details={contextDetails?.group_details} isLink={true}
+                     showPfp={false}/>
+            </div>
+            {contextDetails?.channel_details &&
+                <>
+                      <span
+                          className={orbisStyles["tertiary"] + " " + orbisStyles["mleft-5"] + " " + orbisStyles["mright-5"]}> / </span>
+                  <Channel id={contextDetails?.channel_id} group_id={contextDetails?.group_id}
+                           details={contextDetails?.channel_details} isLink={true}/>
+                </>
+            }
+          </p>
       );
     } else {
-      return(
-        <p className="context-details">
-          <span className="secondary mright-5">in: </span><span className="primary word-break-all">{context}</span>
-        </p>
+      return (
+          <p className={orbisStyles["context-details"]}>
+            <span className={orbisStyles["secondary"] + " " + orbisStyles["mright-5"]}>in: </span><span
+              className="primary word-break-all">{context}</span>
+          </p>
       );
     }
 

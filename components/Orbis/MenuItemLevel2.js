@@ -1,5 +1,5 @@
 import Link from 'next/link'
-
+import orbisStyles from "../../styles/orbis.module.css"
 /** Simple component for menu items */
 export function MenuItemLevel2({title, image, imageActive, active, route , onClick, target = "_self"}) {
   if(route) {

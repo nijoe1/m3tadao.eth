@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { useRouter } from 'next/router'
-import { getChannelIcon } from "../../utils";
-
+import React, {useState, useEffect, useRef, useContext} from 'react';
+import {useRouter} from 'next/router'
+import {getChannelIcon} from "../../utils";
+import orbisStyles from "../../styles/orbis.module.css"
 /** Internal components */
-import { MenuItemLevel2 } from "./MenuItemLevel2"
-import { JoinGroupButton } from "./JoinGroupButton";
-import { ConnectButton } from "./ConnectButton";
+import {MenuItemLevel2} from "./MenuItemLevel2"
+import {JoinGroupButton} from "./JoinGroupButton";
+import {ConnectButton} from "./ConnectButton";
 import useIsGroupAdmin from "../../hooks/useIsGroupAdmin";
 
 /** Import Context */
-import { GlobalContext, ModalsContext } from "../../contexts/GlobalContext";
+import {GlobalContext, ModalsContext} from "../../contexts/GlobalContext";
 
 /** Second level navigation element displaying group details */
 export function GroupDetails() {
@@ -69,77 +69,85 @@ export function GroupDetails() {
   return(
     <>
       {(loading) ?
-        <div className="group-details">
-          <p className="center">
-            <img src="/img/icons/loading-white.svg" height="35" />
-          </p>
-        </div>
+          <div className={orbisStyles["group-details"]}>
+            <p className={orbisStyles["center"]}>
+              <img src="/img/icons/loading-white.svg" height="35"/>
+            </p>
+          </div>
 
-      :
-        <div className="group-details">
-          <div className="group-details-top">
-            {group && group.content &&
-              <>
-                {isAdmin ?
-                  <GroupPfp onClick={() => setModalVis("update-group", true, group, setGroup)} />
-                :
-                  <GroupPfp />
-                }
+          :
+          <div className={orbisStyles["group-details"]}>
+            <div className={orbisStyles["group-details-top"]}>
+              {group && group.content &&
+                  <>
+                    {isAdmin ?
+                        <GroupPfp onClick={() => setModalVis("update-group", true, group, setGroup)}/>
+                        :
+                        <GroupPfp/>
+                    }
 
-                <h1>{group.content.name ? group.content.name : group.content.metadata.name}</h1>
+                    <h1>{group.content.name ? group.content.name : group.content.metadata.name}</h1>
 
-                {/** Only display description if available */}
-                {group.content.description &&
-                  <p className="mbottom-0">{group.content.description}</p>
-                }
-                {group.content.metadata?.description &&
-                  <p className="mbottom-0">{group.content.metadata?.description}</p>
-                }
+                    {/** Only display description if available */}
+                    {group.content.description &&
+                        <p className={orbisStyles["mbottom-0"]}>{group.content.description}</p>
+                    }
+                    {group.content.metadata?.description &&
+                        <p className={orbisStyles["mbottom-0"]}>{group.content.metadata?.description}</p>
+                    }
 
-                {/** Show count group members */}
-                <div className="flex h-justify-content-center mtop-10"><span className="badge dashed">{group.count_members > 1 ? group.count_members + " Members" : group.count_members + " Member"}</span></div>
+                    {/** Show count group members */}
+                    <div
+                        className={orbisStyles["flex"] + " " + orbisStyles["h-justify-content-center"] + " " + orbisStyles["mtop-10"]}>
+                              <span
+                                  className="badge dashed">{group.count_members > 1 ? group.count_members + " Members" : group.count_members + " Member"}</span>
+                    </div>
 
-                {/** If user us connected, show join group button */}
-                {user ?
-                  <div className="center mtop-10">
-                    <JoinGroupButton group_id={group_id}  />
-                  </div>
-                :
-                  <div className="center mtop-10">
-                    <ConnectButton />
-                  </div>
+                    {/** If user us connected, show join group button */}
+                    {user ?
+                        <div className={orbisStyles["center"] + " " + orbisStyles["mtop-10"]}>
+                          <JoinGroupButton group_id={group_id}/>
+                        </div>
+                        :
+                        <div className={orbisStyles["center"] + " " + orbisStyles["mtop-10"]}>
+                          <ConnectButton/>
+                        </div>
                 }
 
                 {/** If user is group admin: show Edit button */}
                 {isAdmin &&
-                  <div className="center mtop-10">
-                    <div className="btn white" onClick={() => setModalVis("update-group", true, group, setGroup)}>Update group</div>
-                  </div>
+                    <div className={orbisStyles["center"] + " " + orbisStyles["mtop-10"]}>
+                      <div className={orbisStyles["btn"] + " " + orbisStyles["white"]}
+                           onClick={() => setModalVis("update-group", true, group, setGroup)}>Update group
+                      </div>
+                    </div>
                 }
               </>
             }
           </div>
           {/** Show channels */}
           {group &&
-            <div className="group-channels">
-              {/** Show home channel */}
-              <MenuItemLevel2
-                title="home"
-                image="/img/icons/group-home-grey.png"
-                imageActive="/img/icons/group-home-white.png"
-                route={`/orbis?groupId=${group_id}`}
-                active={!channel_id ? true : false} />
+              <div className={orbisStyles["group-channels"]}>
+                {/** Show home channel */}
+                <MenuItemLevel2
+                    title="home"
+                    image="/img/icons/group-home-grey.png"
+                    imageActive="/img/icons/group-home-white.png"
+                    route={`/orbis?groupId=${group_id}`}
+                    active={!channel_id ? true : false}/>
 
-              {/** Loop through all channels */}
-              <LoopChannels channels={group?.channels} />
+                {/** Loop through all channels */}
+                <LoopChannels channels={group?.channels}/>
 
-              {/** Create channel CTA */}
-              {isAdmin &&
-                <div className="">
-                  <div className="btn white" onClick={() => setModalVis("create-channel", true, group, setGroup)}>+ Add a channel</div>
-                </div>
-              }
-            </div>
+                {/** Create channel CTA */}
+                {isAdmin &&
+                    <div>
+                      <div className={orbisStyles["btn"] + " " + orbisStyles["white"]}
+                           onClick={() => setModalVis("create-channel", true, group, setGroup)}>+ Add a channel
+                      </div>
+                    </div>
+                }
+              </div>
           }
         </div>
       }

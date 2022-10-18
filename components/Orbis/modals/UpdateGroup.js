@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { useRouter } from 'next/router'
-import { sleep } from "../../../utils"
-import { resizeFile, base64ToFile } from "../../../utils"
-import { arweavePush } from "../../../utils/arweave"
-
+import React, {useState, useEffect, useRef, useContext} from 'react';
+import {useRouter} from 'next/router'
+import {sleep} from "../../../utils"
+import {resizeFile, base64ToFile} from "../../../utils"
+import {arweavePush} from "../../../utils/arweave"
+import orbisStyles from "../../../styles/orbis.module.css"
 /** Internal components */
-import { Modal } from "../Modal";
-import { SaveButton } from "../SaveButton";
+import {Modal} from "../Modal";
+import {SaveButton} from "../SaveButton";
 
 /** Import Context */
-import { GlobalContext } from "../../../contexts/GlobalContext";
+import {GlobalContext} from "../../../contexts/GlobalContext";
 
 /** Modal to send a message */
 export function UpdateGroupModal({visible, setVisible, group, callback}) {
-  const { user, setUser, orbis } = useContext(GlobalContext);
+  const {user, setUser, orbis} = useContext(GlobalContext);
   const router = useRouter()
   const [name, setName] = useState(group?.content?.name);
   const [description, setDescription] = useState(group?.content?.description);
@@ -116,63 +116,69 @@ export function UpdateGroupModal({visible, setVisible, group, callback}) {
     <Modal title="Update your group" visible={visible} setVisible={setVisible}>
       {user ?
         <>
-          <div className="modal-body group-settings">
+          <div className={orbisStyles["modal-body"] + " " + orbisStyles["group-settings"]}>
 
             {/** Profile picture */}
-            <div className="flex-row v-align-items-center">
-                <div className="profile-pic flex">
+            <div className={orbisStyles["flex-row"] + " " + orbisStyles["v-align-items-center"]}>
+              <div className={orbisStyles["profile-pic"] + " " + orbisStyles["flex"]}>
                 {pfpIsUploading ?
-                    <img src="/img/icons/loading-white.svg"  className="pfp" />
-                :
-                  <>
-                    {/** Show PfP if user has already used one */}
-                    {pfp ?
-                      <img src={pfp} className="pfp pointer" onClick={() => uploadPfp()} />
+                    <img src="/img/icons/loading-white.svg" className={orbisStyles["pfp"]}/>
                     :
-                      <img src="/img/empty-pfp.png" className="pfp pointer" onClick={() => uploadPfp()} />
-                    }
-                  </>
+                    <>
+                      {/** Show PfP if user has already used one */}
+                      {pfp ?
+                          <img src={pfp} className={orbisStyles["pfp"] + " " + orbisStyles["pointer"]}
+                               onClick={() => uploadPfp()}/>
+                          :
+                          <img src="/img/empty-pfp.png"
+                               className={orbisStyles["pfp"] + " " + orbisStyles["pointer"]}
+                               onClick={() => uploadPfp()}/>
+                      }
+                    </>
                 }
 
-                </div>
-                <div className="flex-row mleft-15">
-                    <button className="btn white" onClick={() => uploadPfp()}>Upload</button>
-                </div>
+              </div>
+              <div className={orbisStyles["flex-row"] + " " + orbisStyles["mleft-15"]}>
+                <button className={orbisStyles["btn"] + " " + orbisStyles["white"]}
+                        onClick={() => uploadPfp()}>Upload
+                </button>
+              </div>
             </div>
             <input
-              ref={hiddenPfpInput}
-              type="file"
-              className="hidden"
-              accept="image/png, image/jpeg, image/gif"
-              onChange={(e) => _setPfp(e.target.files[0])}/>
+                ref={hiddenPfpInput}
+                type="file"
+                className={orbisStyles["hidden"]}
+                accept="image/png, image/jpeg, image/gif"
+                onChange={(e) => _setPfp(e.target.files[0])}/>
 
             {/** Group name */}
-            <div className="input-container mtop-15">
-               <label className={name && 'filled'}>Group name</label>
-               <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+            <div className={orbisStyles["input-container"] + " " + orbisStyles["mtop-15"]}>
+              <label className={name && 'filled'}>Group name</label>
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
             </div>
 
             {/** Description */}
-            <div className="input-container mtop-15">
+            <div className={orbisStyles["input-container"] + " " + orbisStyles["mtop-15"]}>
               <label className={description && 'filled'}>Bio</label>
               <textarea
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)} />
+                  onChange={(e) => setDescription(e.target.value)}/>
             </div>
 
           </div>
 
           {/** Show modal footer */}
-          <div className="modal-footer flex-row h-justify-content-end">
-            <SaveButton title="Update group" status={status} onClick={updateGroup} />
+          <div
+              className={orbisStyles["modal-footer"] + " " + orbisStyles["flex-row"] + " " + orbisStyles["h-justify-content-end"]}>
+            <SaveButton title="Update group" status={status} onClick={updateGroup}/>
           </div>
         </>
       :
-        <>
-          <div className="modal-body">
-            <p>You must be connected to create a group.</p>
-          </div>
-        </>
+          <>
+            <div className={orbisStyles["modal-body"]}>
+              <p>You must be connected to create a group.</p>
+            </div>
+          </>
       }
 
     </Modal>

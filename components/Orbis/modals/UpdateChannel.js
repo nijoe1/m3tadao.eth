@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { useRouter } from 'next/router'
-import { sleep } from "../../../utils"
-
+import React, {useState, useEffect, useRef, useContext} from 'react';
+import {useRouter} from 'next/router'
+import {sleep} from "../../../utils"
+import orbisStyles from "../../../styles/orbis.module.css"
 /** Internal components */
-import { Modal } from "../Modal";
-import { SaveButton } from "../SaveButton";
-import { RadioButton } from "../UI"
+import {Modal} from "../Modal";
+import {SaveButton} from "../SaveButton";
+import {RadioButton} from "../UI"
 
 /** Import Context */
-import { GlobalContext } from "../../../contexts/GlobalContext";
+import {GlobalContext} from "../../../contexts/GlobalContext";
 
 /** Modal to send a message */
-export function UpdateChannelModal({ visible, setVisible, channel, callback }) {
+export function UpdateChannelModal({visible, setVisible, channel, callback}) {
   const { user, setUser, getUserGroups, orbis } = useContext(GlobalContext);
   const router = useRouter()
   const [name, setName] = useState("");
@@ -197,11 +197,11 @@ export function UpdateChannelModal({ visible, setVisible, channel, callback }) {
           setTabSelected={setTabSelected} />
         </>
       :
-        <>
-          <div className="modal-body">
-            <p>You must be connected to update this channel.</p>
-          </div>
-        </>
+          <>
+            <div className={orbisStyles["modal-body"]}>
+              <p>You must be connected to update this channel.</p>
+            </div>
+          </>
       }
 
     </Modal>
@@ -214,99 +214,110 @@ function Content({getInput, setInput, type, setType, status, updateChannel, tabS
     /** Details tab */
     case 0:
       return(
-        <>
-          <div className="modal-body">
-            {/** Channel type */}
-            <div className="input-container">
-              <label className="filled">Channel type</label>
-              <select value={type} onChange={(e) => setType(e.target.value)}>
-                <option value="chat">Chat (Similar to a Discord experience)</option>
-                <option value="feed">Feed (Posts with likes and thread)</option>
-              </select>
+          <>
+            <div className={orbisStyles["modal-body"]}>
+              {/** Channel type */}
+              <div className={orbisStyles["input-container"]}>
+                <label className={orbisStyles["filled"]}>Channel type</label>
+                <select value={type} onChange={(e) => setType(e.target.value)}>
+                  <option value="chat">Chat (Similar to a Discord experience)</option>
+                  <option value="feed">Feed (Posts with likes and thread)</option>
+                </select>
+              </div>
+
+              {/** Channel name */}
+              <div className={orbisStyles["input-container"] + " " + orbisStyles["mtop-10"]}>
+                <label className={getInput("name") && 'filled'}>Channel name</label>
+                <input type="text" value={getInput("name")} onChange={(e) => setInput("name", e.target.value)}/>
+              </div>
+
+              {/** Channel description */}
+              <div className={orbisStyles["input-container"] + " " + orbisStyles["mtop-10"]}>
+                <label className={getInput("description") && 'filled'}>Channel description</label>
+                <textarea
+                    value={getInput("description")}
+                    onChange={(e) => setInput("description", e.target.value)}/>
+              </div>
             </div>
 
-            {/** Channel name */}
-            <div className="input-container mtop-10">
-               <label className={getInput("name") && 'filled'}>Channel name</label>
-               <input type="text" value={getInput("name")} onChange={(e) => setInput("name", e.target.value)} />
+            {/** Show modal footer */}
+            <div
+                className={orbisStyles["modal-footer"] + " " + orbisStyles["flex-row"] + " " + orbisStyles["h-justify-content-end"]}>
+              <SaveButton title="Update" status={status} onClick={updateChannel}/>
             </div>
-
-            {/** Channel description */}
-            <div className="input-container mtop-10">
-              <label className={getInput("description") && 'filled'}>Channel description</label>
-              <textarea
-                  value={getInput("description")}
-                  onChange={(e) => setInput("description", e.target.value)} />
-            </div>
-          </div>
-
-          {/** Show modal footer */}
-          <div className="modal-footer flex-row h-justify-content-end">
-            <SaveButton title="Update" status={status} onClick={updateChannel} />
-          </div>
-        </>
+          </>
       );
     case 1:
-      return(
-        <>
-          <div className="modal-body">
-            <p className="center tertiary mtop-0">You can token gate this channel to make every posts viewable only by some specific token holders.</p>
-            <p className="center"><RadioButton action={() => setInput("isTokenGated", !getInput("isTokenGated"))} selected={getInput("isTokenGated")} labelRight="Token gated channel" /></p>
-            {getInput("isTokenGated") &&
-              <>
-                {/** Chain */}
-                <div className="input-container">
-                  <label className="filled">Chain</label>
-                  <select value={getInput("ecr_chain")} onChange={(e) => setInput("ecr_chain", e.target.value)}>
-                    <option value="ethereum">Ethereum Mainnet</option>
-                    <option value="arbitrum">Arbitrum</option>
-                    <option value="avalanche">Avalanche</option>
-                    <option value="bsc">Binance Chain</option>
-                    <option value="fantom">Fantom</option>
-                    <option value="xdai">Gnosis Chain (xDAI)</option>
-                    <option value="optimism">Optimism</option>
-                    <option value="polygon">Polygon</option>
-                  </select>
-                </div>
+      return (
+          <>
+            <div className={orbisStyles["modal-body"]}>
+              <p className={orbisStyles["center"] + " " + orbisStyles["tertiary"] + " " + orbisStyles["mtop-0"]}>You
+                can token gate this channel to make every posts viewable only by some specific token holders.</p>
+              <p className={orbisStyles["center"]}><RadioButton
+                  action={() => setInput("isTokenGated", !getInput("isTokenGated"))}
+                  selected={getInput("isTokenGated")} labelRight="Token gated channel"/></p>
+              {getInput("isTokenGated") &&
+                  <>
+                    {/** Chain */}
+                    <div className={orbisStyles["input-container"]}>
+                      <label className={orbisStyles["filled"]}>Chain</label>
+                      <select value={getInput("ecr_chain")}
+                              onChange={(e) => setInput("ecr_chain", e.target.value)}>
+                        <option value="ethereum">Ethereum Mainnet</option>
+                        <option value="arbitrum">Arbitrum</option>
+                        <option value="avalanche">Avalanche</option>
+                        <option value="bsc">Binance Chain</option>
+                        <option value="fantom">Fantom</option>
+                        <option value="xdai">Gnosis Chain (xDAI)</option>
+                        <option value="optimism">Optimism</option>
+                        <option value="polygon">Polygon</option>
+                      </select>
+                    </div>
 
-                {/** Type */}
-                <div className="input-container mtop-10">
-                  <label className="filled">Contract type</label>
-                  <select value={getInput("ecr_contractType")} onChange={(e) => setInput("ecr_contractType", e.target.value)}>
-                    <option value="ERC20">ERC20</option>
-                    <option value="ERC721">ERC721</option>
-                    <option value="ERC1155">ERC1155</option>
-                  </select>
-                </div>
+                    {/** Type */}
+                    <div className={orbisStyles["input-container"] + " " + orbisStyles["mtop-10"]}>
+                      <label className={orbisStyles["filled"]}>Contract type</label>
+                      <select value={getInput("ecr_contractType")}
+                              onChange={(e) => setInput("ecr_contractType", e.target.value)}>
+                        <option value="ERC20">ERC20</option>
+                        <option value="ERC721">ERC721</option>
+                        <option value="ERC1155">ERC1155</option>
+                      </select>
+                    </div>
 
-                {/** Contract */}
-                <div className="input-container mtop-10">
-                   <label className={getInput("ecr_contractAddress") && 'filled'}>Contract address</label>
-                   <input type="text" value={getInput("ecr_contractAddress")} onChange={(e) => setInput("ecr_contractAddress", e.target.value)} />
-                </div>
+                    {/** Contract */}
+                    <div className={orbisStyles["input-container"] + " " + orbisStyles["mtop-10"]}>
+                      <label className={getInput("ecr_contractAddress") && 'filled'}>Contract address</label>
+                      <input type="text" value={getInput("ecr_contractAddress")}
+                             onChange={(e) => setInput("ecr_contractAddress", e.target.value)}/>
+                    </div>
 
-                {/** Minimum token balance */}
-                <div className="input-container mtop-10">
-                   <label className={getInput("ecr_contractMinTokenBalance") && 'filled'}>Min. Balance to access the post (for ERC20 use the WEI amount)</label>
-                   <input type="text" value={getInput("ecr_contractMinTokenBalance")} onChange={(e) => setInput("ecr_contractMinTokenBalance", e.target.value)} />
-                </div>
+                    {/** Minimum token balance */}
+                    <div className={orbisStyles["input-container"] + " " + orbisStyles["mtop-10"]}>
+                      <label className={getInput("ecr_contractMinTokenBalance") && 'filled'}>Min. Balance to
+                        access the post (for ERC20 use the WEI amount)</label>
+                      <input type="text" value={getInput("ecr_contractMinTokenBalance")}
+                             onChange={(e) => setInput("ecr_contractMinTokenBalance", e.target.value)}/>
+                    </div>
 
-                {/** Token ID shown only if ERC 1155 */}
-                {getInput("ecr_contractType") == "ERC1155" &&
-                  <div className="input-container mtop-10">
-                     <label className={getInput("ecr_tokenId") && 'filled'}>Token ID (for ERC1155)</label>
-                     <input type="text" value={getInput("ecr_tokenId")} onChange={(e) => setInput("ecr_tokenId", e.target.value)} />
-                  </div>
-                }
-              </>
-            }
-          </div>
+                    {/** Token ID shown only if ERC 1155 */}
+                    {getInput("ecr_contractType") == "ERC1155" &&
+                        <div className={orbisStyles["input-container"] + " " + orbisStyles["mtop-10"]}>
+                          <label className={getInput("ecr_tokenId") && 'filled'}>Token ID (for ERC1155)</label>
+                          <input type="text" value={getInput("ecr_tokenId")}
+                                 onChange={(e) => setInput("ecr_tokenId", e.target.value)}/>
+                        </div>
+                    }
+                  </>
+              }
+            </div>
 
-          {/** Show modal footer */}
-          <div className="modal-footer flex-row h-justify-content-end">
-            <SaveButton title="Update" status={status} onClick={updateChannel} />
-          </div>
-        </>
+            {/** Show modal footer */}
+            <div
+                className={orbisStyles["modal-footer"] + " " + orbisStyles["flex-row"] + " " + orbisStyles["h-justify-content-end"]}>
+              <SaveButton title="Update" status={status} onClick={updateChannel}/>
+            </div>
+          </>
       );
 
   }
