@@ -1,4 +1,4 @@
-import { createStyles, Image, Container, Title, Button, Group, Text, List, ThemeIcon, Grid, useMantineTheme, Card, BackgroundImage} from '@mantine/core';
+import { createStyles, Image, Container, Title, Button, Group, Text, List, ThemeIcon, Grid, useMantineTheme, Card, BackgroundImage,MantineProvider } from '@mantine/core';
 import { IconCheck } from '@tabler/icons';
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Menu } from '../Menu/Menu'
@@ -148,7 +148,7 @@ export function Hero() {
             </Group>
           </div>
 
-          <Image src={"./hero.svg"} className={classes.image} width={"150%"} />
+          <Image src={"./pic.png"} className={classes.image} width={"150%"} />
         </div>
         <div className={classes.sndSection}>
           <Title className={classes.subtitle}>
