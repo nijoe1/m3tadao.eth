@@ -138,7 +138,7 @@ export function EditOrganisation(props) {
 
     return (
         <>
-            <button onClick={() => setLoading((prevState) => !prevState)}>Toggle Skeleton</button>
+            {/* <button onClick={() => setLoading((prevState) => !prevState)}>Toggle Skeleton</button> */}
             <Tabs value={activeTab} onTabChange={setActiveTab}>
                 <Tabs.List grow>
                     {/* <Tabs.Tab value="first">Basic Info</Tabs.Tab>

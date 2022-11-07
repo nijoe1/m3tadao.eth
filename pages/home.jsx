@@ -6,7 +6,7 @@ import makeBlockie from "ethereum-blockies-base64";
 import {IconCirclePlus} from "@tabler/icons"
 import {useEffect, useState} from "react"
 import {HomePost} from "../components/HomePost/HomePost"
-import {HomeProjectCard} from "../components/HomeProjectCard"
+// import {HomeProjectCard} from "../components/HomeProjectCard"
 
 export default function Home() {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -18,7 +18,7 @@ export default function Home() {
             transition="fade"
             transitionDuration={500}
             transitionTimingFunction="ease"
-            title={<Title>Add a post <Text color={"dimmed"} size={"sm"}>Powered by Lens</Text></Title>}
+            title={<Title order={2}>Add a post <Text color={"dimmed"} size={"sm"}></Text></Title>}
             onClose={() => setIsModalOpen(false)}
         >
             <Center>
@@ -37,7 +37,10 @@ export default function Home() {
                         content="minimum-scale=1, initial-scale=1, width=device-width"
                     />
                 </Head>
+                <Title style={{paddingTop:"20px", paddingLeft:"20px"}} order={2}>Home</Title>
                 <Center m={"lg"}>
+                    
+                    {/* <CreatePost/> */}
                     <Button
                         onClick={() => setIsModalOpen(true)}
                         leftIcon={<IconCirclePlus size={14}/>}
@@ -45,10 +48,20 @@ export default function Home() {
                         Create Post
                     </Button>
                 </Center>
-                <Container my="md">
+                
+                <Container style={{paddingTop:"20px"}} my="md">
+                    
                     <Grid spacing="md" breakpoints={[{maxWidth: "sm", cols: 1}]}>
-                        <Grid.Col lg={7}>
-                            <Title my={"sm"}>Latest Posts</Title>
+                    
+                                   
+                   
+                        <Grid.Col>
+                        <Center m={"xl"}>
+                            <Button variant="subtle" color="gray" size="md">
+                                Show latest
+                            </Button>
+                        </Center>
+                            {/* <Title my={"sm"}>Latest Posts</Title> */}
                             <ScrollArea
                                 style={{height: "80vh"}}
                                 scrollbarSize={4}
@@ -77,7 +90,7 @@ export default function Home() {
                                 />
                             </ScrollArea>
                         </Grid.Col>
-                        <Grid.Col lg={5}>
+                        {/* <Grid.Col lg={5}>
                             <Title my={"sm"}>Latest Projects</Title>
                             <ScrollArea
                                 style={{height: "80vh"}}
@@ -99,7 +112,7 @@ export default function Home() {
                                     image={"https://images.pexels.com/photos/12346579/pexels-photo-12346579.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"}
                                 />
                             </ScrollArea>
-                        </Grid.Col>
+                        </Grid.Col> */}
                     </Grid>
                 </Container>
             </Layout>

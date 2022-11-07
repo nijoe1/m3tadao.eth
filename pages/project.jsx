@@ -46,7 +46,7 @@ export default function Project() {
                     <Title>
                         Welcome to {name} 👋
                     </Title>
-                    <Text color={"dimmed"} size={"sm"}>Powered by Valist</Text>
+                    {/* <Text color={"dimmed"} size={"sm"}>Powered by Valist</Text> */}
                 </Group>
                 <Button.Group>
                     <Link href={`https://app.valist.io/-/account/baetr/project/${name}/create/release`} passHref>

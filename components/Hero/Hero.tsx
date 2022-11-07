@@ -98,10 +98,7 @@ export function Hero() {
   return (
     <div>
 
-      <BackgroundImage
-        src={"./Background.png"}
-        radius="sm"
-      >
+      
     
             <Container>
         <Menu links={[{ link: "https://github.com/Suhel-Kap/m3tadao", label: "Source Code" }, 
@@ -245,7 +242,6 @@ the process of finding the perfect idea for you.
           <Group mt={30}></Group>
         </div>
        
-              </BackgroundImage>
               <Footer/>
     </div>
   );

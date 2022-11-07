@@ -93,9 +93,9 @@ const Organisation = () => {
             <Group position={"apart"} p={"xl"} mx={"xl"} my={"sm"}>
                 <Group>
                     <Title>Welcome to {name} 👋</Title>
-                    <Text color={"dimmed"} size={"sm"}>
+                    {/* <Text color={"dimmed"} size={"sm"}>
                         Powered by Valist
-                    </Text>
+                    </Text> */}
                 </Group>
                 <Button.Group>
                     <Button
@@ -114,15 +114,24 @@ const Organisation = () => {
                 <Tabs.List grow position="center" mb={75}>
                     <Tabs.Tab value="first">Projects</Tabs.Tab>
                     <Tabs.Tab value={"requirements"}>Requirements</Tabs.Tab>
-                    <Tabs.Tab value="fourth">Hiring Requests</Tabs.Tab>
-                    <Tabs.Tab value="third">Manage Organisation</Tabs.Tab>
+                    {/* <Tabs.Tab value="fourth">Hiring Requests</Tabs.Tab> */}
+                    {/* dont show hiring requests and hiring template only for owners */}
+                    <Tabs.Tab value="third">Hiring template</Tabs.Tab>
                 </Tabs.List>
                 <Tabs.Panel value={"first"}>
                     <Container size={"xl"} mb={"xl"}>
+                    <Title order={4} style={{paddingBottom:"20px", paddingLeft:"14px"}}>
+                                Here you'll find M3tadao's parallel projects 
+                    <Title order={6} weight={200} color="dimmed">Explain how this work.</Title></Title>
                         <Paper shadow="xl" radius="lg" p="md" pt={"lg"}>
+                        
                             <Center my={"md"} sx={{ width: "100%" }}>
+                            
                                 <Grid>
+               
                                     <Grid.Col lg={10}>
+                                    
+
                                         <Container>
                                             <SimpleGrid
                                                 cols={2}
@@ -140,7 +149,10 @@ const Organisation = () => {
                                                     href={`/create-project?accId=${accId}`}
                                                     passHref
                                                 >
+                                                
+                                                
                                                     <Grid.Col>
+                                                    
                                                         <Paper
                                                             radius="md"
                                                             withBorder
@@ -153,10 +165,12 @@ const Organisation = () => {
                                                                 cursor: "pointer",
                                                             })}
                                                         >
+                                                        
                                                             <Stack py={"13%"}>
                                                                 <Center>
                                                                     <IconPlus size={128} />
                                                                 </Center>
+                                                                
                                                                 <Center>
                                                                     <Text weight={700} size={"xl"}>
                                                                         Create Project
@@ -189,6 +203,10 @@ const Organisation = () => {
                 </Tabs.Panel>
                 <Tabs.Panel value={"requirements"}>
                     <Container size={"lg"} mb={"xl"}>
+                    <Title order={4} style={{paddingBottom:"20px", paddingLeft:"14px"}}>
+                               Be part of M3tadao's team! 
+                    <Title order={6} weight={200} color="dimmed">See the options you have for helping.</Title></Title>
+                     
                         <SimpleGrid
                             cols={2}
                             spacing={"md"}
@@ -212,6 +230,12 @@ const Organisation = () => {
                     </Container>
                 </Tabs.Panel>
                 <Tabs.Panel value={"third"}>
+                <Title order={4} style={{paddingBottom:"20px", paddingLeft:"17px"}}>
+                               Here is yout hiring offer, if you need more people in the team
+                    
+                    <Title order={6} weight={200} color="dimmed">Complete these fields to pusblish this team request and find
+                    the perfect colaborator.</Title></Title>
+                    
                     <Container>
                         <Paper shadow="xl" radius="lg" p="md" pt={"lg"}>
                             <EditOrganisation
@@ -222,7 +246,7 @@ const Organisation = () => {
                         </Paper>
                     </Container>
                 </Tabs.Panel>
-                <Tabs.Panel value={"fourth"}>
+                {/* <Tabs.Panel value={"fourth"}>
                     <Container>
                         <Paper shadow="xl" radius="lg" p="md" pt={"lg"}>
                             <HiringRequestTable
@@ -234,7 +258,7 @@ const Organisation = () => {
                             />
                         </Paper>
                     </Container>
-                </Tabs.Panel>
+                </Tabs.Panel> */}
             </Tabs>
         </Layout>
     )

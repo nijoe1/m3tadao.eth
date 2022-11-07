@@ -15,6 +15,7 @@ export function Posts() {
     const router = useRouter()
 
     return (
+        
         <Layout>
             <Head>
                 <title>Post Title - m3tadao</title>

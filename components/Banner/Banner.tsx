@@ -9,7 +9,9 @@ import {
     Center,
     Stack,
     Badge,
+    Grid,
     Title,
+    Col
 } from "@mantine/core"
 import Link from "next/link"
 import {
@@ -136,155 +138,157 @@ export function Banner({
     }
 
     return (
+        
         <Card p="xl" className={classes.card}>
-            <Card.Section
-                sx={(theme) => ({
-                    backgroundImage: `url(${image})`,
-                    height: 225,
-                    [theme.fn.smallerThan("md")]: {
-                        height: 150,
-                    },
-                })}
-            />
-            <Avatar
-                src={avatar}
-                size={160}
-                radius={80}
-                mx="auto"
-                mt={-30}
-                className={classes.avatar}
-            />
-            <Text align="center" size="lg" weight={500} mt="sm">
-                {name}
-            </Text>
-            <Text align="center" size="sm" color="dimmed">
-                {designation}
-            </Text>
-            <Group mt={"md"} position={"center"} spacing={30}>
-                {twitter && (
-                    <Link href={twitter ? twitter : "https://twitter.com"} passHref>
-                        <ActionIcon component={"a"} target={"_blank"}>
-                            <IconBrandTwitter size={32} />
-                        </ActionIcon>
-                    </Link>
-                )}
-                {github && (
-                    <Link href={github ? github : "https://github.com"} passHref>
-                        <ActionIcon component={"a"} target={"_blank"}>
-                            <IconBrandGithub size={32} />
-                        </ActionIcon>
-                    </Link>
-                )}
-                {website && (
-                    <Link href={website ? website : "#"} passHref>
-                        <ActionIcon component={"a"} target={"_blank"}>
-                            <IconWorldWww size={32} />
-                        </ActionIcon>
-                    </Link>
-                )}
-            </Group>
-            <Group mt="md" position="center" spacing={30}>
-                {items}
-            </Group>
-            <Stack mt={"lg"}>
-                {skillBadges && (
-                    <>
-                        <Center>
-                            <Title order={5}>Skills</Title>
-                        </Center>
-                        <Center>
-                            <Group
-                                mt={"xs"}
-                                position={"center"}
-                                spacing={20}
-                                sx={(theme) => ({
-                                    width: "25%",
-                                    [theme.fn.smallerThan("sm")]: {
-                                        width: "100%",
-                                    },
-                                })}
-                            >
-                                {skillBadges}
-                            </Group>
-                        </Center>
-                    </>
-                )}
-                {interestBadges && (
-                    <>
-                        <Center>
-                            <Title order={5}>Interests</Title>
-                        </Center>
-                        <Center>
-                            <Group
-                                mt={"xs"}
-                                position={"center"}
-                                spacing={20}
-                                sx={(theme) => ({
-                                    width: "25%",
-                                    [theme.fn.smallerThan("sm")]: {
-                                        width: "100%",
-                                    },
-                                })}
-                            >
-                                {interestBadges}
-                            </Group>
-                        </Center>
-                    </>
-                )}
+        <Card.Section
+            sx={(theme) => ({
+                backgroundImage: `url(${image})`,
+                height: 225,
+                [theme.fn.smallerThan("md")]: {
+                    height: 150,
+                },
+            })}
+        />
+        <Avatar
+            src={avatar}
+            size={160}
+            radius={80}
+            mx="auto"
+            mt={-30}
+            className={classes.avatar}
+        />
+        <Text align="center" size="lg" weight={500} mt="sm">
+            {name}
+        </Text>
+        <Text align="center" size="sm" color="dimmed">
+            {designation}
+        </Text>
+        <Group mt={"md"} position={"center"} spacing={30}>
+            {twitter && (
+                <Link href={twitter ? twitter : "https://twitter.com"} passHref>
+                    <ActionIcon component={"a"} target={"_blank"}>
+                        <IconBrandTwitter size={32} />
+                    </ActionIcon>
+                </Link>
+            )}
+            {github && (
+                <Link href={github ? github : "https://github.com"} passHref>
+                    <ActionIcon component={"a"} target={"_blank"}>
+                        <IconBrandGithub size={32} />
+                    </ActionIcon>
+                </Link>
+            )}
+            {website && (
+                <Link href={website ? website : "#"} passHref>
+                    <ActionIcon component={"a"} target={"_blank"}>
+                        <IconWorldWww size={32} />
+                    </ActionIcon>
+                </Link>
+            )}
+        </Group>
+        <Group mt="md" position="center" spacing={"lg"}>
+            {items}
+        </Group>
+        <Stack mt={"lg"}>
+            {/* {skillBadges && (
+                <> */}
+                    {/* <Center>
+                        <Title order={5}>Skills</Title>
+                    </Center> */}
+                    {/* <Center>
+                        <Group
+                            mt={"xs"}
+                            position={"center"}
+                            spacing={20}
+                            sx={(theme) => ({
+                                width: "25%",
+                                [theme.fn.smallerThan("sm")]: {
+                                    width: "100%",
+                                },
+                            })}
+                        >
+                            {skillBadges}
+                        </Group>
+                    </Center> */}
+                {/* </>
+            )}
+            {interestBadges && (
+                <> */}
+                    {/* <Center>
+                        <Title order={5}>Interests</Title>
+                    </Center>
+                    <Center>
+                        <Group
+                            mt={"xs"}
+                            position={"center"}
+                            spacing={20}
+                            sx={(theme) => ({
+                                width: "25%",
+                                [theme.fn.smallerThan("sm")]: {
+                                    width: "100%",
+                                },
+                            })}
+                        >
+                            {interestBadges}
+                        </Group>
+                    </Center> */}
+                {/* </>
+            )} */}
+        </Stack>
+        {!isOwner && (
+            <Stack m={"md"}>
+                <Center mb={0}>
+                    <Button
+                        radius="md"
+                        mt="xl"
+                        size="md"
+                        fullWidth={false}
+                        variant="gradient"
+                        gradient={{ from: "indigo", to: "cyan" }}
+                        color={theme.colorScheme === "dark" ? undefined : "dark"}
+                        onClick={() => {
+                            handleFollow()
+                        }}
+                    >
+                        Follow
+                    </Button>
+                </Center>
             </Stack>
-            {!isOwner && (
-                <Stack m={"md"}>
-                    <Center mb={0}>
-                        <Button
+        )}
+        {isOwner && (
+            <Stack m={"md"}>
+                <Center mb={0}>
+                    <Button.Group>
+                        {/* <Worldcoin profId={profId} /> */}
+                        {/* <Button
                             radius="md"
                             mt="xl"
                             size="md"
                             fullWidth={false}
-                            variant="gradient"
-                            gradient={{ from: "indigo", to: "cyan" }}
                             color={theme.colorScheme === "dark" ? undefined : "dark"}
                             onClick={() => {
-                                handleFollow()
+                                console.log("hehe")
                             }}
                         >
-                            Follow
-                        </Button>
-                    </Center>
-                </Stack>
-            )}
-            {isOwner && (
-                <Stack m={"md"}>
-                    <Center mb={0}>
-                        <Button.Group>
-                            <Worldcoin profId={profId} />
-                            {/* <Button
-                                radius="md"
-                                mt="xl"
-                                size="md"
-                                fullWidth={false}
-                                color={theme.colorScheme === "dark" ? undefined : "dark"}
-                                onClick={() => {
-                                    console.log("hehe")
-                                }}
-                            >
-                                Verify Profile on Worldcoin
-                            </Button> */}
-                            <Button
-                                radius="md"
-                                mt="xl"
-                                size="md"
-                                fullWidth={false}
-                                color={theme.colorScheme === "dark" ? undefined : "dark"}
-                                onClick={() => {
-                                    optIn()
-                                }}
-                            >
-                                Opt In To EPNS Notification Channel
-                            </Button>
-                        </Button.Group>
-                    </Center>
-                </Stack>
-            )}
-        </Card>
+                            Verify Profile on Worldcoin
+                        </Button> */}
+
+                        {/* <Button
+                            radius="md"
+                            mt="xl"
+                            size="md"
+                            fullWidth={false}
+                            color={theme.colorScheme === "dark" ? undefined : "dark"}
+                            onClick={() => {
+                                optIn()
+                            }}
+                        >
+                            Opt In To EPNS Notification Channel
+                        </Button> */}
+                    </Button.Group>
+                </Center>
+            </Stack>
+        )}
+        </Card> 
     )
 }

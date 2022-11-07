@@ -23,6 +23,7 @@ import {NotificationItem, chainNameType} from "@epnsproject/sdk-uiweb"
 import useEPNS from "../../hooks/useEPNS"
 
 
+
 const HEADER_HEIGHT = 60;
 
 const useStyles = createStyles((theme) => ({
@@ -146,14 +147,14 @@ export function HeaderSimple() {
     }, [])
 
     const links = [
-        {
-            "link": "/organisations",
-            "label": "Organisations"
-        },
-        {
-            "link": "/projects",
-            "label": "Projects"
-        },
+        // {
+        //     "link": "/organisations",
+        //     "label": "Organisations"
+        // },
+        // {
+        //     "link": "/projects",
+        //     "label": "Projects"
+        // },
         {
             "link": `/user-profile?address=${address}`,
             "label": "Your Profile"
@@ -188,7 +189,7 @@ export function HeaderSimple() {
                     {items}
                 </Group>
                 <Group position={"right"} className={classes.links}>
-                    <Menu>
+                    {/* <Menu>
                         <Menu.Target>
                             <Button>Notifications</Button>
                         </Menu.Target>
@@ -197,7 +198,7 @@ export function HeaderSimple() {
                                 {notif}
                             </Menu.Item>
                         </Menu.Dropdown>
-                    </Menu>
+                    </Menu> */}
 
                     <DarkModeToggle/>
                     <ConnectButton showBalance={false}/>

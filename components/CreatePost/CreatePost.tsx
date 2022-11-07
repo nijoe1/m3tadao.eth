@@ -1,9 +1,9 @@
-import {Button, Container, FileInput, Stack, Textarea, TextInput} from "@mantine/core"
+import {Button, Container, FileInput, Stack, Textarea, TextInput, Title} from "@mantine/core"
 import {IconPhoto, IconCheck, IconAlertCircle} from "@tabler/icons"
 import {useForm} from "@mantine/form"
 import {showNotification, updateNotification} from "@mantine/notifications"
 import {useRouter, Router} from "next/router"
-import useLens from "../../hooks/useLens"
+// import useLens from "../../hooks/useLens"
 import useContract from "../../hooks/useContract"
 import useTableland from "../../hooks/useTableland"
 import {useAccount} from "wagmi"
@@ -74,17 +74,19 @@ export function CreatePost() {
                 [theme.fn.smallerThan("sm")]: {
                     width: "90%",
                 },
-                width: "50%",
+                width: "100%",
             })}
         >
+            {/* <Title order={2}>Home</Title> */}
             <TextInput
-                placeholder="Title"
+                placeholder="E.g: New teammate!"
                 label={"Title"}
                 required
                 {...form.getInputProps("title")}
             />
             <Textarea
-                placeholder="Description"
+                placeholder="E.g: We are happy to announce that our 
+                company just added @thisPerson for..."
                 label={"Description"}
                 required
                 autosize
@@ -93,14 +95,14 @@ export function CreatePost() {
                 {...form.getInputProps("description")}
             />
             <FileInput
-                label="Image"
+                // label="Image"
                 placeholder="Choose an image"
                 icon={<IconPhoto size={16}/>}
                 accept="image/*"
                 {...form.getInputProps("image")}
             />
             <Button onClick={() => handleSubmit()} variant={"filled"}>
-                Create Post
+                Post
             </Button>
         </Stack>
     )

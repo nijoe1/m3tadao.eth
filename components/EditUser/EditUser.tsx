@@ -1,11 +1,12 @@
 import {useAccount} from "wagmi"
-import {Button, Checkbox, Container, Input, Skeleton, Tabs, Textarea, TextInput, Title, Tooltip} from "@mantine/core"
+import {Button, Center, Space, Checkbox, Container, Input, Skeleton, Tabs, Textarea, TextInput, Title, Tooltip} from "@mantine/core"
 import {useState} from "react"
 import {IconCheck} from "@tabler/icons"
 import {useForm} from "@mantine/form"
 import {ImageInput} from "../ImageInput"
 import {IconAlertCircle, IconBrandGithub, IconBrandTwitter, IconWorldWww} from "@tabler/icons"
 import {showNotification} from '@mantine/notifications'
+import useEPNS from "../../hooks/useEPNS"
 
 export function EditUser() {
     const {address} = useAccount()
@@ -16,6 +17,7 @@ export function EditUser() {
     const [banner, setBanner] = useState<File>()
     const [skills, setSkills] = useState<string[]>()
     const [interests, setInterests] = useState<string[]>([])
+    const { optIn } = useEPNS()
 
     const form = useForm({
         initialValues: {
@@ -52,7 +54,24 @@ export function EditUser() {
 
     return (
         <>
-            <button onClick={() => setLoading((prevState) => !prevState)}>Toggle Skeleton</button>
+        <Center>
+          <Button
+                            radius="md"
+                            mt="xl"
+                            size="md"
+                            fullWidth={false}
+                            onClick={() => {
+                                optIn()
+                            }}
+                        >
+                            Opt In To EPNS Notification Channel
+                        </Button> 
+                        
+        </Center>
+        <Space h="md" />
+            {/* <button onClick={() => setLoading((prevState) => !prevState)} >
+                Toggle Skeleton
+                </button> */}
             <Tabs value={activeTab} onTabChange={setActiveTab}>
                 <Tabs.List grow>
                     <Tabs.Tab value="first">Basic Info</Tabs.Tab>
@@ -61,31 +80,41 @@ export function EditUser() {
                 </Tabs.List>
 
                 <Tabs.Panel p={"xs"} value="first">
-                    <Title my={"xs"} order={4}>Your Profile Picture</Title>
+                    <Title my={"xs"} order={4}>Your Profile Picture
+                    
+                    <Title order={6} weight={200} color="dimmed">Show your best PFP (Recommended 200px x 350px)</Title></Title>
                     <Skeleton visible={loading}>
                         <ImageInput width={600} height={300} onChange={setImage} value={image}/>
                     </Skeleton>
-                    <Title my={"xs"} order={4}>Your Name <span style={{color: "red"}}>*</span></Title>
+                    <Title my={"xs"} order={4}>Name <span style={{color: "red"}}>*</span> 
+                    <Title order={6} weight={200} color="dimmed">Your real/ artistic name goes down here</Title></Title>
                     <Skeleton visible={loading}>
                         <TextInput required placeholder="Your Name" {...form.getInputProps('name')} />
                     </Skeleton>
-                    <Title my={"xs"} order={4}>Your Designation <span style={{color: "red"}}>*</span></Title>
+                    <Title my={"xs"} order={4}>Designation <span style={{color: "red"}}>*</span>
+                    
+                    <Title order={6} weight={200} color="dimmed">Tell everybody about your talent!</Title></Title>
                     <Skeleton visible={loading}>
                         <TextInput required
-                                   placeholder="Student / web3 developer / full stack engineer" {...form.getInputProps('designation')} />
+                                   placeholder="Artist / Full-Stack engineer/ Designer" {...form.getInputProps('designation')} />
                     </Skeleton>
-                    <Title my={"xs"} order={4}>Something About Yourself <span style={{color: "red"}}>*</span></Title>
+                    <Title my={"xs"} order={4}>Something About Yourself <span style={{color: "red"}}>*</span> 
+                    <Title order={6} weight={200} color="dimmed">A bit of your history</Title></Title>
                     <Skeleton visible={loading}>
                         <Textarea required
                                   placeholder="I am a web3 enthusiast..." {...form.getInputProps('description')} />
                     </Skeleton>
                 </Tabs.Panel>
                 <Tabs.Panel p={"xs"} value="second">
-                    <Title my={"xs"} order={4}>Your Banner</Title>
+                    <Title my={"xs"} order={4}>Your Banner
+                    
+                    <Title order={6} weight={200} color="dimmed">Recommendations 500 x 300 px (Idk, just to add a bit of info here, it looks nice)</Title></Title>
                     <Skeleton visible={loading}>
                         <ImageInput width={600} height={300} onChange={setBanner} value={banner}/>
                     </Skeleton>
-                    <Title my={"xs"} order={4}>Your Website</Title>
+                    <Title my={"xs"} order={4}>Website
+                    
+                    <Title order={6} weight={200} color="dimmed">Share your personal website, blog, etc!</Title></Title>
                     <Skeleton visible={loading}>
                         <Input
                             icon={<IconWorldWww size={16}/>}
@@ -100,7 +129,9 @@ export function EditUser() {
                             }
                         />
                     </Skeleton>
-                    <Title my={"xs"} order={4}>Your Github</Title>
+                    <Title my={"xs"} order={4}>Github
+                    
+                    <Title order={6} weight={200} color="dimmed">For showing up your talent</Title></Title>
                     <Skeleton visible={loading}>
                         <Input
                             icon={<IconBrandGithub size={16}/>}
@@ -115,7 +146,9 @@ export function EditUser() {
                             }
                         />
                     </Skeleton>
-                    <Title my={"xs"} order={4}>Your Twitter</Title>
+                    <Title my={"xs"} order={4}>Twitter
+                    
+                    <Title order={6} weight={200} color="dimmed">Give people the posibility of finding you in your Social Media</Title></Title>
                     <Skeleton visible={loading}>
                         <Input
                             icon={<IconBrandTwitter size={16}/>}
@@ -137,10 +170,10 @@ export function EditUser() {
                             defaultValue={skills}
                             value={skills}
                             onChange={setSkills}
-                            orientation="vertical"
+                            orientation="horizontal"
                             label="What are your skills"
                             description="Select some stuff that you're good at"
-                            spacing="xl"
+                            spacing="md"
                             size="md"
                         >
                             <Checkbox value="development" label="Development"/>
@@ -155,10 +188,10 @@ export function EditUser() {
                             value={interests}
                             defaultValue={interests}
                             onChange={setInterests}
-                            orientation="vertical"
+                            orientation="horizontal"
                             label="What are your interests"
                             description="Select some stuff that you're interested in"
-                            spacing="xl"
+                            spacing="md"
                             size="md"
                         >
                             <Checkbox value="nft" label="NFTs"/>

@@ -46,7 +46,7 @@ const UserProfile: NextPage = () => {
             name: user[3],
         }
         setStats((oldStats) => ({ ...oldStats, ...userStats }))
-        fetchPostsCount(user[1])
+        // fetchPostsCount(user[1])
         fetchExternalURIs(user[7])
 
         const query = {
@@ -67,10 +67,10 @@ const UserProfile: NextPage = () => {
                 value: graphRes.totalFollowing,
                 label: "Follows",
             },
-            {
-                value: graphRes.totalPosts,
-                label: "Posts",
-            },
+            // {
+            //     value: graphRes.totalPosts,
+            //     label: "Posts",
+            // },
         ]
         setStats((oldStats) => ({ ...oldStats, stats: lensStats }))
     }
@@ -79,14 +79,14 @@ const UserProfile: NextPage = () => {
         console.log("fetchTotalPosts")
         const totalPosts = await getLensPostCount(profileId)
         console.log("total post", totalPosts)
-        setStats((oldStats) => {
-            const stats = oldStats.stats
-            stats[2] = {
-                value: totalPosts,
-                label: "Posts",
-            }
-            return { ...oldStats, stats }
-        })
+        // setStats((oldStats) => {
+        //     const stats = oldStats.stats
+        //     stats[2] = {
+        //         value: totalPosts,
+        //         label: "Posts",
+        //     }
+        //     return { ...oldStats, stats }
+        // })
         setIsPostCountFetched(true)
     }
 

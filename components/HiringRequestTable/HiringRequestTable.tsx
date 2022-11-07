@@ -19,7 +19,7 @@ export function HiringRequestTable({someotheredata}: UsersStackProps) {
         transition="fade"
         transitionDuration={500}
         transitionTimingFunction="ease"
-        title={<Title>Send Stream <Text color={"dimmed"} size={"sm"}>Powered by Superfluid</Text></Title>}
+        title={<Title>Send Stream <Text color={"dimmed"} size={"sm"}></Text></Title>}
         onClose={() => setIsModalOpen(false)}>
         <Center>
             <CreateStream receiver={receiver}/>

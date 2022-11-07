@@ -44,6 +44,7 @@ export function ManageProfile() {
                     width: "100%",
                 }
             })}>
+                
             <Grid>
                <Grid.Col lg={3} md={2}>
                    <NavLink

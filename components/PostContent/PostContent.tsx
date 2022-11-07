@@ -32,6 +32,7 @@ export function PostContent() {
 
     return (
         <>
+        
             <Title mt={"md"}>
                 lorem: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod, nisl nec aliquam
             </Title>
